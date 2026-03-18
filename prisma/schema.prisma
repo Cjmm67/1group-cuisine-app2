@@ -1,0 +1,1061 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum ChefRole {
+  EXECUTIVE_CHEF
+  HEAD_CHEF
+  SOUS_CHEF
+  CHEF_DE_PARTIE
+  DEMI_CHEF
+  COMMIS
+  PASTRY_CHEF
+  PRIVATE_CHEF
+  CULINARY_INSTRUCTOR
+  CULINARY_CONSULTANT
+  CULINARY_STUDENT
+  STAGIAIRE
+}
+
+enum KitchenStation {
+  GARDE_MANGER
+  SAUCIER
+  ROTISSEUR
+  POISSONNIER
+  ENTREMETIER
+  PATISSIER
+  BOULANGER
+  TOURNANT
+}
+
+enum RecipeDifficulty {
+  PROFESSIONAL
+  ADVANCED_PROFESSIONAL
+  R_AND_D
+}
+
+enum WasteType {
+  PREP_WASTE
+  PLATE_WASTE
+  SPOILAGE
+  OVERPRODUCTION
+  EXPIRED
+  QUALITY_REJECT
+}
+
+enum SupplierCertification {
+  ORGANIC
+  BIODYNAMIC
+  MSC
+  ASC
+  FAIR_TRADE
+  REGENERATIVE
+  CARBON_NEUTRAL
+  B_CORP
+  DOP_AOC
+  HALAL
+  KOSHER
+}
+
+enum RecipeVisibility {
+  PRIVATE
+  PRO_ONLY
+  PUBLIC
+}
+
+enum ScalingType {
+  LINEAR
+  CUSTOM
+  NON_SCALABLE
+}
+
+enum CrawlStatus {
+  PENDING
+  CRAWLING
+  EXTRACTED
+  NORMALIZED
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  PUBLISHED
+}
+
+enum ExtractionTier {
+  JSON_LD
+  LLM_EXTRACTION
+  VISION_OCR
+}
+
+enum AllergenType {
+  GLUTEN
+  CRUSTACEANS
+  MOLLUSKS
+  PEANUTS
+  TREE_NUTS
+  SESAME
+  CELERY
+  MUSTARD
+  SOY
+  MILK
+  EGGS
+  FISH
+  LUPIN
+  SULFITES
+}
+
+// ============================================================================
+// AUTH & USER
+// ============================================================================
+
+model User {
+  id            String     @id @default(cuid())
+  email         String     @unique
+  emailVerified DateTime?
+  password      String?
+  name          String?
+  image         String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  sessions      Session[]
+  chefProfile   ChefProfile?
+  recipes       Recipe[]
+  comments      Comment[]
+  likes         Like[]
+  followers     UserFollower[] @relation("follower")
+  following     UserFollower[] @relation("following")
+  jobApplications JobApplication[]
+  masterclassProgress MasterclassProgress[]
+
+  @@index([email])
+  @@index([createdAt])
+}
+
+model Session {
+  id        String     @id @default(cuid())
+  sessionToken String  @unique
+  userId    String
+  expires   DateTime
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ============================================================================
+// CHEF PROFILE & SOCIAL
+// ============================================================================
+
+model ChefProfile {
+  id                    String     @id @default(cuid())
+  userId                String     @unique
+  user                  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Profile info
+  bio                   String?
+  profileImage          String?
+  coverImage            String?
+  website               String?
+  michaelinStars        Int        @default(0)
+  michaelinYear         Int?
+
+  // Career
+  currentRole           ChefRole
+  yearsExperience       Int        @default(0)
+  currentRestaurantId   String?
+  currentRestaurant     Restaurant? @relation("currentChef", fields: [currentRestaurantId], references: [id])
+
+  // Specialisations
+  specialisations       CuisineTaxonomy[] @relation("chefSpecialisations")
+  preferredStations     KitchenStation[]
+
+  // Metrics
+  followerCount         Int        @default(0)
+  followingCount        Int        @default(0)
+  recipeCount           Int        @default(0)
+
+  // Timestamps
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+
+  careerEntries         CareerEntry[]
+  accolades             Accolade[]
+  masterclasses         Masterclass[]
+  restaurantMembers     RestaurantMember[]
+
+  @@index([userId])
+  @@index([currentRestaurantId])
+  @@index([followerCount])
+  @@index([createdAt])
+}
+
+model UserFollower {
+  id          String     @id @default(cuid())
+  follower    User       @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  followerId  String
+  following   User       @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+  followingId String
+  createdAt   DateTime   @default(now())
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+}
+
+// ============================================================================
+// CUISINE & TECHNIQUE TAXONOMY
+// ============================================================================
+
+model CuisineTaxonomy {
+  id            String     @id @default(cuid())
+  name          String     @unique
+  slug          String     @unique
+  description   String?
+  level         Int        // 1 = root, 2 = region, 3 = sub-cuisine
+  parentId      String?
+  parent        CuisineTaxonomy? @relation("parent", fields: [parentId], references: [id])
+  children      CuisineTaxonomy[] @relation("parent")
+
+  recipes       Recipe[]
+  chefs         ChefProfile[] @relation("chefSpecialisations")
+
+  @@index([parentId])
+  @@index([level])
+}
+
+model TechniqueTaxonomy {
+  id            String     @id @default(cuid())
+  name          String     @unique
+  slug          String     @unique
+  description   String?
+  level         Int        // 1 = category, 2 = technique
+  parentId      String?
+  parent        TechniqueTaxonomy? @relation("parent", fields: [parentId], references: [id])
+  children      TechniqueTaxonomy[] @relation("parent")
+
+  recipeSteps   RecipeStep[]
+
+  @@index([parentId])
+  @@index([level])
+}
+
+// ============================================================================
+// RECIPE (CORE MODEL)
+// ============================================================================
+
+model Recipe {
+  id                    String     @id @default(cuid())
+  userId                String
+  user                  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Basic info
+  title                 String
+  slug                  String     @unique
+  description           String?    @db.Text
+  shortDescription      String?
+
+  // Classification
+  cuisineId             String?
+  cuisine               CuisineTaxonomy? @relation(fields: [cuisineId], references: [id])
+  difficulty            RecipeDifficulty
+  recipeCourse          String?    // appetizer, main, dessert, etc.
+
+  // Yield & timing
+  yieldValue            Float      // number of portions
+  yieldUnit             String     // "portions", "grams", etc.
+  prepTimeMinutes       Int
+  cookTimeMinutes       Int
+  restTimeMinutes       Int        @default(0)
+  totalTimeMinutes      Int        // calculated
+
+  // Classification
+  servingsMin           Int        @default(1)
+  servingsMax           Int        @default(8)
+
+  // Ingredients (relational)
+  ingredientGroups      IngredientGroup[]
+  ingredients           Ingredient[]
+
+  // Steps (relational)
+  stepGroups            RecipeStepGroup[]
+  steps                 RecipeStep[]
+
+  // Plating & presentation
+  platingNotes          String?    @db.Text
+  platingDimensions     Json?      // {height, width, depth}
+  temperature           Int?       // serving temperature in C
+
+  // Cost analysis
+  foodCostValue         Decimal    @default(0) @db.Decimal(8, 2)
+  foodCostCurrency      String     @default("EUR")
+  foodCostPercentage    Float      @default(0) // for fine dining 28-35%
+
+  // Scaling
+  scalingType           ScalingType @default(LINEAR)
+  scalingRules          ScalingRule[]
+
+  // Allergens
+  allergenFlags         AllergenFlag[]
+
+  // Sustainability
+  sustainabilityScore   Float?     // 0-100
+  carbonfootprint       Float?     // kg CO2
+
+  // SEO
+  seoTitle              String?
+  seoDescription        String?
+
+  // Visibility & publishing
+  visibility            RecipeVisibility @default(PRIVATE)
+  isPublished           Boolean    @default(false)
+  publishedAt           DateTime?
+
+  // Substitutions
+  substitutions         Substitution[]
+
+  // Social
+  commentCount          Int        @default(0)
+  likeCount             Int        @default(0)
+  comments              Comment[]
+  likes                 Like[]
+
+  // Metadata
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+  deletedAt             DateTime?
+
+  @@unique([userId, slug])
+  @@index([userId])
+  @@index([cuisineId])
+  @@index([difficulty])
+  @@index([visibility])
+  @@index([isPublished])
+  @@index([createdAt])
+  @@index([foodCostPercentage])
+}
+
+// ============================================================================
+// INGREDIENT MANAGEMENT
+// ============================================================================
+
+model IngredientGroup {
+  id                    String     @id @default(cuid())
+  recipeId              String
+  recipe                Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  name                  String     // "Sauce", "Garnish", etc.
+  description           String?
+  sequence              Int        // order in recipe
+
+  ingredients           Ingredient[]
+  createdAt             DateTime   @default(now())
+
+  @@index([recipeId])
+}
+
+model Ingredient {
+  id                    String     @id @default(cuid())
+  recipeId              String
+  recipe                Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredientGroupId     String?
+  ingredientGroup       IngredientGroup? @relation(fields: [ingredientGroupId], references: [id], onDelete: SetNull)
+
+  supplierId            String?
+  supplier              Supplier?  @relation(fields: [supplierId], references: [id])
+
+  // Item info
+  name                  String
+  sequence              Int
+
+  // Quantity
+  quantity              Decimal    @db.Decimal(10, 3)
+  unit                  String     // "g", "ml", "pieces", etc.
+  alternativeUnits      Json?      // [{unit: "cups", quantity: 2}]
+
+  // Cost
+  unitCost              Decimal    @default(0) @db.Decimal(8, 2)
+  costCurrency          String     @default("EUR")
+  totalCost             Decimal    @default(0) @db.Decimal(8, 2)
+
+  // Allergens & properties
+  allergens             AllergenFlag[]
+  isOrganic             Boolean    @default(false)
+  isLocal               Boolean    @default(false)
+
+  // Notes
+  notes                 String?
+
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+
+  @@index([recipeId])
+  @@index([ingredientGroupId])
+  @@index([supplierId])
+}
+
+model AllergenFlag {
+  id                    String     @id @default(cuid())
+  recipeId              String?
+  recipe                Recipe?    @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredientId          String?
+  ingredient            Ingredient? @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  allergenType          AllergenType
+  severity              String?    // "trace", "moderate", "severe"
+  notes                 String?
+
+  createdAt             DateTime   @default(now())
+
+  @@index([recipeId])
+  @@index([ingredientId])
+  @@index([allergenType])
+}
+
+model Substitution {
+  id                    String     @id @default(cuid())
+  recipeId              String
+  recipe                Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  originalIngredient    String
+  substitutionIngredient String
+  quantityAdjustment    String?    // "same", "1.2x", etc.
+  notes                 String?
+
+  createdAt             DateTime   @default(now())
+
+  @@index([recipeId])
+}
+
+model ScalingRule {
+  id                    String     @id @default(cuid())
+  recipeId              String
+  recipe                Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  ingredientName        String
+  baseYield            Float
+  scalingFactor        Float      // non-linear scaling coefficient
+  notes                 String?
+
+  @@index([recipeId])
+}
+
+// ============================================================================
+// RECIPE STEPS
+// ============================================================================
+
+model RecipeStepGroup {
+  id                    String     @id @default(cuid())
+  recipeId              String
+  recipe                Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  name                  String     // "Preparation", "Cooking", "Finishing"
+  sequence              Int
+
+  steps                 RecipeStep[]
+  createdAt             DateTime   @default(now())
+
+  @@index([recipeId])
+}
+
+model RecipeStep {
+  id                    String     @id @default(cuid())
+  recipeId              String
+  recipe                Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  stepGroupId           String
+  stepGroup             RecipeStepGroup @relation(fields: [stepGroupId], references: [id], onDelete: Cascade)
+
+  sequence              Int
+  description           String     @db.Text
+
+  // Technique tagging
+  techniques            TechniqueTaxonomy[]
+
+  // Timing & temperature
+  duration              Int?       // minutes
+  temperature           Int?       // celsius
+  temperatureRange      String?    // "180-200"
+
+  // Plating note
+  isPlatingStep         Boolean    @default(false)
+
+  // Timing note
+  canBePreparedAhead    Boolean    @default(false)
+  prepAheadHours        Int?
+
+  createdAt             DateTime   @default(now())
+
+  @@index([recipeId])
+  @@index([stepGroupId])
+}
+
+// ============================================================================
+// CAREER & ACCOLADES
+// ============================================================================
+
+model CareerEntry {
+  id                    String     @id @default(cuid())
+  chefProfileId         String
+  chefProfile           ChefProfile @relation(fields: [chefProfileId], references: [id], onDelete: Cascade)
+
+  restaurantName        String
+  position              ChefRole
+  startDate             DateTime
+  endDate               DateTime?
+  isCurrent             Boolean    @default(false)
+
+  description           String?
+  achievements          String?
+
+  createdAt             DateTime   @default(now())
+
+  @@index([chefProfileId])
+}
+
+model Accolade {
+  id                    String     @id @default(cuid())
+  chefProfileId         String
+  chefProfile           ChefProfile @relation(fields: [chefProfileId], references: [id], onDelete: Cascade)
+
+  title                 String
+  issuer                String?    // Michelin, James Beard, etc.
+  year                  Int
+  category              String?
+  description           String?
+
+  createdAt             DateTime   @default(now())
+
+  @@index([chefProfileId])
+  @@index([year])
+}
+
+// ============================================================================
+// RESTAURANT
+// ============================================================================
+
+model Restaurant {
+  id                    String     @id @default(cuid())
+
+  name                  String
+  slug                  String     @unique
+  description           String?    @db.Text
+
+  // Contact
+  email                 String?
+  phone                 String?
+  website               String?
+
+  // Location
+  address               String?
+  city                  String?
+  country               String?
+  latitude              Float?
+  longitude             Float?
+
+  // Operations
+  cuisineId             String?
+  cuisine               CuisineTaxonomy? @relation(fields: [cuisineId], references: [id])
+  michaelinStars        Int        @default(0)
+  seatingCapacity       Int?
+
+  // Image
+  image                 String?
+
+  // Relations
+  currentChefs          ChefProfile[] @relation("currentChef")
+  members               RestaurantMember[]
+  menu                  Recipe[]   @relation("restaurantMenu")
+
+  // Waste tracking
+  wasteLogs             WasteLogEntry[]
+
+  // Suppliers
+  suppliers             RestaurantSupplier[]
+
+  // Timestamps
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+
+  @@index([cuisineId])
+  @@index([city])
+  @@index([michaelinStars])
+}
+
+model RestaurantMember {
+  id                    String     @id @default(cuid())
+  restaurantId          String
+  restaurant            Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  chefProfileId         String
+  chefProfile           ChefProfile @relation(fields: [chefProfileId], references: [id], onDelete: Cascade)
+
+  role                  ChefRole
+  station               KitchenStation?
+  joinDate              DateTime
+  endDate               DateTime?
+
+  @@unique([restaurantId, chefProfileId])
+  @@index([restaurantId])
+  @@index([chefProfileId])
+}
+
+// ============================================================================
+// WASTE TRACKING
+// ============================================================================
+
+model WasteLogEntry {
+  id                    String     @id @default(cuid())
+  restaurantId          String
+  restaurant            Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  wasteType             WasteType
+  ingredient            String
+  quantity              Decimal    @db.Decimal(10, 3)
+  unit                  String
+  estimatedCost         Decimal    @default(0) @db.Decimal(8, 2)
+  costCurrency          String     @default("EUR")
+
+  reason                String?
+  notes                 String?
+
+  loggedAt              DateTime   @default(now())
+  createdAt             DateTime   @default(now())
+
+  @@index([restaurantId])
+  @@index([wasteType])
+  @@index([loggedAt])
+}
+
+// ============================================================================
+// SUPPLIER MANAGEMENT
+// ============================================================================
+
+model Supplier {
+  id                    String     @id @default(cuid())
+
+  name                  String
+  slug                  String     @unique
+  description           String?
+
+  // Contact
+  email                 String?
+  phone                 String?
+  website               String?
+
+  // Location
+  country               String?
+  region                String?
+
+  // Certifications
+  certifications        SupplierCertification[]
+
+  // Products & pricing
+  products              SupplierProduct[]
+  priceFeeds            SupplierPriceFeed[]
+
+  // Reviews
+  reviews               SupplierReview[]
+  avgRating             Float      @default(0)
+
+  // Relations
+  ingredients           Ingredient[]
+  restaurantSuppliers   RestaurantSupplier[]
+  orders                Order[]
+
+  // Timestamps
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+
+  @@index([slug])
+}
+
+model SupplierProduct {
+  id                    String     @id @default(cuid())
+  supplierId            String
+  supplier              Supplier   @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  name                  String
+  sku                   String
+  description           String?
+
+  unit                  String     // "kg", "piece", etc.
+  minOrder              Int        // minimum order quantity
+
+  currentPrice          Decimal    @db.Decimal(8, 2)
+  currency              String     @default("EUR")
+
+  isOrganic             Boolean    @default(false)
+  isFairTrade           Boolean    @default(false)
+  isLocal               Boolean    @default(false)
+
+  inStock               Boolean    @default(true)
+  leadTimeDays          Int?
+
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+
+  @@index([supplierId])
+  @@index([sku])
+}
+
+model SupplierPriceFeed {
+  id                    String     @id @default(cuid())
+  supplierId            String
+  supplier              Supplier   @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  productSku            String
+  price                 Decimal    @db.Decimal(8, 2)
+  currency              String     @default("EUR")
+
+  effectiveDate         DateTime
+  expiryDate            DateTime?
+
+  createdAt             DateTime   @default(now())
+
+  @@index([supplierId])
+  @@index([effectiveDate])
+}
+
+model SupplierReview {
+  id                    String     @id @default(cuid())
+  supplierId            String
+  supplier              Supplier   @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  rating                Int        // 1-5
+  qualityScore          Int?       // 1-5
+  reliabilityScore      Int?       // 1-5
+  communicationScore    Int?       // 1-5
+
+  comment               String?
+
+  createdAt             DateTime   @default(now())
+
+  @@index([supplierId])
+}
+
+model RestaurantSupplier {
+  id                    String     @id @default(cuid())
+  restaurantId          String
+  restaurant            Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  supplierId            String
+  supplier              Supplier   @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  isPrimary             Boolean    @default(false)
+  notes                 String?
+
+  @@unique([restaurantId, supplierId])
+  @@index([restaurantId])
+  @@index([supplierId])
+}
+
+// ============================================================================
+// ORDERING
+// ============================================================================
+
+model Order {
+  id                    String     @id @default(cuid())
+  supplierId            String
+  supplier              Supplier   @relation(fields: [supplierId], references: [id])
+
+  orderNumber           String     @unique
+  orderDate             DateTime   @default(now())
+  expectedDelivery      DateTime?
+  actualDelivery        DateTime?
+
+  status                String     // PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED
+
+  totalAmount           Decimal    @db.Decimal(10, 2)
+  currency              String     @default("EUR")
+
+  lineItems             OrderLineItem[]
+
+  notes                 String?
+
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+
+  @@index([supplierId])
+  @@index([orderDate])
+  @@index([status])
+}
+
+model OrderLineItem {
+  id                    String     @id @default(cuid())
+  orderId               String
+  order                 Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productSku            String
+  productName           String
+
+  quantity              Int
+  unit                  String
+
+  unitPrice             Decimal    @db.Decimal(8, 2)
+  totalPrice            Decimal    @db.Decimal(10, 2)
+  currency              String     @default("EUR")
+
+  @@index([orderId])
+}
+
+// ============================================================================
+// MASTERCLASSES
+// ============================================================================
+
+model Masterclass {
+  id                    String     @id @default(cuid())
+  chefProfileId         String
+  chefProfile           ChefProfile @relation(fields: [chefProfileId], references: [id], onDelete: Cascade)
+
+  title                 String
+  slug                  String     @unique
+  description           String?    @db.Text
+
+  topic                 String?    // "Plating", "Sauce-Making", etc.
+  level                 String     // BEGINNER, INTERMEDIATE, ADVANCED
+
+  durationMinutes       Int
+
+  episodeCount          Int        @default(0)
+  episodes              Episode[]
+
+  thumbnail             String?
+
+  progress              MasterclassProgress[]
+
+  createdAt             DateTime   @default(now())
+  publishedAt           DateTime?
+
+  @@index([chefProfileId])
+}
+
+model Episode {
+  id                    String     @id @default(cuid())
+  masterclassId         String
+  masterclass           Masterclass @relation(fields: [masterclassId], references: [id], onDelete: Cascade)
+
+  sequence              Int
+  title                 String
+  description           String?
+
+  videoUrl              String?
+  duration              Int        // seconds
+
+  // Timestamps for techniques
+  techniqueTimestamps   Json?      // [{time: 120, techniqueName: "Brunoise"}]
+
+  transcription         String?    @db.Text
+
+  createdAt             DateTime   @default(now())
+
+  @@index([masterclassId])
+}
+
+model MasterclassProgress {
+  id                    String     @id @default(cuid())
+  userId                String
+  user                  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  masterclassId         String
+  masterclass           Masterclass @relation(fields: [masterclassId], references: [id], onDelete: Cascade)
+
+  completedEpisodes     Int        @default(0)
+  progressPercentage    Float      @default(0)
+
+  completedAt           DateTime?
+
+  @@unique([userId, masterclassId])
+  @@index([userId])
+  @@index([masterclassId])
+}
+
+// ============================================================================
+// JOB LISTINGS & RECRUITMENT
+// ============================================================================
+
+model JobListing {
+  id                    String     @id @default(cuid())
+
+  title                 String
+  slug                  String     @unique
+  description           String?    @db.Text
+
+  restaurantName        String
+  city                  String
+  country               String
+
+  position              ChefRole
+  station               KitchenStation?
+  experienceLevel       String     // JUNIOR, INTERMEDIATE, SENIOR, EXECUTIVE
+
+  yearsExperienceMin    Int        @default(0)
+  yearsExperienceMax    Int?
+
+  salaryMin             Decimal?   @db.Decimal(10, 2)
+  salaryMax             Decimal?   @db.Decimal(10, 2)
+  salaryCurrency        String     @default("EUR")
+
+  jobType               String     // FULL_TIME, PART_TIME, CONTRACT, FREELANCE
+
+  isActive              Boolean    @default(true)
+
+  applications          JobApplication[]
+
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+  expiresAt             DateTime?
+
+  @@index([position])
+  @@index([city])
+  @@index([isActive])
+  @@index([createdAt])
+}
+
+model JobApplication {
+  id                    String     @id @default(cuid())
+  jobListingId          String
+  jobListing            JobListing @relation(fields: [jobListingId], references: [id], onDelete: Cascade)
+  userId                String
+  user                  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  status                String     // APPLIED, REVIEWED, SHORTLISTED, REJECTED, OFFERED, ACCEPTED
+
+  appliedAt             DateTime   @default(now())
+  reviewedAt            DateTime?
+
+  messages              RecruitmentMessage[]
+
+  @@unique([jobListingId, userId])
+  @@index([jobListingId])
+  @@index([userId])
+  @@index([status])
+}
+
+model RecruitmentMessage {
+  id                    String     @id @default(cuid())
+  applicationId         String
+  application           JobApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  senderRole            String     // APPLICANT, RECRUITER
+  message               String     @db.Text
+
+  createdAt             DateTime   @default(now())
+
+  @@index([applicationId])
+}
+
+// ============================================================================
+// RECIPE CRAWLER PIPELINE
+// ============================================================================
+
+model CrawledRecipe {
+  id                    String     @id @default(cuid())
+
+  sourceUrl             String     @unique
+  sourceTitle           String?
+  sourceSiteName        String?
+
+  // Extraction metadata
+  extractionTier        ExtractionTier
+  extractionTimestamp   DateTime   @default(now())
+  confidenceScore       Float      // 0-1
+
+  // Extraction data
+  rawHtml               String?    @db.Text
+  rawJson               Json?
+
+  // Normalized recipe data
+  normalizedData        Json?      // structured recipe object
+
+  // Status in review pipeline
+  status                CrawlStatus @default(PENDING)
+
+  // Review
+  reviewedBy            String?
+  reviewedAt            DateTime?
+  reviewNotes           String?
+
+  // Publishing
+  publishedAsRecipeId   String?    // if approved and published
+
+  // Timestamps
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+
+  @@index([sourceUrl])
+  @@index([status])
+  @@index([extractionTier])
+  @@index([createdAt])
+}
+
+model CrawlJob {
+  id                    String     @id @default(cuid())
+
+  name                  String
+  description           String?
+
+  status                String     // PENDING, RUNNING, COMPLETED, FAILED
+
+  targetUrls            String[]   // list of URLs to crawl
+  crawledCount          Int        @default(0)
+  successCount          Int        @default(0)
+  errorCount            Int        @default(0)
+
+  startedAt             DateTime?
+  completedAt           DateTime?
+
+  errors                Json?      // error log
+
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+
+  @@index([status])
+}
+
+// ============================================================================
+// SOCIAL FEATURES
+// ============================================================================
+
+model Comment {
+  id                    String     @id @default(cuid())
+  recipeId              String
+  recipe                Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  userId                String
+  user                  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  content               String     @db.Text
+
+  parentCommentId       String?
+  parentComment         Comment?   @relation("replies", fields: [parentCommentId], references: [id], onDelete: Cascade)
+  replies               Comment[]  @relation("replies")
+
+  likeCount             Int        @default(0)
+
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+
+  @@index([recipeId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Like {
+  id                    String     @id @default(cuid())
+  recipeId              String
+  recipe                Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  userId                String
+  user                  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt             DateTime   @default(now())
+
+  @@unique([recipeId, userId])
+  @@index([recipeId])
+  @@index([userId])
+}

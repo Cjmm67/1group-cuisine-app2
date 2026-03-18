@@ -1,0 +1,90 @@
+# 1-Group Cuisine Recipe Crawler Configuration
+
+crawl_settings:
+  # Maximum recipes to extract per chef
+  max_recipes_per_chef: 10
+
+  # Maximum concurrent crawl requests
+  max_concurrent_requests: 5
+
+  # Default delay between requests (seconds)
+  default_delay_seconds: 2
+
+  # Request timeout (seconds)
+  request_timeout_seconds: 30
+
+  # Maximum retry attempts
+  retry_max_attempts: 3
+
+# Rate limits per domain (requests_per_second and daily_max)
+rate_limits:
+  default:
+    requests_per_second: 1
+    daily_max: 100
+
+  greatbritishchefs.com:
+    requests_per_second: 0.5
+    daily_max: 50
+
+  michelin.com:
+    requests_per_second: 0.3
+    daily_max: 30
+
+  finedininglovers.com:
+    requests_per_second: 0.5
+    daily_max: 50
+
+  bonappetit.com:
+    requests_per_second: 1
+    daily_max: 100
+
+  seriouseats.com:
+    requests_per_second: 1
+    daily_max: 100
+
+  foodandwine.com:
+    requests_per_second: 1
+    daily_max: 100
+
+  eater.com:
+    requests_per_second: 1
+    daily_max: 100
+
+# Extraction engine settings
+extraction:
+  # Confidence threshold for accepting extractions (0-1)
+  confidence_threshold: 0.6
+
+  # Score threshold for auto-approval (0-100)
+  auto_approve_threshold: 85
+
+  # Request timeout in seconds
+  timeout_seconds: 30
+
+# Credible sources organized by tier
+credible_sources:
+  tier_1:
+    - michelin.com
+    - theworlds50best.com
+    - greatbritishchefs.com
+    - finedininglovers.com
+
+  tier_2:
+    - bonappetit.com
+    - seriouseats.com
+    - foodandwine.com
+    - eater.com
+    - saveur.com
+    - gourmet.com
+
+  tier_3:
+    - epicurious.com
+    - allrecipes.com
+    - tasty.com
+    - simplyrecipes.com
+    - myrecipes.com
+    - delish.com
+
+# Logging configuration
+log_level: INFO
+log_format: json  # json or text

@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: 1group-postgres
+    environment:
+      POSTGRES_USER: crawler
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: 1group_cuisine
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crawler"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: 1group-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Recipe Crawler
+  crawler:
+    build: .
+    container_name: 1group-crawler
+    environment:
+      DATABASE_URL: postgresql://crawler:password@postgres:5432/1group_cuisine
+      REDIS_URL: redis://redis:6379/0
+      CLAUDE_API_KEY: ${CLAUDE_API_KEY}
+      LOG_LEVEL: INFO
+      LOG_FORMAT: json
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./config:/app/config
+      - ./logs:/app/logs
+    command: crawl --tier 1 --max-recipes 10
+
+volumes:
+  postgres_data:
+  redis_data:
