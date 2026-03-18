@@ -124,7 +124,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-8',
     name: 'Dominique Crenn',
-    avatar: 'https://thebestchefawards.com/wp-content/uploads/2025/10/Dominique-Crenn_credit-John-Troxell-683x1024.webp',
+    avatar: 'https://thebestchefawards.com/wp-content/uploads/2026/03/Dominique-Crenn_dish1_credit-John-Troxell.png',
     bio: 'Dominique Crenn is the first female chef in the US to earn three Michelin stars, leading Atelier Crenn in San Francisco with poetic, deeply personal tasting menus inspired by her Breton roots and expressed through modernist technique.',
     cuisine: ['French', 'Contemporary', 'Modern European'],
     accolades: [
@@ -194,7 +194,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-12',
     name: 'Lamley Chua',
-    avatar: 'https://ieatishootipost.sg/wp-content/uploads/2024/06/Action1-1024x1024.jpg',
+    avatar: 'https://citynomads.com/wp-content/uploads/2022/05/Oumi-Chef-Lamley-Chua.png',
     bio: 'Lamley Chua is 1-Group\'s Executive Chef for Asian Cuisines, helming both Flnt and Oumi. His culinary journey began at 15, inspired by teppanyaki performance at Benihana, and spans two decades across Japanese techniques — from sashimi and sushi to robatayaki and tempura. At Oumi, he marries traditional Japanese kappo with produce from the world\'s highest food forest. At Flnt, he channels Nikkei fire and whisky-bar energy.',
     cuisine: ['Contemporary Japanese', 'Nikkei', 'Kappo'],
     accolades: [
@@ -210,7 +210,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-13',
     name: 'Tom Kung',
-    avatar: 'https://images.squarespace-cdn.com/content/v1/5c6cef6e797f7425a8d88a6f/730a4f3c-6cb4-4e76-88bd-cf494d6bc267/14082024_AlkaffMansion_Colossal_Upload_Clean_062.jpg',
+    avatar: 'https://robbreport.com.sg/storage/2024/08/UNA_Rubia-Gallega-Beef.webp',
     bio: 'Tom Kung is 1-Group\'s Executive Chef for Spanish Cuisine Development, leading the kitchen at Una. Trained for three years under renowned Spanish-Italian chef Jean Philippe Patruno, Tom\'s cooking is rooted firmly in the Iberian tradition — the patience of slow preparations, the confidence of sofrito and romesco, the generosity of the Spanish table. Under his direction, Una holds the prestigious "Restaurants from Spain" certification from ICEX.',
     cuisine: ['Spanish', 'Contemporary Iberian', 'Mediterranean'],
     accolades: [
@@ -885,7 +885,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'cereals', name: 'Cereals containing gluten', code: 'gluten' },
     ],
     foodCostPercent: 32,
-    image: 'https://corebyclaresmyth.com/wp-content/uploads/2023/10/CORE-cornishturbot-1.jpg',
+    image: 'https://corebyclaresmyth.com/wp-content/uploads/2023/10/COREbyClareSmyth-42.jpg',
     menuContext: ['a_la_carte', 'brunch'],
     sustainability: {
       lowCarbon: true,
@@ -1036,7 +1036,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'sesame', name: 'Sesame', code: 'sesame' },
     ],
     foodCostPercent: 26,
-    image: 'https://thebestchefawards.com/wp-content/uploads/2025/10/Dominique-Crenn_credit-John-Troxell-683x1024.webp',
+    image: 'https://thebestchefawards.com/wp-content/uploads/2026/03/Dominique-Crenn_dish1_credit-John-Troxell.png',
     menuContext: ['a_la_carte'],
     sustainability: {
       lowCarbon: false,
@@ -1141,7 +1141,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'sesame', name: 'Sesame', code: 'sesame' },
     ],
     foodCostPercent: 28,
-    image: 'https://thebestchefawards.com/wp-content/uploads/2026/03/Ana-Ros_restaurant_credit-Suzan-Gabrijan-scaled.webp',
+    image: 'https://thebestchefawards.com/wp-content/uploads/2026/03/Ana_Ros_Dish-1_credit-Ciril-Jazbec-682x1024.webp',
     menuContext: ['a_la_carte', 'brunch'],
     sustainability: {
       lowCarbon: true,
@@ -1296,7 +1296,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'fish', name: 'Fish', code: 'fish' },
     ],
     foodCostPercent: 35,
-    image: 'https://www.oumi.sg/wp-content/uploads/2025/03/6-768x513.jpg',
+    image: 'https://citynomads.com/wp-content/uploads/2022/05/Oumi-Tempura-Crepe.png',
     menuContext: ['a_la_carte', 'omakase'],
     sustainability: { lowCarbon: false, seasonal: true, zeroWaste: false, score: 60 },
     rating: 4.9,
@@ -1436,7 +1436,7 @@ export const MOCK_RECIPES: Recipe[] = [
     ],
     allergens: [],
     foodCostPercent: 38,
-    image: 'https://firerestaurant.sg/wp-content/uploads/2021/01/WhatsApp-Image-2024-11-22-at-14.28.37-1.jpeg',
+    image: 'https://firerestaurant.sg/wp-content/uploads/2021/01/IMG_0289-scaled.jpeg',
     menuContext: ['a_la_carte', 'communal'],
     sustainability: { lowCarbon: false, seasonal: false, zeroWaste: false, score: 40 },
     rating: 4.8,
@@ -1480,7 +1480,7 @@ export const MOCK_RECIPES: Recipe[] = [
     ],
     allergens: [],
     foodCostPercent: 45,
-    image: 'https://images.squarespace-cdn.com/content/v1/5c6cef6e797f7425a8d88a6f/730a4f3c-6cb4-4e76-88bd-cf494d6bc267/14082024_AlkaffMansion_Colossal_Upload_Clean_062.jpg',
+    image: 'https://robbreport.com.sg/storage/2024/08/UNA_Rubia-Gallega-Beef.webp',
     menuContext: ['a_la_carte', 'sharing'],
     sustainability: { lowCarbon: false, seasonal: true, zeroWaste: false, score: 48 },
     rating: 4.9,
@@ -1593,7 +1593,7 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
     title: 'Contemporary French Technique Masterclass',
     chef: MOCK_CHEFS[7],
     description: 'With Dominique Crenn: Learn poetic plating and contemporary French techniques that define modern gastronomy.',
-    image: 'https://thebestchefawards.com/wp-content/uploads/2025/10/Dominique-Crenn_credit-John-Troxell-683x1024.webp',
+    image: 'https://thebestchefawards.com/wp-content/uploads/2026/03/Dominique-Crenn_dish1_credit-John-Troxell.png',
     level: 'advanced',
     cuisine: ['French', 'Modern European'],
     duration: 210,

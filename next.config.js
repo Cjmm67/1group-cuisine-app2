@@ -69,6 +69,14 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'citynomads.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'robbreport.com.sg',
+      },
+      {
+        protocol: 'https',
         hostname: '1-atico.sg',
       },
     ],
