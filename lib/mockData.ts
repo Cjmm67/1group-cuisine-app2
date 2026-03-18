@@ -193,7 +193,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-13',
     name: 'Tom Kung',
-    avatar: 'https://robbreport.com.sg/storage/2024/08/UNA_Rubia-Gallega-Beef.webp',
+    avatar: '/chefs/tom-kung.jpg',
     bio: 'Tom Kung is 1-Group\'s Executive Chef for Spanish Cuisine Development, leading the kitchen at Una. Trained for three years under renowned Spanish-Italian chef Jean Philippe Patruno, Tom\'s cooking is rooted firmly in the Iberian tradition — the patience of slow preparations, the confidence of sofrito and romesco, the generosity of the Spanish table. Under his direction, Una holds the prestigious "Restaurants from Spain" certification from ICEX.',
     cuisine: ['Spanish', 'Contemporary Iberian', 'Mediterranean'],
     accolades: [
