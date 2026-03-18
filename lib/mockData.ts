@@ -1503,7 +1503,7 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
     title: 'Massimo Bottura — Osteria Francescana',
     chef: MOCK_CHEFS[0],
     description: 'The maestro of Osteria Francescana explores how tradition fuels innovation — from deconstructed classics to art-inspired plating that redefined Italian cuisine.',
-    image: 'https://img.youtube.com/vi/adyRuV2eJlM/maxresdefault.jpg',
+    image: 'https://img.youtube.com/vi/FNyvFVaj3IM/maxresdefault.jpg',
     level: 'advanced',
     cuisine: ['Italian'],
     duration: 90,
