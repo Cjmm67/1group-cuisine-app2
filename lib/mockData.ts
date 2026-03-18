@@ -6,8 +6,8 @@ export const MOCK_CHEFS: Chef[] = [
     id: 'chef-1',
     name: 'Massimo Bottura',
     avatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400&h=400&fit=crop',
-    bio: 'Three-Michelin-starred chef and innovator of modern Italian cuisine. Known for transforming traditional dishes with contemporary techniques.',
-    cuisine: ['Italian', 'Modern European'],
+    bio: 'Massimo Bottura transformed Modena\'s Osteria Francescana from a modest trattoria into a twice-crowned World\'s Best Restaurant, reimagining Italian classics with contemporary art and philosophy. Named Best Visionary 2025.',
+    cuisine: ['Avant-Garde Italian', 'Modern European'],
     accolades: [
       { type: 'michelin', stars: 3, year: 2023, restaurant: 'Osteria Francescana' },
       { type: 'fifty_best', year: 2023 },
@@ -23,8 +23,8 @@ export const MOCK_CHEFS: Chef[] = [
     id: 'chef-2',
     name: 'René Redzepi',
     avatar: 'https://images.unsplash.com/photo-1581299894007-aaa50297cf16?w=400&h=400&fit=crop',
-    bio: 'Pioneer of New Nordic Cuisine. Focuses on hyper-local, seasonal ingredients and sustainable practices.',
-    cuisine: ['Nordic', 'Scandinavian'],
+    bio: 'René Redzepi fundamentally changed global gastronomy through Noma in Copenhagen, pioneering New Nordic Cuisine and making foraging, fermentation, and hyper-seasonality the language of modern fine dining. Four-time World\'s Best Restaurant winner.',
+    cuisine: ['New Nordic', 'Foraging-Based'],
     accolades: [
       { type: 'michelin', stars: 3, year: 2023, restaurant: 'Noma' },
       { type: 'fifty_best', year: 2023 },
@@ -40,8 +40,8 @@ export const MOCK_CHEFS: Chef[] = [
     id: 'chef-3',
     name: 'Gaggan Anand',
     avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop',
-    bio: 'Visionary chef redefining modern Indian cuisine with progressive techniques and emotional storytelling through food.',
-    cuisine: ['Indian', 'Contemporary'],
+    bio: 'Gaggan Anand is the iconoclast of Indian cuisine, transforming street food and traditional flavours through modernist techniques at his eponymous Bangkok restaurant. Four-time Asia\'s Best Restaurant, trained under Ferran Adrià at elBulli.',
+    cuisine: ['Progressive Indian', 'Molecular Gastronomy'],
     accolades: [
       { type: 'michelin', stars: 2, year: 2023, restaurant: 'Gaggan' },
       { type: 'fifty_best', year: 2023 },
@@ -57,8 +57,8 @@ export const MOCK_CHEFS: Chef[] = [
     id: 'chef-4',
     name: 'Thomas Keller',
     avatar: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=400&fit=crop',
-    bio: 'Master of French classical technique. Renowned for precise, elegant cuisine with impeccable execution.',
-    cuisine: ['French', 'American Contemporary'],
+    bio: 'Thomas Keller is an icon of American fine dining whose The French Laundry in Napa Valley and Per Se in New York both hold three Michelin stars. His pursuit of perfection in classical technique has trained a generation of America\'s best chefs.',
+    cuisine: ['American-French', 'Classical Fine Dining'],
     accolades: [
       { type: 'michelin', stars: 3, year: 2023, restaurant: 'The French Laundry' },
       { type: 'fifty_best', year: 2023 },
@@ -74,8 +74,8 @@ export const MOCK_CHEFS: Chef[] = [
     id: 'chef-5',
     name: 'Clare Smyth',
     avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop',
-    bio: 'Chef-patron of the acclaimed restaurant Core. Specializes in innovative British cuisine with Japanese influences.',
-    cuisine: ['British', 'Japanese Fusion'],
+    bio: 'Clare Smyth earned three Michelin stars at Core in London\'s Notting Hill, the first female British chef to achieve this distinction. Her \'natural core\' philosophy celebrates the best of British produce with technical mastery.',
+    cuisine: ['Modern British', 'Natural Cuisine'],
     accolades: [
       { type: 'michelin', stars: 2, year: 2023, restaurant: 'Core by Clare Smyth' },
     ],
@@ -91,7 +91,7 @@ export const MOCK_CHEFS: Chef[] = [
     id: 'chef-6',
     name: 'Alain Ducasse',
     avatar: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=400&h=400&fit=crop',
-    bio: 'Legendary French chef with restaurants across the globe. Pioneer in sustainable gastronomy and a master of technique.',
+    bio: 'Alain Ducasse is the godfather of modern French luxury dining, the first chef to hold three Michelin stars simultaneously in three cities. His empire spans 18 active Michelin stars and restaurants worldwide, pioneering \'naturalité\' cuisine.',
     cuisine: ['French', 'Mediterranean', 'Contemporary'],
     accolades: [
       { type: 'michelin', stars: 3, year: 2023, restaurant: 'Le Jules Verne' },
@@ -108,7 +108,7 @@ export const MOCK_CHEFS: Chef[] = [
     id: 'chef-7',
     name: 'Heston Blumenthal',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
-    bio: 'British chef celebrated for pioneering molecular gastronomy. Combines science, art, and psychology in culinary innovation.',
+    bio: 'Heston Blumenthal pioneered the multi-sensory dining movement at The Fat Duck in Bray, using scientific inquiry to create dishes that engage all five senses. A three-Michelin-star visionary who turned molecular gastronomy into edible art.',
     cuisine: ['British', 'Modernist', 'Experimental'],
     accolades: [
       { type: 'michelin', stars: 3, year: 2023, restaurant: 'The Fat Duck' },
@@ -125,7 +125,7 @@ export const MOCK_CHEFS: Chef[] = [
     id: 'chef-8',
     name: 'Dominique Crenn',
     avatar: 'https://images.unsplash.com/photo-1504674900152-b8b80e7b6c5d?w=400&h=400&fit=crop',
-    bio: 'First female chef in France to earn three Michelin stars. Renowned for poetic plating and contemporary French cuisine.',
+    bio: 'Dominique Crenn is the first female chef in the US to earn three Michelin stars, leading Atelier Crenn in San Francisco with poetic, deeply personal tasting menus inspired by her Breton roots and expressed through modernist technique.',
     cuisine: ['French', 'Contemporary', 'Modern European'],
     accolades: [
       { type: 'michelin', stars: 3, year: 2023, restaurant: 'Atelier Crenn' },
@@ -142,7 +142,7 @@ export const MOCK_CHEFS: Chef[] = [
     id: 'chef-9',
     name: 'Yoshihiro Narisawa',
     avatar: 'https://images.unsplash.com/photo-1494897692104-481c6b1dc239?w=400&h=400&fit=crop',
-    bio: 'Japanese chef pioneering innovative Japanese cuisine. Focused on sustainability and respect for ingredients.',
+    bio: 'Yoshihiro Narisawa is Japan\'s foremost exponent of nature-driven cuisine. His \'Innovative Satoyama Cuisine\' celebrates forests, rivers, and soil of Japan, merging European technique with a profound Japanese sense of terroir.',
     cuisine: ['Japanese', 'Contemporary Japanese', 'Modern'],
     accolades: [
       { type: 'michelin', stars: 3, year: 2023, restaurant: 'Narisawa' },
@@ -159,7 +159,7 @@ export const MOCK_CHEFS: Chef[] = [
     id: 'chef-10',
     name: 'Ana Roš',
     avatar: 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400&h=400&fit=crop',
-    bio: 'Slovenian chef celebrated for seasonal, local, and foraged ingredients. Runner-up World Best Female Chef.',
+    bio: 'Ana Roš put Slovenia on the global culinary map through Hiša Franko in the remote Soča Valley, where she forages, ferments, and draws on Alpine-Mediterranean ingredients. Self-taught, now Slovenia\'s first and only three-Michelin-star chef.',
     cuisine: ['Slovenian', 'Nordic', 'Contemporary'],
     accolades: [
       { type: 'michelin', stars: 2, year: 2023, restaurant: 'Hiša Franko' },
@@ -178,10 +178,10 @@ export const MOCK_RECIPES: Recipe[] = [
   // Original 5 recipes
   {
     id: 'recipe-1',
-    title: 'Risotto ai Funghi Porcini',
+    title: 'Five Ages of Parmigiano Reggiano',
     chef: MOCK_CHEFS[0],
     restaurant: 'Osteria Francescana',
-    description: 'Creamy arborio rice with wild porcini mushrooms, perfectly balanced with truffle oil and Parmigiano-Reggiano.',
+    description: 'Massimo Bottura\'s iconic dish showcasing Parmigiano Reggiano in five different textures and temperatures — from a creamy foam to a crunchy galette, each representing a different age of the cheese.',
     cuisines: [
       { id: 'italian', name: 'Italian', parent: 'european' },
       { id: 'italian_northern', name: 'Northern Italian', parent: 'italian' },
@@ -284,10 +284,10 @@ export const MOCK_RECIPES: Recipe[] = [
   },
   {
     id: 'recipe-2',
-    title: 'Smørrebrød with Cured Fish',
+    title: 'The Crunchy Part of the Lasagna',
     chef: MOCK_CHEFS[1],
-    restaurant: 'Noma',
-    description: 'Traditional Danish open-faced sandwich featuring house-cured Nordic fish on dense rye bread with seasonal vegetables.',
+    restaurant: 'Osteria Francescana',
+    description: 'Bottura\'s deconstructed lasagna focusing on the caramelized, crunchy corner parts — the piece everyone fights over — elevated into a work of contemporary culinary art.',
     cuisines: [
       { id: 'nordic', name: 'Nordic', parent: 'european' },
     ],
@@ -362,10 +362,10 @@ export const MOCK_RECIPES: Recipe[] = [
   },
   {
     id: 'recipe-3',
-    title: 'Saffron Risotto with Sea Urchin',
+    title: 'Celeriac and Truffle Shawarma',
     chef: MOCK_CHEFS[2],
-    restaurant: 'Gaggan',
-    description: 'Elegant North Indian-influenced risotto with delicate saffron, finished with luxurious sea urchin roe.',
+    restaurant: 'Noma',
+    description: 'René Redzepi\'s showstopper from Noma\'s vegetable season — a whole celeriac slow-roasted on a vertical spit like a shawarma, shaved tableside and served with black truffle and hazelnut.',
     cuisines: [
       { id: 'indian', name: 'Indian', parent: 'asian' },
       { id: 'indian_contemporary', name: 'Contemporary', parent: 'indian' },
@@ -451,10 +451,10 @@ export const MOCK_RECIPES: Recipe[] = [
   },
   {
     id: 'recipe-4',
-    title: 'Roasted Duck Breast with Cherry Gastrique',
+    title: 'Langoustine on a Rock',
     chef: MOCK_CHEFS[3],
-    restaurant: 'The French Laundry',
-    description: 'Perfect medium-rare duck breast with crispy skin, accompanied by a glossy cherry gastrique and seasonal vegetables.',
+    restaurant: 'Noma',
+    description: 'A pristine langoustine tail served perched on a rock, dotted with oyster emulsion and dusted with seaweed powder — the very tidal landscape in which a live langoustine might flourish.',
     cuisines: [
       { id: 'french', name: 'French', parent: 'european' },
       { id: 'french_classical', name: 'Classical', parent: 'french' },
@@ -544,10 +544,10 @@ export const MOCK_RECIPES: Recipe[] = [
   },
   {
     id: 'recipe-5',
-    title: 'Oyster with Champagne Foam',
+    title: 'Lick It Up',
     chef: MOCK_CHEFS[4],
-    restaurant: 'Core by Clare Smyth',
-    description: 'Fresh British oyster topped with delicate champagne foam and caviar, a celebration of minimalism and precision.',
+    restaurant: 'Gaggan',
+    description: 'Gaggan Anand\'s signature: the essence of a good curry with sweet, sour, spice, and savoury notes spread on a plate — a gel, jam, chutney, and purée designed to be eaten without cutlery.',
     cuisines: [
       { id: 'british', name: 'British', parent: 'european' },
     ],
@@ -623,10 +623,10 @@ export const MOCK_RECIPES: Recipe[] = [
   // New 10 recipes
   {
     id: 'recipe-6',
-    title: 'Beef Tartare with Quail Egg and Caper',
+    title: 'Yogurt Explosion',
     chef: MOCK_CHEFS[5],
-    restaurant: 'Le Jules Verne',
-    description: 'Premium beef tartare with ultra-fresh ingredients, quail egg yolk, and delicate capers on crisp toast.',
+    restaurant: 'Gaggan',
+    description: 'A tribute to Indian street-style dahi puri using molecular spherification — a delicate sphere that bursts with tangy yogurt, tamarind, and spiced chutneys in one explosive bite.',
     cuisines: [
       { id: 'french', name: 'French', parent: 'european' },
       { id: 'french_classical', name: 'Classical', parent: 'french' },
@@ -704,10 +704,10 @@ export const MOCK_RECIPES: Recipe[] = [
   },
   {
     id: 'recipe-7',
-    title: 'Grand Marnier Soufflé',
+    title: 'Oysters and Pearls',
     chef: MOCK_CHEFS[6],
-    restaurant: 'The Fat Duck',
-    description: 'Impossibly light Grand Marnier soufflé with hints of bitter chocolate and orange zest, a timeless classic.',
+    restaurant: 'The French Laundry',
+    description: 'Thomas Keller\'s most famous creation — a sabayon of pearl tapioca with Beau Soleil oysters and white sturgeon caviar. This dish has been on The French Laundry menu since its creation.',
     cuisines: [
       { id: 'french', name: 'French', parent: 'european' },
       { id: 'pastry', name: 'Pastry', parent: 'french' },
@@ -785,10 +785,10 @@ export const MOCK_RECIPES: Recipe[] = [
   },
   {
     id: 'recipe-8',
-    title: 'Beef Wellington with Mushroom Duxelles',
+    title: 'Salmon Cornet',
     chef: MOCK_CHEFS[7],
-    restaurant: 'Atelier Crenn',
-    description: 'Tender beef tenderloin wrapped in pastry with luxurious mushroom duxelles, a modern interpretation of a classic.',
+    restaurant: 'The French Laundry',
+    description: 'Keller\'s signature amuse-bouche since 1991 — a tiny sesame tuile cone filled with crème fraîche and topped with smoked salmon tartare. More an experience than a course.',
     cuisines: [
       { id: 'french', name: 'French', parent: 'european' },
       { id: 'french_contemporary', name: 'Contemporary French', parent: 'french' },
@@ -884,10 +884,10 @@ export const MOCK_RECIPES: Recipe[] = [
   },
   {
     id: 'recipe-9',
-    title: 'Tonkotsu Ramen with 24-Hour Pork Bone Broth',
+    title: 'Potato and Roe',
     chef: MOCK_CHEFS[8],
-    restaurant: 'Narisawa',
-    description: 'Rich, creamy pork bone broth simmered for 24 hours, served with tender chashu and silky noodles.',
+    restaurant: 'Core by Clare Smyth',
+    description: 'Clare Smyth\'s most celebrated dish — a baked potato with dulse beurre blanc, herring and trout roe. Humble British produce transformed into something extraordinary.',
     cuisines: [
       { id: 'japanese', name: 'Japanese', parent: 'asian' },
       { id: 'japanese_contemporary', name: 'Contemporary', parent: 'japanese' },
@@ -965,10 +965,10 @@ export const MOCK_RECIPES: Recipe[] = [
   },
   {
     id: 'recipe-10',
-    title: 'Ceviche Classico with Leche de Tigre',
+    title: 'Lamb Carrot',
     chef: MOCK_CHEFS[9],
-    restaurant: 'Hiša Franko',
-    description: 'Pristine white fish cured in citrus and spices, Peruvian-style with traditional tiger milk sauce.',
+    restaurant: 'Core by Clare Smyth',
+    description: 'Carrot slowly confited in lamb fat until tender and juicy, served with pressure-cooked neck of lamb, the cooking juices reduced to a rich glaze, balanced with sheep\'s milk yogurt.',
     cuisines: [
       { id: 'peruvian', name: 'Peruvian', parent: 'south_american' },
       { id: 'latin_american', name: 'Latin American', parent: 'latin' },
@@ -1045,10 +1045,10 @@ export const MOCK_RECIPES: Recipe[] = [
   },
   {
     id: 'recipe-11',
-    title: 'Thai Green Curry with Coconut Milk',
+    title: 'Green Lentils with Caviar',
     chef: MOCK_CHEFS[0],
-    restaurant: 'Osteria Francescana',
-    description: 'Aromatic Thai green curry with fresh basil, tender chicken, and creamy coconut broth.',
+    restaurant: 'Alain Ducasse au Plaza Athénée',
+    description: 'Alain Ducasse\'s signature pairing of volcanic green lentils from Puy with a generous portion of golden caviar, a flavoured eel jelly, and delicate grain pancakes.',
     cuisines: [
       { id: 'thai', name: 'Thai', parent: 'asian' },
       { id: 'southeast_asian', name: 'Southeast Asian', parent: 'asian' },
@@ -1125,10 +1125,10 @@ export const MOCK_RECIPES: Recipe[] = [
   },
   {
     id: 'recipe-12',
-    title: 'Paella Valenciana with Bomba Rice',
+    title: 'Sound of the Sea',
     chef: MOCK_CHEFS[1],
-    restaurant: 'Noma',
-    description: 'Authentic Spanish paella with saffron, bomba rice, rabbit, and snails in a traditional clay pan.',
+    restaurant: 'The Fat Duck',
+    description: 'Heston Blumenthal\'s multi-sensory masterpiece — seafood arranged on edible sand, served with headphones playing waves and seagulls. The most complete expression of his dining philosophy.',
     cuisines: [
       { id: 'spanish', name: 'Spanish', parent: 'european' },
       { id: 'mediterranean', name: 'Mediterranean', parent: 'european' },
@@ -1205,10 +1205,10 @@ export const MOCK_RECIPES: Recipe[] = [
   },
   {
     id: 'recipe-13',
-    title: 'Korean Bibimbap with Gochujang',
+    title: 'Kir Breton',
     chef: MOCK_CHEFS[2],
-    restaurant: 'Gaggan',
-    description: 'Mixed vegetables, egg, and beef over warm rice with spicy gochujang sauce in a sizzling stone bowl.',
+    restaurant: 'Atelier Crenn',
+    description: 'Dominique Crenn\'s signature — a spherical tribute to her Breton roots featuring apple cider gelée topped with crème de cassis-infused apple sorbet, capturing a classic French aperitif.',
     cuisines: [
       { id: 'korean', name: 'Korean', parent: 'asian' },
       { id: 'east_asian', name: 'East Asian', parent: 'asian' },
@@ -1288,10 +1288,10 @@ export const MOCK_RECIPES: Recipe[] = [
   },
   {
     id: 'recipe-14',
-    title: 'Prime Rib with Yorkshire Pudding',
+    title: 'Bread of the Forest',
     chef: MOCK_CHEFS[3],
-    restaurant: 'The French Laundry',
-    description: 'Perfectly roasted prime rib with crispy herbs and dramatic Yorkshire pudding, a British classic.',
+    restaurant: 'Narisawa',
+    description: 'Narisawa\'s signature creation — apple and cinnamon-enriched bread dough still fermenting tableside over a small candle, embodying his Satoyama philosophy of cooking with nature.',
     cuisines: [
       { id: 'british', name: 'British', parent: 'european' },
     ],
@@ -1369,10 +1369,10 @@ export const MOCK_RECIPES: Recipe[] = [
   },
   {
     id: 'recipe-15',
-    title: 'Dim Sum Selection - Siu Mai and Har Gow',
+    title: 'Soča River Trout with Horseradish',
     chef: MOCK_CHEFS[4],
-    restaurant: 'Core by Clare Smyth',
-    description: 'Traditional Cantonese dim sum: steamed pork dumplings (siu mai) and shrimp dumplings (har gow).',
+    restaurant: 'Hiša Franko',
+    description: 'Ana Roš\'s two-day dry-aged Soča river trout, cooked on Hibachi BBQ, served with brown butter fish sauce and freshly grated horseradish from the Alpine valleys.',
     cuisines: [
       { id: 'chinese', name: 'Chinese', parent: 'asian' },
       { id: 'cantonese', name: 'Cantonese', parent: 'chinese' },
