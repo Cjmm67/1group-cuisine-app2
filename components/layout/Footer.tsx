@@ -14,10 +14,10 @@ export const Footer = () => {
               <div className="w-8 h-8 bg-gradient-to-br from-gold-500 to-gold-700 rounded-lg flex items-center justify-center">
                 <span className="text-white font-semibold text-sm">1G</span>
               </div>
-              <span className="text-lg font-semibold text-white tracking-tight">1-Group Cuisine</span>
+              <span className="text-lg font-semibold text-white tracking-tight">1-CUISINE</span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Professional culinary platform for Singapore's 1-Group hospitality portfolio.
+              Professional culinary platform for Singapore's premier hospitality portfolio.
             </p>
           </div>
 
@@ -67,7 +67,7 @@ export const Footer = () => {
         <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-gray-500">
-              &copy; 2024 1-Group Cuisine. All rights reserved.
+              &copy; 2024 1-CUISINE. All rights reserved.
             </p>
             <div className="flex items-center gap-6 text-sm text-gray-500">
               <Link href="#" className="hover:text-gold-400 transition-colors">Privacy</Link>

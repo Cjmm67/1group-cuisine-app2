@@ -26,7 +26,7 @@ export default function LoginPage() {
             <h1 className="text-2xl font-bold text-gray-900 tracking-tight mb-2">
               Sign In
             </h1>
-            <p className="text-gray-500">Welcome back to 1-Group Cuisine</p>
+            <p className="text-gray-500">Welcome back to 1-CUISINE</p>
           </div>
         </CardHeader>
 

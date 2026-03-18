@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Search, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -34,7 +33,7 @@ export const Navbar = () => {
             {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold tracking-tight text-gray-900">1-Group Cuisine</span>
+            <span className="text-xl font-bold tracking-tight text-gray-900">1-CUISINE</span>
           </Link>
         </div>
 
@@ -50,7 +49,7 @@ export const Navbar = () => {
           </div>
         </div>
 
-        {/* Right: sign in + 1-Group logo */}
+        {/* Right: sign in */}
         <div className="flex items-center gap-3">
           <button
             onClick={() => setSearchOpen(!searchOpen)}
@@ -64,15 +63,6 @@ export const Navbar = () => {
           >
             Sign in
           </Link>
-          <div className="w-11 h-11 rounded-md overflow-hidden border border-gray-200 bg-white flex-shrink-0">
-            <Image
-              src="/1group-logo.png"
-              alt="1-Group"
-              width={44}
-              height={44}
-              className="w-full h-full object-contain p-0.5"
-            />
-          </div>
         </div>
       </div>
 
