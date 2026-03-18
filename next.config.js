@@ -33,6 +33,10 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'www.ducasse-paris.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'www.theworlds50best.com',
       },
     ],

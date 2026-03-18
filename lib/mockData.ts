@@ -56,7 +56,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-4',
     name: 'Thomas Keller',
-    avatar: 'https://thebestchefawards.com/wp-content/uploads/2025/09/Thomas-Keller_portrait-photo.webp',
+    avatar: 'https://thomaskeller.com/sites/default/files/styles/2_3_screen/public/media/franchises/staff_bios_headshots/tk.com_tk_portrait.biography3_0.jpg',
     bio: 'Thomas Keller is an icon of American fine dining whose The French Laundry in Napa Valley and Per Se in New York both hold three Michelin stars. His pursuit of perfection in classical technique has trained a generation of America\'s best chefs.',
     cuisine: ['American-French', 'Classical Fine Dining'],
     accolades: [
@@ -90,7 +90,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-6',
     name: 'Alain Ducasse',
-    avatar: 'https://thebestchefawards.com/wp-content/uploads/2025/09/Alain-Ducasse_portrait-photo.webp',
+    avatar: 'https://www.ducasse-paris.com/wp-content/uploads/2023/09/alain-ducasse-2.jpg',
     bio: 'Alain Ducasse is the godfather of modern French luxury dining, the first chef to hold three Michelin stars simultaneously in three cities. His empire spans 18 active Michelin stars and restaurants worldwide, pioneering \'naturalité\' cuisine.',
     cuisine: ['French', 'Mediterranean', 'Contemporary'],
     accolades: [
@@ -261,7 +261,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'milk', name: 'Milk (including lactose)', code: 'milk' },
     ],
     foodCostPercent: 28,
-    image: 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=800&h=600&fit=crop',
+    image: 'https://osteriafrancescana.it/wp-content/uploads/2025/12/Osteria-FRancescana_La-contadina_02-1024x682.jpg',
     menuContext: ['a_la_carte', 'tasting_menu'],
     sustainability: {
       lowCarbon: true,
@@ -322,7 +322,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'milk', name: 'Milk (including lactose)', code: 'milk' },
     ],
     foodCostPercent: 35,
-    image: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&h=600&fit=crop',
+    image: 'https://osteriafrancescana.it/wp-content/uploads/2023/07/220503_OF_Sueo_PDS_074.jpg',
     menuContext: ['a_la_carte', 'brunch'],
     sustainability: {
       lowCarbon: true,
@@ -374,7 +374,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'milk', name: 'Milk (including lactose)', code: 'milk' },
     ],
     foodCostPercent: 42,
-    image: 'https://images.unsplash.com/photo-1494897692104-481c6b1dc239?w=800&h=600&fit=crop',
+    image: 'https://thebestchefawards.com/wp-content/uploads/2026/03/Julien-Royer_dish-1_credit-Odette-Restaurant.webp',
     menuContext: ['tasting_menu'],
     sustainability: {
       lowCarbon: false,
@@ -424,7 +424,7 @@ export const MOCK_RECIPES: Recipe[] = [
     ],
     allergens: [],
     foodCostPercent: 38,
-    image: 'https://images.unsplash.com/photo-1432139509613-5c4255a1d127?w=800&h=600&fit=crop',
+    image: 'https://thebestchefawards.com/wp-content/uploads/2026/03/Julien-Royer_dish-2_credit-Odette-Restaurant.webp',
     menuContext: ['a_la_carte', 'tasting_menu'],
     sustainability: {
       lowCarbon: false,
@@ -475,7 +475,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'soybeans', name: 'Soybeans', code: 'soybeans' },
     ],
     foodCostPercent: 45,
-    image: 'https://images.unsplash.com/photo-1514516345957-556ca7d90a29?w=800&h=600&fit=crop',
+    image: 'https://www.theworlds50best.com//filestore/Gaggan-dish-2_W50BR25.jpg',
     menuContext: ['tasting_menu'],
     sustainability: {
       lowCarbon: true,
@@ -528,7 +528,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'cereals', name: 'Cereals containing gluten', code: 'gluten' },
     ],
     foodCostPercent: 55,
-    image: 'https://images.unsplash.com/photo-1514516345957-556ca7d90a29?w=800&h=600&fit=crop',
+    image: 'https://gaggan.com/wp-content/uploads/2025/05/blue-asia-2025.webp',
     menuContext: ['a_la_carte', 'tasting_menu'],
     sustainability: {
       lowCarbon: false,
@@ -646,7 +646,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'soy', name: 'Soy', code: 'soy' },
     ],
     foodCostPercent: 18,
-    image: 'https://images.unsplash.com/photo-1488477304112-4944851de03d?w=800&h=600&fit=crop',
+    image: 'https://www.theworlds50best.com//filestore/Odette-dish-1_W50BR25.jpg',
     menuContext: ['tasting_menu'],
     sustainability: {
       lowCarbon: true,
@@ -698,7 +698,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'eggs', name: 'Eggs', code: 'eggs' },
     ],
     foodCostPercent: 48,
-    image: 'https://images.unsplash.com/photo-1432139509613-5c4255a1d127?w=800&h=600&fit=crop',
+    image: 'https://www.ducasse-paris.com/wp-content/uploads/2023/09/ADOUR-photo_BG_2021_-_ECOLE_DUCASSE_-_HD-C-026-1-988x1480.jpg',
     menuContext: ['tasting_menu', 'a_la_carte'],
     sustainability: {
       lowCarbon: false,
@@ -753,7 +753,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'eggs', name: 'Eggs', code: 'eggs' },
     ],
     foodCostPercent: 22,
-    image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=800&h=600&fit=crop',
+    image: 'https://thebestchefawards.com/wp-content/uploads/2026/03/Clare-Smyth_dish1.webp',
     menuContext: ['a_la_carte'],
     sustainability: {
       lowCarbon: false,
@@ -802,7 +802,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'cereals', name: 'Cereals containing gluten', code: 'gluten' },
     ],
     foodCostPercent: 32,
-    image: 'https://images.unsplash.com/photo-1535399831218-d5bd36d1a6b3?w=800&h=600&fit=crop',
+    image: 'https://corebyclaresmyth.com/wp-content/uploads/2023/10/CORE-cornishturbot-1.jpg',
     menuContext: ['a_la_carte', 'brunch'],
     sustainability: {
       lowCarbon: true,
@@ -852,7 +852,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'fish', name: 'Fish', code: 'fish' },
     ],
     foodCostPercent: 24,
-    image: 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=800&h=600&fit=crop',
+    image: 'https://www.ducasse-paris.com/wp-content/uploads/2023/09/ADOUR-photo_BG_2021_-_ECOLE_DUCASSE_-_HD-C-026-1.jpg',
     menuContext: ['a_la_carte'],
     sustainability: {
       lowCarbon: false,
@@ -902,7 +902,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'mollusks', name: 'Mollusks', code: 'mollusks' },
     ],
     foodCostPercent: 34,
-    image: 'https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=800&h=600&fit=crop',
+    image: 'https://thebestchefawards.com/wp-content/uploads/2026/01/Heston-Blumenthal_Dish1_credit-Lola-Laurent-1024x683.webp',
     menuContext: ['a_la_carte', 'tasting_menu'],
     sustainability: {
       lowCarbon: false,
@@ -953,7 +953,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'sesame', name: 'Sesame', code: 'sesame' },
     ],
     foodCostPercent: 26,
-    image: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=800&h=600&fit=crop',
+    image: 'https://thebestchefawards.com/wp-content/uploads/2025/10/Dominique-Crenn_credit-John-Troxell-683x1024.webp',
     menuContext: ['a_la_carte'],
     sustainability: {
       lowCarbon: false,
@@ -1004,7 +1004,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'milk', name: 'Milk (including lactose)', code: 'milk' },
     ],
     foodCostPercent: 44,
-    image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&h=600&fit=crop',
+    image: 'https://thebestchefawards.com/wp-content/uploads/2026/03/Yoshihiro-Narisawa_Dish-1_credit-1024x683.webp',
     menuContext: ['tasting_menu', 'a_la_carte'],
     sustainability: {
       lowCarbon: false,
@@ -1058,7 +1058,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'sesame', name: 'Sesame', code: 'sesame' },
     ],
     foodCostPercent: 28,
-    image: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=800&h=600&fit=crop',
+    image: 'https://thebestchefawards.com/wp-content/uploads/2026/03/Ana-Ros_restaurant_credit-Suzan-Gabrijan-scaled.webp',
     menuContext: ['a_la_carte', 'brunch'],
     sustainability: {
       lowCarbon: true,
@@ -1087,7 +1087,7 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
     title: 'Modern Italian Cooking Fundamentals',
     chef: MOCK_CHEFS[0],
     description: 'Master the techniques behind contemporary Italian cuisine with Massimo Bottura. Learn how tradition meets innovation.',
-    image: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&h=600&fit=crop',
+    image: 'https://osteriafrancescana.it/wp-content/uploads/2024/11/OF_massimo_bottura_Letizia_cigliutti_09-ottobre-2024_BG8A8521.jpg',
     level: 'intermediate',
     cuisine: ['Italian', 'Modern European'],
     duration: 180,
@@ -1127,7 +1127,7 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
     title: 'Essential Cuisine: The Art of Seasonal French-Asian Cooking',
     chef: MOCK_CHEFS[1],
     description: 'Join Julien Royer of three-Michelin-starred Odette in Singapore, exploring how French classical technique meets Asian sensibility through seasonal produce and artisan sourcing.',
-    image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=600&fit=crop', // TODO: Replace with real Odette kitchen/plating photography,
+    image: 'https://www.theworlds50best.com//filestore/Odette-dish-1_W50BR25.jpg',
     level: 'advanced',
     cuisine: ['French', 'French-Asian'],
     duration: 240,
@@ -1176,7 +1176,7 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
     title: 'Contemporary French Technique Masterclass',
     chef: MOCK_CHEFS[7],
     description: 'With Dominique Crenn: Learn poetic plating and contemporary French techniques that define modern gastronomy.',
-    image: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=800&h=600&fit=crop',
+    image: 'https://thebestchefawards.com/wp-content/uploads/2025/10/Dominique-Crenn_credit-John-Troxell-683x1024.webp',
     level: 'advanced',
     cuisine: ['French', 'Modern European'],
     duration: 210,
@@ -1224,7 +1224,7 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
     title: 'Japanese Culinary Excellence and Sustainability',
     chef: MOCK_CHEFS[8],
     description: 'With Yoshihiro Narisawa: Explore contemporary Japanese techniques with deep respect for ingredient sourcing and sustainability.',
-    image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&h=600&fit=crop',
+    image: 'https://www.theworlds50best.com//filestore/Narisawa-dish-1_W50BR25.jpg',
     level: 'intermediate',
     cuisine: ['Japanese', 'Contemporary Asian'],
     duration: 190,
@@ -1272,7 +1272,7 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
     title: 'Global Cuisines: A Journey Through World Flavors',
     chef: MOCK_CHEFS[5],
     description: 'With Alain Ducasse: Travel through the worlds greatest cuisines, learning techniques from Mediterranean, Asian, and Latin American traditions.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&h=600&fit=crop',
+    image: 'https://www.ducasse-paris.com/wp-content/uploads/2023/09/LMP_Dejeuner_a_Zone_Sensible_81_by_Maki_Manoukian2-988x1480.jpg',
     level: 'intermediate',
     cuisine: ['Global', 'Mediterranean', 'Asian', 'Latin American'],
     duration: 220,
