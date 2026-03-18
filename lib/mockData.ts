@@ -20,23 +20,6 @@ export const MOCK_CHEFS: Chef[] = [
     createdAt: new Date(),
   },
   {
-    id: 'chef-2',
-    name: 'Julien Royer',
-    avatar: 'https://thebestchefawards.com/wp-content/uploads/2026/03/Julien-Royer_dish-1_credit-Odette-Restaurant.webp',
-    bio: 'Julien Royer brings fourth-generation farming roots from Cantal, France, to Singapore\'s National Gallery, where his three-Michelin-starred Odette celebrates seasonal produce, artisan sourcing, and French technique infused with a decade of Asian sensibility. Named Asia\'s Best Restaurant and Chefs\' Choice Award 2023.',
-    cuisine: ['Modern French', 'French-Asian'],
-    accolades: [
-      { type: 'michelin', stars: 3, year: 2024, restaurant: 'Odette' },
-      { type: 'fifty_best', year: 2024 },
-    ],
-    restaurant: 'Odette',
-    yearsExperience: 25,
-    specialties: ['Modern French', 'Seasonal Produce', 'French-Asian Fusion'],
-    recipes: [],
-    masterclasses: [],
-    createdAt: new Date(),
-  },
-  {
     id: 'chef-3',
     name: 'Gaggan Anand',
     avatar: 'https://gaggan.com/wp-content/uploads/2023/07/img_-gaggan-gg-2.png',
@@ -419,111 +402,9 @@ export const MOCK_RECIPES: Recipe[] = [
     updatedAt: new Date(),
   },
   {
-    id: 'recipe-3',
-    title: 'Hokkaido Uni',
-    chef: MOCK_CHEFS[1],
-    restaurant: 'Odette',
-    description: 'Julien Royer\'s signature expression of essential cuisine — just four ingredients, each bringing a singular quality: Hokkaido sea urchin for sweetness, Osietra caviar for salt, Brittany langoustine for texture, and Granny Smith apple for crunch.',
-    cuisines: [
-      { id: 'french', name: 'French', parent: 'european' },
-      { id: 'french_contemporary', name: 'Contemporary French', parent: 'french' },
-    ],
-    techniques: [
-      { id: 'simmering', name: 'Simmering', category: 'wet_heat', description: 'Cooking in gently bubbling liquid' },
-      { id: 'tempering', name: 'Tempering', category: 'pastry', description: 'Controlling chocolate crystallization' },
-    ],
-    station: { id: 'entremetier', name: 'Entremetier', description: 'Vegetable station' },
-    difficulty: 'advanced',
-    prepTime: 15,
-    cookTime: 5,
-    servings: 4,
-    ingredients: [
-      { id: 'i26', name: 'Hokkaido Sea Urchin (uni)', weight: 80, unit: 'g', allergens: ['shellfish'], group: 'seafood', sustainability: 'sustainable' },
-      { id: 'i27', name: 'Brittany Langoustine Tails', weight: 4, unit: 'pcs', allergens: ['shellfish'], group: 'seafood', sustainability: 'sustainable' },
-      { id: 'i28', name: 'Osietra Caviar', weight: 20, unit: 'g', allergens: ['fish'], group: 'seafood', sustainability: 'sustainable' },
-      { id: 'i29', name: 'Granny Smith Apple', weight: 1, unit: 'pcs', allergens: [], group: 'fruit', sustainability: 'seasonal' },
-      { id: 'i30', name: 'Mussel Stock', weight: 100, unit: 'ml', allergens: ['shellfish'], group: 'seafood', sustainability: 'standard' },
-      { id: 'i31', name: 'Chive Tips', weight: 5, unit: 'g', allergens: [], group: 'herb', sustainability: 'seasonal' },
-    ],
-    steps: [
-      { id: 's14', order: 1, instruction: 'Prepare the apple: peel and finely dice the Granny Smith. Dress with lemon juice. The apple provides essential crunch in this four-ingredient composition.', techniques: [], station: { id: 'garde_manger', name: 'Garde Manger', description: 'Cold station' }, duration: 5 },
-      { id: 's15', order: 2, instruction: 'Poach langoustine gently in mussel stock at 55C until just opaque (2-3 min). Slice into medallions for texture.', techniques: ['poaching'], station: { id: 'poissonnier', name: 'Poissonnier', description: 'Fish station' }, duration: 5 },
-      { id: 's16', order: 3, instruction: 'Make the mussel cloud: whip mussel stock into light, airy foam with a hand blender. Season delicately.', techniques: [], station: { id: 'saucier', name: 'Saucier', description: 'Sauce station' }, duration: 3 },
-      { id: 's17', order: 4, instruction: 'To plate: arrange langoustine in a chilled bowl. Nestle Hokkaido uni alongside for sweetness. Spoon diced apple around for crunch. Cover with mussel cloud. Plant chive tips upright. Finish with Osietra caviar for salt. Each element brings one singular quality.', techniques: [], station: null, duration: 3 },
-    ],
-    allergens: [
-      { id: 'mollusks', name: 'Mollusks', code: 'mollusks' },
-      { id: 'fish', name: 'Fish', code: 'fish' },
-      { id: 'milk', name: 'Milk (including lactose)', code: 'milk' },
-    ],
-    foodCostPercent: 42,
-    image: 'https://thebestchefawards.com/wp-content/uploads/2026/03/Julien-Royer_dish-1_credit-Odette-Restaurant.webp',
-    menuContext: ['tasting_menu'],
-    sustainability: {
-      lowCarbon: false,
-      seasonal: true,
-      zeroWaste: false,
-      score: 65,
-    },
-    rating: 4.7,
-    reviews: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 'recipe-4',
-    title: 'Kampot Pepper Crusted Pigeon',
-    chef: MOCK_CHEFS[1],
-    restaurant: 'Odette',
-    description: 'Odette\'s signature main course — pigeon crusted with Cambodian Kampot pepper, served three ways: yakitori from the heart, a modern parfait from the liver, and the breast with the fragrant, long-lasting pepper crust.',
-    cuisines: [
-      { id: 'french', name: 'French', parent: 'european' },
-      { id: 'french_classical', name: 'Classical', parent: 'french' },
-    ],
-    techniques: [
-      { id: 'roasting', name: 'Roasting', category: 'dry_heat', description: 'Cooking with dry heat in an oven' },
-      { id: 'searing', name: 'Searing', category: 'dry_heat', description: 'High-heat cooking to create crust' },
-    ],
-    station: { id: 'rotisseur', name: 'Rôtisseur', description: 'Roast station' },
-    difficulty: 'advanced',
-    prepTime: 45,
-    cookTime: 90,
-    servings: 4,
-    ingredients: [
-      { id: 'i34', name: 'Whole Pigeon (Bresse or equivalent)', weight: 2, unit: 'pcs', allergens: [], group: 'protein', sustainability: 'standard' },
-      { id: 'i35', name: 'Kampot Pepper (Cambodian, cracked)', weight: 10, unit: 'g', allergens: [], group: 'seasoning', sustainability: 'standard' },
-      { id: 'i36', name: 'Pigeon Liver', weight: 80, unit: 'g', allergens: [], group: 'protein', sustainability: 'standard' },
-      { id: 'i37', name: 'Foie Gras', weight: 40, unit: 'g', allergens: [], group: 'protein', sustainability: 'standard' },
-      { id: 'i38', name: 'Pigeon Hearts', weight: 4, unit: 'pcs', allergens: [], group: 'protein', sustainability: 'standard' },
-      { id: 'i39', name: 'Madeira Wine', weight: 50, unit: 'ml', allergens: [], group: 'other', sustainability: 'standard' },
-      { id: 'i40', name: 'Butter, Thyme, Rosemary', weight: 60, unit: 'g', allergens: ['milk'], group: 'dairy', sustainability: 'standard' },
-    ],
-    steps: [
-      { id: 's18', order: 1, instruction: 'Break down pigeon: remove breasts (skin on), reserve hearts and livers. Make a jus from carcasses with mirepoix, Madeira, and herbs — reduce to a concentrated, glossy sauce.', techniques: [], station: { id: 'rotisseur', name: 'Rotisseur', description: 'Roast station' }, duration: 90 },
-      { id: 's19', order: 2, instruction: 'Prepare the parfait: saute pigeon livers and shallots in butter until just pink. Blend with foie gras while warm, pass through a fine sieve. Season and set in a mould. Chill until firm.', techniques: ['pan_frying'], station: { id: 'garde_manger', name: 'Garde Manger', description: 'Cold station' }, duration: 30 },
-      { id: 's20', order: 3, instruction: 'Heart yakitori: skewer pigeon hearts, season with salt and Kampot pepper. Grill over high heat, basting with pigeon jus, until charred but still rosy (2-3 min per side).', techniques: ['grilling'], station: { id: 'grillardin', name: 'Grillardin', description: 'Grill station' }, duration: 8 },
-      { id: 's21', order: 4, instruction: 'Cook the breast: press cracked Kampot pepper into skin side. Sear skin-down in hot pan with butter, thyme, rosemary until deeply golden. Flip, baste. Rest 5 min, carve.', techniques: ['searing'], station: { id: 'rotisseur', name: 'Rotisseur', description: 'Roast station' }, duration: 12 },
-      { id: 's22', order: 5, instruction: 'To plate: quenelle of parfait to one side. Fan carved breast slices, pepper crust visible. Heart yakitori alongside. Glossy pigeon jus poured tableside.', techniques: [], station: null, duration: 3 },
-    ],
-    allergens: [],
-    foodCostPercent: 38,
-    image: 'https://thebestchefawards.com/wp-content/uploads/2026/03/Julien-Royer_dish-2_credit-Odette-Restaurant.webp',
-    menuContext: ['a_la_carte', 'tasting_menu'],
-    sustainability: {
-      lowCarbon: false,
-      seasonal: true,
-      zeroWaste: false,
-      score: 58,
-    },
-    rating: 4.9,
-    reviews: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
     id: 'recipe-5',
     title: 'Lick It Up',
-    chef: MOCK_CHEFS[2],
+    chef: MOCK_CHEFS[1],
     restaurant: 'Gaggan',
     description: 'Gaggan Anand\'s signature: the essence of a good curry with sweet, sour, spice, and savoury notes spread on a plate — a gel, jam, chutney, and purée designed to be eaten without cutlery.',
     cuisines: [
@@ -575,7 +456,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-6',
     title: 'Yogurt Explosion',
-    chef: MOCK_CHEFS[2],
+    chef: MOCK_CHEFS[1],
     restaurant: 'Gaggan',
     description: 'A tribute to Indian street-style dahi puri using molecular spherification — a delicate sphere that bursts with tangy yogurt, tamarind, and spiced chutneys in one explosive bite.',
     cuisines: [
@@ -627,7 +508,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-7',
     title: 'Oysters and Pearls',
-    chef: MOCK_CHEFS[3],
+    chef: MOCK_CHEFS[2],
     restaurant: 'The French Laundry',
     description: 'Thomas Keller\'s most famous creation — a sabayon of pearl tapioca with Beau Soleil oysters and white sturgeon caviar. This dish has been on The French Laundry menu since its creation.',
     cuisines: [
@@ -745,7 +626,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-8',
     title: 'Salmon Cornet',
-    chef: MOCK_CHEFS[3],
+    chef: MOCK_CHEFS[2],
     restaurant: 'The French Laundry',
     description: 'Keller\'s signature amuse-bouche since 1991 — a tiny sesame tuile cone filled with crème fraîche and topped with smoked salmon tartare. More an experience than a course.',
     cuisines: [
@@ -797,7 +678,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-9',
     title: 'Potato and Roe',
-    chef: MOCK_CHEFS[4],
+    chef: MOCK_CHEFS[3],
     restaurant: 'Core by Clare Smyth',
     description: 'Clare Smyth\'s most celebrated dish — a baked potato with dulse beurre blanc, herring and trout roe. Humble British produce transformed into something extraordinary.',
     cuisines: [
@@ -852,7 +733,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-10',
     title: 'Lamb Carrot',
-    chef: MOCK_CHEFS[4],
+    chef: MOCK_CHEFS[3],
     restaurant: 'Core by Clare Smyth',
     description: 'Carrot slowly confited in lamb fat until tender and juicy, served with pressure-cooked neck of lamb, the cooking juices reduced to a rich glaze, balanced with sheep\'s milk yogurt.',
     cuisines: [
@@ -901,7 +782,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-11',
     title: 'Green Lentils with Caviar',
-    chef: MOCK_CHEFS[5],
+    chef: MOCK_CHEFS[4],
     restaurant: 'Alain Ducasse au Plaza Athénée',
     description: 'Alain Ducasse\'s signature pairing of volcanic green lentils from Puy with a generous portion of golden caviar, a flavoured eel jelly, and delicate grain pancakes.',
     cuisines: [
@@ -951,7 +832,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-12',
     title: 'Sound of the Sea',
-    chef: MOCK_CHEFS[6],
+    chef: MOCK_CHEFS[5],
     restaurant: 'The Fat Duck',
     description: 'Heston Blumenthal\'s multi-sensory masterpiece — seafood arranged on edible sand, served with headphones playing waves and seagulls. The most complete expression of his dining philosophy.',
     cuisines: [
@@ -1001,7 +882,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-13',
     title: 'Kir Breton',
-    chef: MOCK_CHEFS[7],
+    chef: MOCK_CHEFS[6],
     restaurant: 'Atelier Crenn',
     description: 'Dominique Crenn\'s signature — a spherical tribute to her Breton roots featuring apple cider gelée topped with crème de cassis-infused apple sorbet, capturing a classic French aperitif.',
     cuisines: [
@@ -1052,7 +933,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-14',
     title: 'Bread of the Forest',
-    chef: MOCK_CHEFS[8],
+    chef: MOCK_CHEFS[7],
     restaurant: 'Narisawa',
     description: 'Narisawa\'s signature creation — apple and cinnamon-enriched bread dough still fermenting tableside over a small candle, embodying his Satoyama philosophy of cooking with nature.',
     cuisines: [
@@ -1103,7 +984,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-15',
     title: 'Soča River Trout with Horseradish',
-    chef: MOCK_CHEFS[9],
+    chef: MOCK_CHEFS[8],
     restaurant: 'Hiša Franko',
     description: 'Ana Roš\'s two-day dry-aged Soča river trout, cooked on Hibachi BBQ, served with brown butter fish sauce and freshly grated horseradish from the Alpine valleys.',
     cuisines: [
@@ -1161,7 +1042,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-16',
     title: 'Spaghetti Aglio Olio with Tiger Prawns',
-    chef: MOCK_CHEFS[10],
+    chef: MOCK_CHEFS[9],
     restaurant: 'Monti',
     description: 'Felix Chong\'s signature weeknight pasta — a dish of deceptive simplicity where timing is everything. Fresh tiger prawns, slowly toasted garlic, a whisper of chilli padi, and the emulsification of butter and pasta water into a glossy sauce that clings to every strand.',
     cuisines: [
@@ -1210,7 +1091,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-17',
     title: 'Monti Handmade Gnocchi with Porcini and Truffle',
-    chef: MOCK_CHEFS[10],
+    chef: MOCK_CHEFS[9],
     restaurant: 'Monti',
     description: 'Felix Chong\'s handmade gnocchi — light pillows of potato dressed in a wild porcini mushroom sauce with a drizzle of truffle oil. This dish reflects what Monti does best: Italian soul, technical precision, and the restraint to let premium ingredients speak for themselves.',
     cuisines: [
@@ -1261,7 +1142,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-18',
     title: 'Tempura Crepe with Scampi Roe and Avocado',
-    chef: MOCK_CHEFS[11],
+    chef: MOCK_CHEFS[10],
     restaurant: 'Oumi',
     description: 'Lamley Chua\'s signature at Oumi — a gruyere cheese tempura cooked on the teppan until it turns crackling crisp, then lavished with azure blue wild Australian scampi roe, Japanese flying fish roe, creamy avocado, and Ao-togarashi yoghurt for a lick of spice. Kappo dining at its most contemporary.',
     cuisines: [
@@ -1307,7 +1188,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-19',
     title: 'Binchotan-Grilled Wagyu with Ponzu and Shiso',
-    chef: MOCK_CHEFS[11],
+    chef: MOCK_CHEFS[10],
     restaurant: 'Flnt',
     description: 'Lamley Chua\'s Flnt signature — premium wagyu seared over binchotan Japanese oak charcoal, served with a bright ponzu dressing, shiso leaf, and grated daikon. The charcoal heat of Flnt meets the precision of a chef trained across two decades of Japanese technique.',
     cuisines: [
@@ -1353,7 +1234,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-20',
     title: 'Paella De Marisco',
-    chef: MOCK_CHEFS[12],
+    chef: MOCK_CHEFS[11],
     restaurant: 'Una',
     description: 'Tom Kung\'s signature paella — built on a closely guarded house-made stock recipe, using short-grained Bomba rice steeped until each grain is swollen with deep seafood flavour. Crowned with a medley of fresh prawns, mussels, and clams, this is the dish that earned Una its "Restaurants from Spain" certification.',
     cuisines: [
@@ -1402,7 +1283,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-21',
     title: 'Asado-Grilled Bone-In Ribeye with Chimichurri',
-    chef: MOCK_CHEFS[13],
+    chef: MOCK_CHEFS[12],
     restaurant: 'Fire Restaurant',
     description: 'Soledad Nardelli\'s essential expression of Argentine fire cooking — a bone-in ribeye slow-grilled over open flame in the asado tradition, served with her house chimichurri. For Soledad, fire is not a heat source but a flavour system. This is the dish that connects her Argentine heritage to her Barcelona training.',
     cuisines: [
@@ -1448,7 +1329,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-22',
     title: 'Rubia Gallega Costillas a la Parrilla',
-    chef: MOCK_CHEFS[14],
+    chef: MOCK_CHEFS[13],
     restaurant: 'Una',
     description: 'Diego Grimbery\'s centrepiece for Una\'s tenth anniversary menu — Spain\'s prized Rubia Gallega beef, slow-grilled asado-style over open flame. The Gold grade prime rib, native to Galicia in northwestern Spain, is served with fricandó sauce, pumpkin purée, and oyster mushrooms. Diego brought this cut to Singapore for the first time.',
     cuisines: [
@@ -1573,7 +1454,7 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
   {
     id: 'mc-4',
     title: 'Gaggan Anand — Gaggan',
-    chef: MOCK_CHEFS[2],
+    chef: MOCK_CHEFS[1],
     description: 'Bangkok\'s boundary-breaking chef takes you inside Progressive Indian cuisine — 25 courses eaten by hand, emoji menus, and the fearless reinvention of subcontinental flavours.',
     image: '',
     level: 'advanced',
@@ -1645,7 +1526,7 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
   {
     id: 'mc-7',
     title: 'Dominique Crenn — Atelier Crenn',
-    chef: MOCK_CHEFS[7],
+    chef: MOCK_CHEFS[6],
     description: 'The first female chef in America to earn three Michelin stars shares her poetic approach to cuisine at Atelier Crenn — menus presented as verse, plates as emotion.',
     image: '',
     level: 'advanced',
@@ -1717,7 +1598,7 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
   {
     id: 'mc-10',
     title: 'Ana Roš — Hiša Franko',
-    chef: MOCK_CHEFS[9],
+    chef: MOCK_CHEFS[8],
     description: 'Slovenia\'s self-taught star takes you into the Soča Valley, where hyperlocal sourcing, wild ingredients, and fierce independence created one of Europe\'s most original kitchens.',
     image: '',
     level: 'intermediate',
@@ -1741,7 +1622,7 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
   {
     id: 'mc-11',
     title: 'Heston Blumenthal — The Fat Duck',
-    chef: MOCK_CHEFS[6],
+    chef: MOCK_CHEFS[5],
     description: 'The mad scientist of The Fat Duck reveals the neuroscience of flavour, multi-sensory dining, and how Sound of the Sea became the world\'s most famous dish experiment.',
     image: '',
     level: 'advanced',
@@ -1861,7 +1742,7 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
   {
     id: 'mc-16',
     title: 'Yoshihiro Narisawa — Narisawa',
-    chef: MOCK_CHEFS[8],
+    chef: MOCK_CHEFS[7],
     description: 'Tokyo\'s Satoyama chef reveals his Innovative Japanese philosophy — cooking that honours the relationship between nature and humanity through forest, soil, and sea.',
     image: '',
     level: 'advanced',
@@ -1909,7 +1790,7 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
   {
     id: 'mc-18',
     title: 'Clare Smyth — Core by Clare Smyth',
-    chef: MOCK_CHEFS[4],
+    chef: MOCK_CHEFS[3],
     description: 'The first British female chef to earn three Michelin stars demonstrates her philosophy of elevating humble British ingredients into extraordinary fine dining at Core.',
     image: '',
     level: 'intermediate',
