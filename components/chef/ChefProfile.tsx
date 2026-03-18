@@ -37,9 +37,6 @@ export const ChefProfile: React.FC<ChefProfileProps> = ({ chef }) => {
                   {' '}Michelin Stars
                 </Badge>
               )}
-              {hasAccolade(chef.accolades, 'fifty_best') && (
-                <Badge variant="secondary">50 Best Restaurants</Badge>
-              )}
               {hasAccolade(chef.accolades, 'guide') && (
                 <Badge variant="secondary">Guide Listed</Badge>
               )}

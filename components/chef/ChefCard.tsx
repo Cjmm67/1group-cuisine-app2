@@ -13,7 +13,6 @@ interface ChefCardProps {
 
 export const ChefCard: React.FC<ChefCardProps> = ({ chef }) => {
   const michelinStars = getMichelinStars(chef.accolades);
-  const has50Best = hasAccolade(chef.accolades, 'fifty_best');
 
   return (
     <Link href={`/chefs/${slugify(chef.name)}`}>
@@ -40,9 +39,6 @@ export const ChefCard: React.FC<ChefCardProps> = ({ chef }) => {
                 ))}
                 <span className="ml-0.5">{michelinStars}</span>
               </Badge>
-            )}
-            {has50Best && (
-              <Badge variant="secondary">50 Best</Badge>
             )}
           </div>
 
