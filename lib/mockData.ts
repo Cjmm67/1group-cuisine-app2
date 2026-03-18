@@ -5,7 +5,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-1',
     name: 'Massimo Bottura',
-    avatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400&h=400&fit=crop',
+    avatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400&h=400&fit=crop', // TODO: Replace with real Massimo Bottura portrait from osteriafrancescana.it,
     bio: 'Massimo Bottura transformed Modena\'s Osteria Francescana from a modest trattoria into a twice-crowned World\'s Best Restaurant, reimagining Italian classics with contemporary art and philosophy. Named Best Visionary 2025.',
     cuisine: ['Avant-Garde Italian', 'Modern European'],
     accolades: [
@@ -21,17 +21,17 @@ export const MOCK_CHEFS: Chef[] = [
   },
   {
     id: 'chef-2',
-    name: 'René Redzepi',
-    avatar: 'https://images.unsplash.com/photo-1581299894007-aaa50297cf16?w=400&h=400&fit=crop',
-    bio: 'René Redzepi fundamentally changed global gastronomy through Noma in Copenhagen, pioneering New Nordic Cuisine and making foraging, fermentation, and hyper-seasonality the language of modern fine dining. Four-time World\'s Best Restaurant winner.',
-    cuisine: ['New Nordic', 'Foraging-Based'],
+    name: 'Julien Royer',
+    avatar: 'https://images.unsplash.com/photo-1583394293214-28ez19ed6aab0?w=400&h=400&fit=crop', // TODO: Replace with real Julien Royer portrait from odetterestaurant.com,
+    bio: 'Julien Royer brings fourth-generation farming roots from Cantal, France, to Singapore\'s National Gallery, where his three-Michelin-starred Odette celebrates seasonal produce, artisan sourcing, and French technique infused with a decade of Asian sensibility. Named Asia\'s Best Restaurant and Chefs\' Choice Award 2023.',
+    cuisine: ['Modern French', 'French-Asian'],
     accolades: [
-      { type: 'michelin', stars: 3, year: 2023, restaurant: 'Noma' },
-      { type: 'fifty_best', year: 2023 },
+      { type: 'michelin', stars: 3, year: 2024, restaurant: 'Odette' },
+      { type: 'fifty_best', year: 2024 },
     ],
-    restaurant: 'Noma',
-    yearsExperience: 30,
-    specialties: ['Nordic Cuisine', 'Foraging', 'Sustainability'],
+    restaurant: 'Odette',
+    yearsExperience: 25,
+    specialties: ['Modern French', 'Seasonal Produce', 'French-Asian Fusion'],
     recipes: [],
     masterclasses: [],
     createdAt: new Date(),
@@ -39,7 +39,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-3',
     name: 'Gaggan Anand',
-    avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop',
+    avatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400&h=400&fit=crop', // TODO: Replace with real Gaggan Anand portrait from theworlds50best.com,
     bio: 'Gaggan Anand is the iconoclast of Indian cuisine, transforming street food and traditional flavours through modernist techniques at his eponymous Bangkok restaurant. Four-time Asia\'s Best Restaurant, trained under Ferran Adrià at elBulli.',
     cuisine: ['Progressive Indian', 'Molecular Gastronomy'],
     accolades: [
@@ -56,7 +56,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-4',
     name: 'Thomas Keller',
-    avatar: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=400&fit=crop',
+    avatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400&h=400&fit=crop', // TODO: Replace with real Thomas Keller portrait from thomaskeller.com,
     bio: 'Thomas Keller is an icon of American fine dining whose The French Laundry in Napa Valley and Per Se in New York both hold three Michelin stars. His pursuit of perfection in classical technique has trained a generation of America\'s best chefs.',
     cuisine: ['American-French', 'Classical Fine Dining'],
     accolades: [
@@ -73,7 +73,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-5',
     name: 'Clare Smyth',
-    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop',
+    avatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400&h=400&fit=crop', // TODO: Replace with real Clare Smyth portrait from corebyclaresmyth.com,
     bio: 'Clare Smyth earned three Michelin stars at Core in London\'s Notting Hill, the first female British chef to achieve this distinction. Her \'natural core\' philosophy celebrates the best of British produce with technical mastery.',
     cuisine: ['Modern British', 'Natural Cuisine'],
     accolades: [
@@ -90,7 +90,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-6',
     name: 'Alain Ducasse',
-    avatar: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=400&h=400&fit=crop',
+    avatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400&h=400&fit=crop', // TODO: Replace with real Alain Ducasse portrait from alain-ducasse.com,
     bio: 'Alain Ducasse is the godfather of modern French luxury dining, the first chef to hold three Michelin stars simultaneously in three cities. His empire spans 18 active Michelin stars and restaurants worldwide, pioneering \'naturalité\' cuisine.',
     cuisine: ['French', 'Mediterranean', 'Contemporary'],
     accolades: [
@@ -107,7 +107,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-7',
     name: 'Heston Blumenthal',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
+    avatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400&h=400&fit=crop', // TODO: Replace with real Heston Blumenthal portrait from thefatduck.co.uk,
     bio: 'Heston Blumenthal pioneered the multi-sensory dining movement at The Fat Duck in Bray, using scientific inquiry to create dishes that engage all five senses. A three-Michelin-star visionary who turned molecular gastronomy into edible art.',
     cuisine: ['British', 'Modernist', 'Experimental'],
     accolades: [
@@ -124,7 +124,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-8',
     name: 'Dominique Crenn',
-    avatar: 'https://images.unsplash.com/photo-1504674900152-b8b80e7b6c5d?w=400&h=400&fit=crop',
+    avatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400&h=400&fit=crop', // TODO: Replace with real Dominique Crenn portrait from ateliercrenn.com,
     bio: 'Dominique Crenn is the first female chef in the US to earn three Michelin stars, leading Atelier Crenn in San Francisco with poetic, deeply personal tasting menus inspired by her Breton roots and expressed through modernist technique.',
     cuisine: ['French', 'Contemporary', 'Modern European'],
     accolades: [
@@ -141,7 +141,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-9',
     name: 'Yoshihiro Narisawa',
-    avatar: 'https://images.unsplash.com/photo-1494897692104-481c6b1dc239?w=400&h=400&fit=crop',
+    avatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400&h=400&fit=crop', // TODO: Replace with real Yoshihiro Narisawa portrait from narisawa-yoshihiro.com,
     bio: 'Yoshihiro Narisawa is Japan\'s foremost exponent of nature-driven cuisine. His \'Innovative Satoyama Cuisine\' celebrates forests, rivers, and soil of Japan, merging European technique with a profound Japanese sense of terroir.',
     cuisine: ['Japanese', 'Contemporary Japanese', 'Modern'],
     accolades: [
@@ -158,7 +158,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-10',
     name: 'Ana Roš',
-    avatar: 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400&h=400&fit=crop',
+    avatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400&h=400&fit=crop', // TODO: Replace with real Ana Roš portrait from hisafranko.com,
     bio: 'Ana Roš put Slovenia on the global culinary map through Hiša Franko in the remote Soča Valley, where she forages, ferments, and draws on Alpine-Mediterranean ingredients. Self-taught, now Slovenia\'s first and only three-Michelin-star chef.',
     cuisine: ['Slovenian', 'Nordic', 'Contemporary'],
     accolades: [
@@ -289,7 +289,8 @@ export const MOCK_RECIPES: Recipe[] = [
     restaurant: 'Osteria Francescana',
     description: 'Bottura\'s deconstructed lasagna focusing on the caramelized, crunchy corner parts — the piece everyone fights over — elevated into a work of contemporary culinary art.',
     cuisines: [
-      { id: 'nordic', name: 'Nordic', parent: 'european' },
+      { id: 'italian', name: 'Italian', parent: 'european' },
+      { id: 'italian_avantgarde', name: 'Avant-Garde Italian', parent: 'italian' },
     ],
     techniques: [
       { id: 'curing', name: 'Curing', category: 'preservation', description: 'Preserving with salt and spices' },
@@ -362,13 +363,13 @@ export const MOCK_RECIPES: Recipe[] = [
   },
   {
     id: 'recipe-3',
-    title: 'Celeriac and Truffle Shawarma',
+    title: 'Hokkaido Uni',
     chef: MOCK_CHEFS[1],
-    restaurant: 'Noma',
-    description: 'René Redzepi\'s showstopper from Noma\'s vegetable season — a whole celeriac slow-roasted on a vertical spit like a shawarma, shaved tableside and served with black truffle and hazelnut.',
+    restaurant: 'Odette',
+    description: 'Julien Royer\'s signature expression of essential cuisine — just four ingredients, each bringing a singular quality: Hokkaido sea urchin for sweetness, Osietra caviar for salt, Brittany langoustine for texture, and Granny Smith apple for crunch.',
     cuisines: [
-      { id: 'indian', name: 'Indian', parent: 'asian' },
-      { id: 'indian_contemporary', name: 'Contemporary', parent: 'indian' },
+      { id: 'french', name: 'French', parent: 'european' },
+      { id: 'french_contemporary', name: 'Contemporary French', parent: 'french' },
     ],
     techniques: [
       { id: 'simmering', name: 'Simmering', category: 'wet_heat', description: 'Cooking in gently bubbling liquid' },
@@ -451,10 +452,10 @@ export const MOCK_RECIPES: Recipe[] = [
   },
   {
     id: 'recipe-4',
-    title: 'Langoustine on a Rock',
+    title: 'Kampot Pepper Crusted Pigeon',
     chef: MOCK_CHEFS[1],
-    restaurant: 'Noma',
-    description: 'A pristine langoustine tail served perched on a rock, dotted with oyster emulsion and dusted with seaweed powder — the very tidal landscape in which a live langoustine might flourish.',
+    restaurant: 'Odette',
+    description: 'Odette\'s signature main course — pigeon crusted with Cambodian Kampot pepper, served three ways: yakitori from the heart, a modern parfait from the liver, and the breast with the fragrant, long-lasting pepper crust.',
     cuisines: [
       { id: 'french', name: 'French', parent: 'european' },
       { id: 'french_classical', name: 'Classical', parent: 'french' },
@@ -549,7 +550,8 @@ export const MOCK_RECIPES: Recipe[] = [
     restaurant: 'Gaggan',
     description: 'Gaggan Anand\'s signature: the essence of a good curry with sweet, sour, spice, and savoury notes spread on a plate — a gel, jam, chutney, and purée designed to be eaten without cutlery.',
     cuisines: [
-      { id: 'british', name: 'British', parent: 'european' },
+      { id: 'indian', name: 'Indian', parent: 'asian' },
+      { id: 'indian_progressive', name: 'Progressive Indian', parent: 'indian' },
     ],
     techniques: [
       { id: 'foaming', name: 'Foaming', category: 'modernist', description: 'Creating foams and airs' },
@@ -628,8 +630,8 @@ export const MOCK_RECIPES: Recipe[] = [
     restaurant: 'Gaggan',
     description: 'A tribute to Indian street-style dahi puri using molecular spherification — a delicate sphere that bursts with tangy yogurt, tamarind, and spiced chutneys in one explosive bite.',
     cuisines: [
-      { id: 'french', name: 'French', parent: 'european' },
-      { id: 'french_classical', name: 'Classical', parent: 'french' },
+      { id: 'indian', name: 'Indian', parent: 'asian' },
+      { id: 'indian_molecular', name: 'Molecular Gastronomy', parent: 'indian' },
     ],
     techniques: [
       { id: 'knife_work', name: 'Knife Work', category: 'dry_heat', description: 'Fine chopping and preparation' },
@@ -889,8 +891,8 @@ export const MOCK_RECIPES: Recipe[] = [
     restaurant: 'Core by Clare Smyth',
     description: 'Clare Smyth\'s most celebrated dish — a baked potato with dulse beurre blanc, herring and trout roe. Humble British produce transformed into something extraordinary.',
     cuisines: [
-      { id: 'japanese', name: 'Japanese', parent: 'asian' },
-      { id: 'japanese_contemporary', name: 'Contemporary', parent: 'japanese' },
+      { id: 'british', name: 'British', parent: 'european' },
+      { id: 'british_natural', name: 'Natural Cuisine', parent: 'british' },
     ],
     techniques: [
       { id: 'simmering', name: 'Simmering', category: 'wet_heat', description: 'Cooking in gently bubbling liquid' },
@@ -1130,8 +1132,8 @@ export const MOCK_RECIPES: Recipe[] = [
     restaurant: 'The Fat Duck',
     description: 'Heston Blumenthal\'s multi-sensory masterpiece — seafood arranged on edible sand, served with headphones playing waves and seagulls. The most complete expression of his dining philosophy.',
     cuisines: [
-      { id: 'spanish', name: 'Spanish', parent: 'european' },
-      { id: 'mediterranean', name: 'Mediterranean', parent: 'european' },
+      { id: 'british', name: 'British', parent: 'european' },
+      { id: 'british_modernist', name: 'British Modernist', parent: 'british' },
     ],
     techniques: [
       { id: 'simmering', name: 'Simmering', category: 'wet_heat', description: 'Cooking in gently bubbling liquid' },
@@ -1210,8 +1212,8 @@ export const MOCK_RECIPES: Recipe[] = [
     restaurant: 'Atelier Crenn',
     description: 'Dominique Crenn\'s signature — a spherical tribute to her Breton roots featuring apple cider gelée topped with crème de cassis-infused apple sorbet, capturing a classic French aperitif.',
     cuisines: [
-      { id: 'korean', name: 'Korean', parent: 'asian' },
-      { id: 'east_asian', name: 'East Asian', parent: 'asian' },
+      { id: 'french', name: 'French', parent: 'european' },
+      { id: 'french_breton', name: 'Breton / Contemporary French', parent: 'french' },
     ],
     techniques: [
       { id: 'pan_frying', name: 'Pan-Frying', category: 'dry_heat', description: 'Cooking in a shallow pan with oil' },
@@ -1293,7 +1295,8 @@ export const MOCK_RECIPES: Recipe[] = [
     restaurant: 'Narisawa',
     description: 'Narisawa\'s signature creation — apple and cinnamon-enriched bread dough still fermenting tableside over a small candle, embodying his Satoyama philosophy of cooking with nature.',
     cuisines: [
-      { id: 'british', name: 'British', parent: 'european' },
+      { id: 'japanese', name: 'Japanese', parent: 'asian' },
+      { id: 'japanese_satoyama', name: 'Satoyama / Contemporary Japanese', parent: 'japanese' },
     ],
     techniques: [
       { id: 'roasting', name: 'Roasting', category: 'dry_heat', description: 'Cooking with dry heat in an oven' },
@@ -1512,44 +1515,44 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
   },
   {
     id: 'mc-2',
-    title: 'Nordic Foraging and Sustainable Cooking',
+    title: 'Essential Cuisine: The Art of Seasonal French-Asian Cooking',
     chef: MOCK_CHEFS[1],
-    description: 'Join René Redzepi in exploring Nordic cuisine through foraging, seasonality, and sustainable practices.',
-    image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=600&fit=crop',
+    description: 'Join Julien Royer of three-Michelin-starred Odette in Singapore, exploring how French classical technique meets Asian sensibility through seasonal produce and artisan sourcing.',
+    image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=600&fit=crop', // TODO: Replace with real Odette kitchen/plating photography,
     level: 'advanced',
-    cuisine: ['Nordic', 'Scandinavian'],
+    cuisine: ['French', 'French-Asian'],
     duration: 240,
     price: 449,
     episodes: [
       {
         id: 'ep-4',
         order: 1,
-        title: 'Foraging Essentials',
-        description: 'Learn to identify and responsibly harvest wild ingredients for your kitchen.',
+        title: 'Produce as Philosophy',
+        description: 'How to build lasting relationships with artisan producers and let ingredients lead the menu.',
         duration: 60,
-        relatedRecipeIds: ['recipe-2'],
+        relatedRecipeIds: ['recipe-3'],
       },
       {
         id: 'ep-5',
         order: 2,
-        title: 'Seasonal Menu Planning',
-        description: 'Structure menus around seasonal availability and optimize ingredient usage.',
+        title: 'French Foundations, Asian Sensibility',
+        description: 'Bridging classical French technique with the precision and flavours of Asia.',
         duration: 60,
         relatedRecipeIds: [],
       },
       {
         id: 'ep-6',
         order: 3,
-        title: 'Zero Waste Cooking',
-        description: 'Minimize waste through creative utilization of every ingredient component.',
+        title: 'The Art of the Tasting Menu',
+        description: 'Constructing a multi-course narrative through texture, temperature, and surprise.',
         duration: 60,
-        relatedRecipeIds: ['recipe-2'],
+        relatedRecipeIds: ['recipe-4'],
       },
       {
         id: 'ep-7',
         order: 4,
-        title: 'Traditional Preservation Techniques',
-        description: 'Master curing, fermentation, and drying to extend ingredient seasons.',
+        title: 'Building a Restaurant Culture',
+        description: 'Teamwork, mentorship, and creating a kitchen environment where talent thrives.',
         duration: 60,
         relatedRecipeIds: [],
       },
