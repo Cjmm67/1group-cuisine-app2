@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { RecipeDetail } from '@/components/recipe/RecipeDetail';
+import { SchemaMarkup, buildRecipeSchema } from '@/components/seo/SchemaMarkup';
 import { MOCK_RECIPES } from '@/lib/mockData';
 import { notFound } from 'next/navigation';
 
@@ -20,8 +21,24 @@ export default function RecipeDetailPage({ params }: RecipeDetailPageProps) {
     notFound();
   }
 
+  const recipeSchema = buildRecipeSchema({
+    title: recipe.title,
+    description: recipe.description,
+    chef: recipe.chef.name,
+    restaurant: recipe.restaurant,
+    image: recipe.image,
+    prepTime: recipe.prepTime,
+    cookTime: recipe.cookTime,
+    servings: recipe.servings,
+    cuisines: recipe.cuisines?.map((c) => c.name),
+    ingredients: recipe.ingredients,
+    steps: recipe.steps,
+    rating: recipe.rating,
+  });
+
   return (
     <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-10 space-y-6">
+      <SchemaMarkup data={recipeSchema} />
       <div className="space-y-4">
         <RecipeDetail recipe={recipe} />
       </div>

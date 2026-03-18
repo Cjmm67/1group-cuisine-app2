@@ -19,7 +19,7 @@ export const MasterclassCard: React.FC<MasterclassCardProps> = ({ masterclass })
           {masterclass.image ? (
             <img
               src={masterclass.image}
-              alt={masterclass.title}
+              alt={`${masterclass.title} — chef video on 1-CUISINESG, 1-Group Singapore culinary platform`}
               className="w-full h-full object-cover"
             />
           ) : (

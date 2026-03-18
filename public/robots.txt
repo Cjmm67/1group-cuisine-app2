@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /login
+
+Sitemap: https://1-groupculinary.com/sitemap.xml
+
+# 1-CUISINESG — Professional Culinary Platform by 1-Group Singapore
+# Venues: 1-Altitude, Kaarla, Oumi, MONTI, Sol & Luna, UNA, Fire Restaurant, FLNT, Camille

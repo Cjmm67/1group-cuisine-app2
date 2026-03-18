@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { ChefProfile } from '@/components/chef/ChefProfile';
+import { SchemaMarkup, buildChefSchema } from '@/components/seo/SchemaMarkup';
 import { MOCK_CHEFS } from '@/lib/mockData';
 import { notFound } from 'next/navigation';
 
@@ -20,5 +21,19 @@ export default function ChefDetailPage({ params }: ChefDetailPageProps) {
     notFound();
   }
 
-  return <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-10"><ChefProfile chef={chef} /></div>;
+  const chefSchema = buildChefSchema({
+    name: chef.name,
+    bio: chef.bio,
+    avatar: chef.avatar,
+    restaurant: chef.restaurant,
+    cuisine: chef.cuisine,
+    accolades: chef.accolades,
+  });
+
+  return (
+    <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-10">
+      <SchemaMarkup data={chefSchema} />
+      <ChefProfile chef={chef} />
+    </div>
+  );
 }

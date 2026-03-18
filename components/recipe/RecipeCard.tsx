@@ -22,7 +22,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
           {recipe.image ? (
             <img
               src={recipe.image}
-              alt={recipe.title}
+              alt={`${recipe.title} by ${recipe.chef.name}${recipe.restaurant ? ` at ${recipe.restaurant}, Singapore` : ', 1-Group Singapore'}`}
               className="w-full h-full object-cover"
             />
           ) : (

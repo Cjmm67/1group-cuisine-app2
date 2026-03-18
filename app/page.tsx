@@ -6,8 +6,32 @@ import { RecipeCard } from '@/components/recipe/RecipeCard';
 import { ChefCard } from '@/components/chef/ChefCard';
 import { MasterclassCard } from '@/components/masterclass/MasterclassCard';
 import { Badge } from '@/components/ui/Badge';
+import { SchemaMarkup, websiteSchema, venueSchemas, buildFAQSchema } from '@/components/seo/SchemaMarkup';
 import { MOCK_RECIPES, MOCK_CHEFS, MOCK_MASTERCLASSES } from '@/lib/mockData';
 import { ArrowRight, Sparkles, ChefHat, GraduationCap } from 'lucide-react';
+
+const homeFAQs = buildFAQSchema([
+  {
+    question: 'What restaurants does 1-Group operate in Singapore?',
+    answer: '1-Group Singapore operates 24 venues across Singapore and Malaysia, including 1-Altitude (Singapore\'s highest rooftop bar at Level 63, One Raffles Place), Kaarla (modern Australian live-fire dining at CapitaSpring), Oumi (Japanese omakase at CapitaSpring), MONTI (award-winning Italian at 1-Pavilion), Sol & Luna (Spanish-Mediterranean), UNA at The Alkaff Mansion, Fire Restaurant, FLNT (Nikkei), and Camille (French bistro at 1-Flowerhill).',
+  },
+  {
+    question: 'Where is 1-Altitude located in Singapore?',
+    answer: '1-Altitude is located at Level 63 of One Raffles Place, 1 Raffles Place, Singapore 048616. Standing 282 metres above sea level, it is Singapore\'s highest al fresco rooftop bar, offering 360-degree panoramic views of Marina Bay, the CBD skyline, and Sentosa.',
+  },
+  {
+    question: 'Does 1-Group cater for weddings and corporate events?',
+    answer: '1-Group provides premium wedding and corporate event services across its venue portfolio. Venues accommodate 20 to 300+ guests, with full F&B by 1-Group\'s culinary teams, dedicated event management, and customisable menus for Western and Chinese-style celebrations. Popular wedding venues include 1-Altitude (skyline views), 1-Arden (sky garden), and 1-Flowerhill (botanical setting).',
+  },
+  {
+    question: 'How do I make a reservation at 1-Group venues?',
+    answer: 'Reservations at 1-Group venues can be made through the 1-Group website at 1-group.sg, via the SevenRooms reservation system, or by contacting individual venues directly. Advance booking is recommended for weekend evenings and special occasions.',
+  },
+  {
+    question: 'What type of cuisine does Oumi serve?',
+    answer: 'Oumi serves contemporary Japanese kappo cuisine at Level 51 of CapitaSpring, Singapore. Helmed by Executive Chef Lamley Chua, the restaurant offers seasonal omakase menus from SGD 180++ per person, featuring traditional Japanese techniques with premium produce sourced from Japan and Australia.',
+  },
+]);
 
 export default function Home() {
   const featuredRecipes = MOCK_RECIPES.slice(0, 6);
@@ -16,21 +40,32 @@ export default function Home() {
   const heroRecipe = MOCK_RECIPES[0];
 
   const venues = [
-    { name: '1-Altitude', cuisine: 'French Contemporary' },
-    { name: 'Oumi', cuisine: 'Nordic' },
-    { name: 'Kaarla', cuisine: 'Contemporary Asian' },
-    { name: 'Sol & Luna', cuisine: 'Mediterranean' },
-    { name: 'Camille', cuisine: 'Global' },
+    { name: '1-Altitude', cuisine: 'Rooftop Bar & Lounge, Level 63 One Raffles Place' },
+    { name: 'Kaarla', cuisine: 'Modern Australian, Live-Fire' },
+    { name: 'Oumi', cuisine: 'Japanese Omakase & Kappo' },
+    { name: 'MONTI', cuisine: 'Italian, Ospitalita Italiana Certified' },
+    { name: 'Sol & Luna', cuisine: 'Spanish-Mediterranean' },
+    { name: 'UNA', cuisine: 'Spanish, ICEX Certified' },
+    { name: 'Fire Restaurant', cuisine: 'Argentine Open-Flame' },
+    { name: 'FLNT', cuisine: 'Nikkei (Japanese-Peruvian)' },
+    { name: 'Camille', cuisine: 'French Bistro, All-Day Dining' },
   ];
 
   return (
     <div>
+      {/* ── JSON-LD Schema Markup for SEO/GEO ── */}
+      <SchemaMarkup data={websiteSchema} />
+      <SchemaMarkup data={homeFAQs} />
+      {venueSchemas.map((schema, i) => (
+        <SchemaMarkup key={i} data={schema} />
+      ))}
+
       {/* ── Hero ── */}
       <section className="bg-gray-950 text-white">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-16 sm:py-20 lg:py-24 text-center">
-          <p className="text-gold-400 text-xs font-semibold tracking-[0.2em] uppercase mb-4">Singapore&apos;s Premier Culinary Platform</p>
+          <p className="text-gold-400 text-xs font-semibold tracking-[0.2em] uppercase mb-4">1-Group Singapore&apos;s Culinary Platform</p>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight mb-4">
-            Where Culinary Excellence<br className="hidden sm:block" /> Meets Community
+            Recipes &amp; Chefs from<br className="hidden sm:block" /> Singapore&apos;s Leading Hospitality Group
           </h1>
           <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto mb-8">
             Connect with world-class chefs, explore innovative recipes, and master culinary techniques.
