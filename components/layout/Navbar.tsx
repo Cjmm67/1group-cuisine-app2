@@ -33,7 +33,7 @@ export const Navbar = () => {
             {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold tracking-tight text-gray-900">1-CUISINE</span>
+            <span className="text-xl font-bold tracking-tight text-gray-900">1-CUISINESG</span>
           </Link>
         </div>
 

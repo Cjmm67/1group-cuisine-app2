@@ -11,10 +11,10 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: '1-CUISINE | Professional Culinary Platform',
+  title: '1-CUISINESG | Professional Culinary Platform',
   description: 'Professional culinary platform for Singapore\'s premier hospitality portfolio.',
   keywords: ['culinary', 'recipes', 'chefs', 'Singapore', 'professional cooking'],
-  authors: [{ name: '1-CUISINE' }],
+  authors: [{ name: '1-CUISINESG' }],
   viewport: 'width=device-width, initial-scale=1',
 };
 

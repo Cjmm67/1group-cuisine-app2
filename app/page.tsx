@@ -153,7 +153,7 @@ export default function Home() {
       <section className="bg-gray-950 text-white">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-14 text-center">
           <h2 className="text-2xl font-bold mb-3">Ready to elevate your culinary skills?</h2>
-          <p className="text-gray-400 mb-6 max-w-lg mx-auto">Join thousands of professional chefs and culinary students on 1-CUISINE.</p>
+          <p className="text-gray-400 mb-6 max-w-lg mx-auto">Join thousands of professional chefs and culinary students on 1-CUISINESG.</p>
           <Link href="/register" className="inline-block bg-gold-600 hover:bg-gold-700 text-white text-sm font-semibold px-8 py-3 rounded-full transition-colors">
             Get Started Free
           </Link>
