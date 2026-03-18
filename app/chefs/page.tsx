@@ -39,10 +39,10 @@ export default function ChefsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-playfair text-5xl font-bold text-charcoal-800 mb-2">
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight tracking-tight mb-2">
           Chef Directory
         </h1>
-        <p className="text-lg text-charcoal-600">
+        <p className="text-lg text-gray-500">
           Discover and connect with world-class chefs
         </p>
       </div>
@@ -60,7 +60,7 @@ export default function ChefsPage() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            className="px-4 py-2 border border-gray-300 rounded-lg font-inter focus:border-gold-500 focus:ring-1 focus:ring-gold-500"
+            className="px-4 py-2 border border-gray-300 rounded-lg font-sans focus:border-gold-500 focus:ring-1 focus:ring-gold-500"
           >
             <option value="name">Sort: A-Z</option>
             <option value="experience">Sort: Years Experience</option>
@@ -68,7 +68,7 @@ export default function ChefsPage() {
           </select>
         </div>
 
-        <p className="text-sm text-charcoal-600">
+        <p className="text-sm text-gray-500">
           Showing <span className="font-semibold">{filteredChefs.length}</span> of{' '}
           <span className="font-semibold">{MOCK_CHEFS.length}</span> chefs
         </p>
@@ -83,7 +83,7 @@ export default function ChefsPage() {
 
       {filteredChefs.length === 0 && (
         <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
-          <p className="text-lg text-charcoal-600 mb-4">
+          <p className="text-lg text-gray-500 mb-4">
             No chefs found matching "{searchQuery}"
           </p>
         </div>

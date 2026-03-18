@@ -56,11 +56,11 @@ export default function SustainabilityPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-playfair text-5xl font-bold text-charcoal-800 mb-2 flex items-center gap-3">
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight tracking-tight mb-2 flex items-center gap-3">
           <Leaf size={40} className="text-green-600" />
           Sustainability Hub
         </h1>
-        <p className="text-lg text-charcoal-600">
+        <p className="text-lg text-gray-500">
           Track waste, optimize ingredients, and build a sustainable kitchen
         </p>
       </div>

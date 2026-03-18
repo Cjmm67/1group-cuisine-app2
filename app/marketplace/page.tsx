@@ -41,10 +41,10 @@ export default function MarketplacePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-playfair text-5xl font-bold text-charcoal-800 mb-2">
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight tracking-tight mb-2">
           Job Marketplace
         </h1>
-        <p className="text-lg text-charcoal-600">
+        <p className="text-lg text-gray-500">
           Find your next culinary opportunity
         </p>
       </div>
@@ -61,7 +61,7 @@ export default function MarketplacePage() {
 
         <div className="space-y-3">
           <div>
-            <p className="text-sm font-medium text-charcoal-700 mb-2">Experience Level</p>
+            <p className="text-sm font-medium text-gray-700 mb-2">Experience Level</p>
             <div className="flex flex-wrap gap-2">
               {['junior', 'mid', 'senior', 'executive'].map((level) => (
                 <button
@@ -72,7 +72,7 @@ export default function MarketplacePage() {
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     selectedLevel === level
                       ? 'bg-gold-500 text-white'
-                      : 'bg-gray-100 text-charcoal-700 hover:bg-gray-200'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
                   {level.charAt(0).toUpperCase() + level.slice(1)}
@@ -82,7 +82,7 @@ export default function MarketplacePage() {
           </div>
 
           <div>
-            <p className="text-sm font-medium text-charcoal-700 mb-2">Employment Type</p>
+            <p className="text-sm font-medium text-gray-700 mb-2">Employment Type</p>
             <div className="flex flex-wrap gap-2">
               {['full_time', 'part_time', 'contract', 'temporary'].map((type) => (
                 <button
@@ -91,7 +91,7 @@ export default function MarketplacePage() {
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     selectedType === type
                       ? 'bg-gold-500 text-white'
-                      : 'bg-gray-100 text-charcoal-700 hover:bg-gray-200'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
                   {type.replace(/_/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
@@ -101,7 +101,7 @@ export default function MarketplacePage() {
           </div>
         </div>
 
-        <p className="text-sm text-charcoal-600 pt-2 border-t border-gray-200">
+        <p className="text-sm text-gray-500 pt-2 border-t border-gray-200">
           Found <span className="font-semibold">{filteredJobs.length}</span> positions
         </p>
       </div>
@@ -115,7 +115,7 @@ export default function MarketplacePage() {
                 <div className="flex-1">
                   <div className="flex items-start justify-between gap-4 mb-3">
                     <div>
-                      <h3 className="font-playfair text-2xl font-semibold text-charcoal-800">
+                      <h3 className="text-2xl font-semibold text-gray-900">
                         {job.title}
                       </h3>
                       <p className="text-lg text-gold-600 font-medium mt-1">
@@ -132,7 +132,7 @@ export default function MarketplacePage() {
                     </Badge>
                   </div>
 
-                  <p className="text-charcoal-600 mb-4">{job.description}</p>
+                  <p className="text-gray-500 mb-4">{job.description}</p>
 
                   <div className="flex flex-wrap gap-2 mb-4">
                     {job.cuisine.map((c) => (
@@ -143,12 +143,12 @@ export default function MarketplacePage() {
                   </div>
 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                    <div className="flex items-center gap-2 text-charcoal-600">
+                    <div className="flex items-center gap-2 text-gray-500">
                       <MapPin size={16} className="text-gold-500" />
                       <span>{job.location}</span>
                     </div>
                     {job.salary && (
-                      <div className="flex items-center gap-2 text-charcoal-600">
+                      <div className="flex items-center gap-2 text-gray-500">
                         <DollarSign size={16} className="text-gold-500" />
                         <span>
                           {formatCurrency(job.salary.min, job.salary.currency)} -{' '}
@@ -156,12 +156,12 @@ export default function MarketplacePage() {
                         </span>
                       </div>
                     )}
-                    <div className="flex items-center gap-2 text-charcoal-600">
+                    <div className="flex items-center gap-2 text-gray-500">
                       <Briefcase size={16} className="text-gold-500" />
                       <span>{job.type.replace(/_/g, ' ')}</span>
                     </div>
                     {job.deadline && (
-                      <div className="flex items-center gap-2 text-charcoal-600">
+                      <div className="flex items-center gap-2 text-gray-500">
                         <Calendar size={16} className="text-gold-500" />
                         <span>Closes {formatDate(job.deadline)}</span>
                       </div>
@@ -180,7 +180,7 @@ export default function MarketplacePage() {
 
       {filteredJobs.length === 0 && (
         <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
-          <p className="text-lg text-charcoal-600">
+          <p className="text-lg text-gray-500">
             No positions match your criteria
           </p>
         </div>

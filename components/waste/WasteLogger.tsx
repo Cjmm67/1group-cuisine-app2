@@ -48,7 +48,7 @@ export const WasteLogger: React.FC<WasteLoggerProps> = ({ onSubmit, isLoading = 
   return (
     <Card>
       <CardHeader>
-        <h2 className="font-playfair text-2xl font-bold text-charcoal-800 flex items-center gap-2">
+        <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
           <Trash2 size={24} />
           Log Waste
         </h2>
@@ -56,7 +56,7 @@ export const WasteLogger: React.FC<WasteLoggerProps> = ({ onSubmit, isLoading = 
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
-            <h3 className="font-semibold text-charcoal-700">Add Waste Items</h3>
+            <h3 className="font-semibold text-gray-700">Add Waste Items</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
               <Input
@@ -117,7 +117,7 @@ export const WasteLogger: React.FC<WasteLoggerProps> = ({ onSubmit, isLoading = 
 
           {items.length > 0 && (
             <div className="space-y-3">
-              <h3 className="font-semibold text-charcoal-700">Logged Items</h3>
+              <h3 className="font-semibold text-gray-700">Logged Items</h3>
               <div className="space-y-2">
                 {items.map((item, index) => (
                   <div
@@ -125,8 +125,8 @@ export const WasteLogger: React.FC<WasteLoggerProps> = ({ onSubmit, isLoading = 
                     className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
                   >
                     <div className="flex-1">
-                      <p className="font-medium text-charcoal-800">{item.ingredient}</p>
-                      <p className="text-sm text-charcoal-600">
+                      <p className="font-medium text-gray-900">{item.ingredient}</p>
+                      <p className="text-sm text-gray-500">
                         {item.weight} {item.unit} • <Badge variant="default" size="sm">{item.category}</Badge>
                       </p>
                     </div>
@@ -141,14 +141,14 @@ export const WasteLogger: React.FC<WasteLoggerProps> = ({ onSubmit, isLoading = 
                 ))}
               </div>
 
-              <div className="text-sm text-charcoal-600 p-3 bg-blue-50 rounded-lg">
+              <div className="text-sm text-gray-500 p-3 bg-blue-50 rounded-lg">
                 <strong>Total items:</strong> {items.length}
               </div>
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-charcoal-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Notes (optional)
             </label>
             <textarea
@@ -156,7 +156,7 @@ export const WasteLogger: React.FC<WasteLoggerProps> = ({ onSubmit, isLoading = 
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any prevention strategies or notes..."
               rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg font-inter text-charcoal-800 placeholder-gray-400 focus:border-gold-500 focus:ring-1 focus:ring-gold-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg font-sans text-gray-900 placeholder-gray-400 focus:border-gold-500 focus:ring-1 focus:ring-gold-500"
             />
           </div>
 

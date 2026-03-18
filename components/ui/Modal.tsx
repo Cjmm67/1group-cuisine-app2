@@ -51,7 +51,7 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
         >
           {title && (
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h2 className="font-playfair text-lg font-semibold text-charcoal-800">
+              <h2 className="text-lg font-semibold text-gray-900">
                 {title}
               </h2>
               <button

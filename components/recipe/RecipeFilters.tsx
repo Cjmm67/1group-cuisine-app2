@@ -115,7 +115,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({ filters, onFilters
             onChange={() => onChange(item.id)}
             className="w-4 h-4 rounded border-gray-300 text-gold-500 cursor-pointer"
           />
-          <span className="text-sm text-charcoal-700">{item[labelKey]}</span>
+          <span className="text-sm text-gray-700">{item[labelKey]}</span>
         </label>
       ))}
     </div>
@@ -133,7 +133,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({ filters, onFilters
     <div className="border-b border-gray-200">
       <button
         onClick={() => toggleSection(sectionKey)}
-        className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-charcoal-700 hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
       >
         <span>{title}</span>
         <ChevronDown
@@ -150,7 +150,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({ filters, onFilters
   return (
     <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
       <div className="p-4 border-b border-gray-200">
-        <h3 className="font-playfair text-lg font-semibold text-charcoal-800">Filters</h3>
+        <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
       </div>
 
       <div className="divide-y divide-gray-200">
@@ -193,7 +193,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({ filters, onFilters
                   onChange={() => handleMenuContextChange(context)}
                   className="w-4 h-4 rounded border-gray-300 text-gold-500 cursor-pointer"
                 />
-                <span className="text-sm text-charcoal-700 capitalize">
+                <span className="text-sm text-gray-700 capitalize">
                   {context.replace(/_/g, ' ')}
                 </span>
               </label>
@@ -217,7 +217,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({ filters, onFilters
                   }
                   className="w-4 h-4 rounded border-gray-300 text-gold-500 cursor-pointer"
                 />
-                <span className="text-sm text-charcoal-700">{label}</span>
+                <span className="text-sm text-gray-700">{label}</span>
               </label>
             ))}
           </div>
@@ -243,7 +243,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({ filters, onFilters
                   onChange={() => handleDifficultyChange(difficulty)}
                   className="w-4 h-4 rounded border-gray-300 text-gold-500 cursor-pointer"
                 />
-                <span className="text-sm text-charcoal-700 capitalize">{difficulty}</span>
+                <span className="text-sm text-gray-700 capitalize">{difficulty}</span>
               </label>
             ))}
           </div>

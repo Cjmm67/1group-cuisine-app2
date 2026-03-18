@@ -14,8 +14,8 @@ interface MasterclassCardProps {
 export const MasterclassCard: React.FC<MasterclassCardProps> = ({ masterclass }) => {
   return (
     <Link href={`/masterclasses/${slugify(masterclass.title)}`}>
-      <Card variant="interactive" className="overflow-hidden h-full">
-        <div className="aspect-video bg-gradient-to-br from-gold-100 to-gold-50 flex items-center justify-center relative">
+      <Card variant="interactive" className="overflow-hidden h-full card-hover group">
+        <div className="aspect-video bg-gray-100 flex items-center justify-center relative image-zoom-hover">
           {masterclass.image ? (
             <img
               src={masterclass.image}
@@ -23,16 +23,18 @@ export const MasterclassCard: React.FC<MasterclassCardProps> = ({ masterclass })
               className="w-full h-full object-cover"
             />
           ) : (
-            <span className="text-gold-700">{masterclass.title}</span>
+            <span className="text-gray-500">{masterclass.title}</span>
           )}
-          <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-            <Play size={48} className="text-white fill-white" />
+          <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center">
+              <Play size={24} className="text-gray-900 fill-gray-900 ml-1" />
+            </div>
           </div>
         </div>
 
-        <div className="p-4 space-y-3">
+        <div className="p-5 space-y-3">
           <div>
-            <h3 className="font-playfair text-lg font-semibold text-charcoal-800 line-clamp-2">
+            <h3 className="text-base font-semibold text-gray-900 line-clamp-2 group-hover:text-gold-700 transition-colors">
               {masterclass.title}
             </h3>
             <div className="flex items-center gap-2 mt-2">
@@ -41,9 +43,9 @@ export const MasterclassCard: React.FC<MasterclassCardProps> = ({ masterclass })
             </div>
           </div>
 
-          <p className="text-sm text-charcoal-600 line-clamp-2">{masterclass.description}</p>
+          <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">{masterclass.description}</p>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {masterclass.cuisine.slice(0, 2).map((c) => (
               <Badge key={c} variant="secondary" size="sm">
                 {c}
@@ -54,21 +56,23 @@ export const MasterclassCard: React.FC<MasterclassCardProps> = ({ masterclass })
             </Badge>
           </div>
 
-          <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-            <div className="flex items-center gap-2 text-xs text-charcoal-600">
-              <Play size={14} />
-              {masterclass.episodes.length} episodes
-            </div>
-            <div className="flex items-center gap-2 text-xs text-charcoal-600">
-              <Users size={14} />
-              {masterclass.enrollmentCount}
+          <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+            <div className="flex items-center gap-4 text-xs text-gray-500">
+              <span className="flex items-center gap-1">
+                <Play size={13} />
+                {masterclass.episodes.length} episodes
+              </span>
+              <span className="flex items-center gap-1">
+                <Users size={13} />
+                {masterclass.enrollmentCount}
+              </span>
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-            <div className="flex items-center">
-              <span className="text-yellow-500 mr-1">★</span>
-              <span className="text-sm font-semibold text-charcoal-800">
+          <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+            <div className="flex items-center gap-1">
+              <span className="text-amber-500">&#9733;</span>
+              <span className="text-sm font-semibold text-gray-900">
                 {masterclass.rating.toFixed(1)}
               </span>
             </div>

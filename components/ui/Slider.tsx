@@ -46,7 +46,7 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
     return (
       <div ref={ref} className={cn('w-full', className)}>
         {label && (
-          <label className="block text-sm font-medium text-charcoal-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
             {label}
           </label>
         )}

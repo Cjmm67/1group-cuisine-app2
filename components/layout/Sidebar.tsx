@@ -90,7 +90,7 @@ export const Sidebar = () => {
                     'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-250',
                     isActive
                       ? 'bg-gold-50 text-gold-700 font-medium'
-                      : 'text-charcoal-600 hover:bg-gray-50'
+                      : 'text-gray-500 hover:bg-gray-50'
                   )}
                   onClick={() => setSidebarOpen(false)}
                 >

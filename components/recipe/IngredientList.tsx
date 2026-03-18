@@ -45,7 +45,7 @@ export const IngredientList: React.FC<IngredientListProps> = ({
     <div className="space-y-6">
       {Object.entries(groupedIngredients).map(([group, items]) => (
         <div key={group}>
-          <h4 className="font-semibold text-charcoal-700 text-sm uppercase tracking-wide mb-3">
+          <h4 className="font-semibold text-gray-700 text-sm uppercase tracking-wide mb-3">
             {getGroupLabel(group)}
           </h4>
           <div className="space-y-2">
@@ -56,7 +56,7 @@ export const IngredientList: React.FC<IngredientListProps> = ({
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-charcoal-800 font-medium">
+                    <span className="text-gray-900 font-medium">
                       {ingredient.name}
                     </span>
                     {ingredient.allergens && ingredient.allergens.length > 0 && (
@@ -72,10 +72,10 @@ export const IngredientList: React.FC<IngredientListProps> = ({
                   )}
                 </div>
                 <div className="text-right whitespace-nowrap">
-                  <span className="font-semibold text-charcoal-800">
+                  <span className="font-semibold text-gray-900">
                     {(ingredient.weight * scale).toFixed(1)}
                   </span>
-                  <span className="text-charcoal-600 ml-1">{ingredient.unit}</span>
+                  <span className="text-gray-500 ml-1">{ingredient.unit}</span>
                 </div>
               </div>
             ))}

@@ -23,10 +23,10 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <div className="text-center">
-            <h1 className="font-playfair text-3xl font-bold text-charcoal-800 mb-2">
+            <h1 className="text-2xl font-bold text-gray-900 tracking-tight mb-2">
               Sign In
             </h1>
-            <p className="text-charcoal-600">Welcome back to 1-Group Cuisine</p>
+            <p className="text-gray-500">Welcome back to 1-Group Cuisine</p>
           </div>
         </CardHeader>
 
@@ -64,7 +64,7 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 pt-6 border-t border-gray-200 text-center">
-            <p className="text-sm text-charcoal-600">
+            <p className="text-sm text-gray-500">
               Don't have an account?{' '}
               <Link href="/register" className="text-gold-500 font-medium hover:text-gold-600">
                 Sign up

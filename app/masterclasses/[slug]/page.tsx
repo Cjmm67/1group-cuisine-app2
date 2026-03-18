@@ -49,7 +49,7 @@ export default function MasterclassDetailPage({ params }: MasterclassDetailPageP
           </div>
 
           <div className="flex-1">
-            <h1 className="font-playfair text-4xl font-bold mb-4">{masterclass.title}</h1>
+            <h1 className="text-4xl font-bold mb-4">{masterclass.title}</h1>
             <p className="text-lg text-white/90 mb-6">{masterclass.description}</p>
 
             <div className="flex items-center gap-4 mb-6">
@@ -88,14 +88,14 @@ export default function MasterclassDetailPage({ params }: MasterclassDetailPageP
         <Card>
           <CardContent className="pt-6 text-center">
             <p className="text-3xl font-bold text-gold-500">{masterclass.episodes.length}</p>
-            <p className="text-sm text-charcoal-600 mt-1">Episodes</p>
+            <p className="text-sm text-gray-500 mt-1">Episodes</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="pt-6 text-center">
             <p className="text-3xl font-bold text-gold-500">{formatTime(totalDuration)}</p>
-            <p className="text-sm text-charcoal-600 mt-1">Total Duration</p>
+            <p className="text-sm text-gray-500 mt-1">Total Duration</p>
           </CardContent>
         </Card>
 
@@ -103,18 +103,18 @@ export default function MasterclassDetailPage({ params }: MasterclassDetailPageP
           <CardContent className="pt-6 text-center">
             <div className="flex items-center justify-center gap-1">
               <Star size={20} className="text-yellow-500 fill-yellow-500" />
-              <p className="text-3xl font-bold text-charcoal-800">
+              <p className="text-2xl font-bold text-gray-900 tracking-tight">
                 {masterclass.rating.toFixed(1)}
               </p>
             </div>
-            <p className="text-sm text-charcoal-600 mt-1">Rating</p>
+            <p className="text-sm text-gray-500 mt-1">Rating</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="pt-6 text-center">
             <p className="text-3xl font-bold text-gold-500">{masterclass.enrollmentCount}+</p>
-            <p className="text-sm text-charcoal-600 mt-1">Enrolled</p>
+            <p className="text-sm text-gray-500 mt-1">Enrolled</p>
           </CardContent>
         </Card>
       </div>
@@ -122,7 +122,7 @@ export default function MasterclassDetailPage({ params }: MasterclassDetailPageP
       {/* Episodes */}
       <Card>
         <CardHeader>
-          <h2 className="font-playfair text-2xl font-bold text-charcoal-800">Course Content</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Course Content</h2>
         </CardHeader>
         <CardContent>
           <EpisodeList episodes={masterclass.episodes} />
@@ -132,10 +132,10 @@ export default function MasterclassDetailPage({ params }: MasterclassDetailPageP
       {/* About Chef */}
       <Card>
         <CardHeader>
-          <h2 className="font-playfair text-2xl font-bold text-charcoal-800">About the Chef</h2>
+          <h2 className="text-2xl font-bold text-gray-900">About the Chef</h2>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-charcoal-700">{masterclass.chef.bio}</p>
+          <p className="text-gray-700">{masterclass.chef.bio}</p>
 
           <Link href={`/chefs/${masterclass.chef.name.toLowerCase().replace(/\s+/g, '-')}`}>
             <Button variant="outline">View Full Profile</Button>

@@ -19,7 +19,7 @@ export const StepList: React.FC<StepListProps> = ({ steps }) => {
           </div>
 
           <div className="flex-1 pb-4 border-b border-gray-200 last:border-b-0">
-            <p className="text-charcoal-800 mb-3">{step.instruction}</p>
+            <p className="text-gray-900 mb-3">{step.instruction}</p>
 
             <div className="flex flex-wrap gap-2">
               {step.station && (

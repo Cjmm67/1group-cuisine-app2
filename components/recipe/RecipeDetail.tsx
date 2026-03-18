@@ -36,19 +36,19 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
         </div>
 
         <div className="mb-6">
-          <h1 className="font-playfair text-4xl font-bold text-charcoal-800 mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight mb-2">
             {recipe.title}
           </h1>
-          <p className="text-lg text-charcoal-600">{recipe.description}</p>
+          <p className="text-lg text-gray-500">{recipe.description}</p>
         </div>
 
         <div className="flex items-center gap-6 mb-6 pb-6 border-b border-gray-200">
           <div className="flex items-center gap-3">
             <Avatar name={recipe.chef.name} image={recipe.chef.avatar} size="lg" />
             <div>
-              <p className="font-semibold text-charcoal-800">{recipe.chef.name}</p>
+              <p className="font-semibold text-gray-900">{recipe.chef.name}</p>
               {recipe.restaurant && (
-                <p className="text-sm text-charcoal-600">{recipe.restaurant}</p>
+                <p className="text-sm text-gray-500">{recipe.restaurant}</p>
               )}
             </div>
           </div>
@@ -76,25 +76,25 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-warm-100 rounded-lg p-6 mb-6">
           <div>
-            <p className="text-sm text-charcoal-600 mb-1">Prep Time</p>
-            <p className="flex items-center gap-2 font-semibold text-charcoal-800">
+            <p className="text-sm text-gray-500 mb-1">Prep Time</p>
+            <p className="flex items-center gap-2 font-semibold text-gray-900">
               <Clock size={18} />
               {formatTime(recipe.prepTime)}
             </p>
           </div>
           <div>
-            <p className="text-sm text-charcoal-600 mb-1">Cook Time</p>
-            <p className="flex items-center gap-2 font-semibold text-charcoal-800">
+            <p className="text-sm text-gray-500 mb-1">Cook Time</p>
+            <p className="flex items-center gap-2 font-semibold text-gray-900">
               <Clock size={18} />
               {formatTime(recipe.cookTime)}
             </p>
           </div>
           <div>
-            <p className="text-sm text-charcoal-600 mb-1">Food Cost</p>
-            <p className="font-semibold text-charcoal-800">{recipe.foodCostPercent}%</p>
+            <p className="text-sm text-gray-500 mb-1">Food Cost</p>
+            <p className="font-semibold text-gray-900">{recipe.foodCostPercent}%</p>
           </div>
           <div>
-            <p className="text-sm text-charcoal-600 mb-1">Sustainability</p>
+            <p className="text-sm text-gray-500 mb-1">Sustainability</p>
             <p className="flex items-center gap-2 font-semibold text-green-600">
               <TrendingUp size={18} />
               {recipe.sustainability.score}%
@@ -105,14 +105,14 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
 
       <Card>
         <CardHeader>
-          <h2 className="font-playfair text-2xl font-bold text-charcoal-800 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <Users size={24} />
             Ingredients
           </h2>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-charcoal-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Servings: {servings}
             </label>
             <Slider
@@ -132,7 +132,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
 
       <Card>
         <CardHeader>
-          <h2 className="font-playfair text-2xl font-bold text-charcoal-800">Method</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Method</h2>
         </CardHeader>
         <CardContent>
           <StepList steps={recipe.steps} />
@@ -161,7 +161,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
 
       <Card>
         <CardHeader>
-          <h2 className="font-playfair text-2xl font-bold text-charcoal-800">Techniques</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Techniques</h2>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">

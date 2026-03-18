@@ -21,7 +21,7 @@ export const ChefProfile: React.FC<ChefProfileProps> = ({ chef }) => {
           <Avatar name={chef.name} image={chef.avatar} size="lg" className="w-24 h-24" />
 
           <div className="flex-1">
-            <h1 className="font-playfair text-4xl font-bold mb-2">{chef.name}</h1>
+            <h1 className="text-4xl font-bold mb-2">{chef.name}</h1>
             {chef.restaurant && (
               <p className="text-xl font-medium text-white/90 mb-4">{chef.restaurant}</p>
             )}
@@ -52,42 +52,42 @@ export const ChefProfile: React.FC<ChefProfileProps> = ({ chef }) => {
         <Card>
           <CardContent className="pt-6 text-center">
             <p className="text-3xl font-bold text-gold-500">{chef.yearsExperience}</p>
-            <p className="text-sm text-charcoal-600 mt-1">Years Experience</p>
+            <p className="text-sm text-gray-500 mt-1">Years Experience</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="pt-6 text-center">
             <p className="text-3xl font-bold text-gold-500">{chef.recipes.length}</p>
-            <p className="text-sm text-charcoal-600 mt-1">Recipes</p>
+            <p className="text-sm text-gray-500 mt-1">Recipes</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="pt-6 text-center">
             <p className="text-3xl font-bold text-gold-500">{chef.masterclasses.length}</p>
-            <p className="text-sm text-charcoal-600 mt-1">Classes</p>
+            <p className="text-sm text-gray-500 mt-1">Classes</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="pt-6 text-center">
             <p className="text-3xl font-bold text-gold-500">{chef.cuisine.length}</p>
-            <p className="text-sm text-charcoal-600 mt-1">Cuisines</p>
+            <p className="text-sm text-gray-500 mt-1">Cuisines</p>
           </CardContent>
         </Card>
       </div>
 
       <Card>
         <CardHeader>
-          <h2 className="font-playfair text-2xl font-bold text-charcoal-800 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <Award size={24} />
             Specialties & Expertise
           </h2>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <h3 className="font-semibold text-charcoal-700 mb-2">Cuisines</h3>
+            <h3 className="font-semibold text-gray-700 mb-2">Cuisines</h3>
             <div className="flex flex-wrap gap-2">
               {chef.cuisine.map((c) => (
                 <Badge key={c} variant="secondary">
@@ -98,7 +98,7 @@ export const ChefProfile: React.FC<ChefProfileProps> = ({ chef }) => {
           </div>
 
           <div>
-            <h3 className="font-semibold text-charcoal-700 mb-2">Specialties</h3>
+            <h3 className="font-semibold text-gray-700 mb-2">Specialties</h3>
             <div className="flex flex-wrap gap-2">
               {chef.specialties.map((specialty) => (
                 <Badge key={specialty} variant="primary">
@@ -112,7 +112,7 @@ export const ChefProfile: React.FC<ChefProfileProps> = ({ chef }) => {
 
       {chef.recipes.length > 0 && (
         <div>
-          <h2 className="font-playfair text-2xl font-bold text-charcoal-800 mb-6">Recipes</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Recipes</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {chef.recipes.slice(0, 6).map((recipe) => (
               <RecipeCard key={recipe.id} recipe={recipe} />

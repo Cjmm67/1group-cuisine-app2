@@ -1,58 +1,133 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { Search, Menu } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Search, Menu, X } from 'lucide-react';
 import { Avatar } from '@/components/ui/Avatar';
-import { useUIStore } from '@/store/uiStore';
 import { useAuth } from '@/hooks/useAuth';
+import { cn } from '@/lib/utils';
+
+const NAV_LINKS = [
+  { label: 'Recipes', href: '/recipes' },
+  { label: 'Chefs', href: '/chefs' },
+  { label: 'Masterclasses', href: '/masterclasses' },
+  { label: 'Marketplace', href: '/marketplace' },
+  { label: 'Sustainability', href: '/sustainability' },
+  { label: 'Suppliers', href: '/suppliers' },
+];
 
 export const Navbar = () => {
-  const { toggleSidebar } = useUIStore();
   const { user } = useAuth();
+  const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-40 transition-all duration-300">
-      <div className="px-4 py-3 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={toggleSidebar}
-            className="hidden sm:inline-flex p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            aria-label="Toggle sidebar"
-          >
-            <Menu size={20} className="text-charcoal-700" />
-          </button>
-
-          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
+    <nav className="bg-white/90 backdrop-blur-lg border-b border-gray-100 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
             <div className="w-8 h-8 bg-gradient-to-br from-gold-500 to-gold-700 rounded-lg flex items-center justify-center">
-              <span className="text-white font-playfair font-bold text-sm">1G</span>
+              <span className="text-white font-semibold text-sm">1G</span>
             </div>
-            <span className="hidden sm:inline font-playfair text-lg font-semibold text-charcoal-800">
+            <span className="hidden sm:inline text-lg font-semibold text-gray-900 tracking-tight">
               1-Group Cuisine
             </span>
           </Link>
-        </div>
 
-        <div className="flex-1 max-w-xs">
-          <div className="relative">
-            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              type="search"
-              placeholder="Search recipes, chefs..."
-              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:border-gold-500 focus:ring-1 focus:ring-gold-500"
-            />
+          {/* Desktop Nav Links */}
+          <div className="hidden lg:flex items-center gap-1">
+            {NAV_LINKS.map((link) => {
+              const isActive = pathname === link.href || pathname.startsWith(link.href + '/');
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    'px-3 py-2 text-sm font-medium rounded-lg transition-colors',
+                    isActive
+                      ? 'text-gold-700 bg-gold-50'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  )}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Right Side */}
+          <div className="flex items-center gap-3">
+            {/* Search */}
+            <div className="hidden md:block">
+              <div className="relative">
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="search"
+                  placeholder="Search..."
+                  className="w-48 lg:w-56 pl-9 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-gold-400 focus:ring-1 focus:ring-gold-400 transition-all outline-none"
+                />
+              </div>
+            </div>
+
+            {/* User / Sign In */}
+            {user ? (
+              <Avatar name={user.name} image={user.avatar} size="md" />
+            ) : (
+              <Link
+                href="/login"
+                className="text-sm font-medium text-white bg-gold-600 hover:bg-gold-700 px-4 py-2 rounded-lg transition-colors"
+              >
+                Sign in
+              </Link>
+            )}
+
+            {/* Mobile Menu Toggle */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          {user ? (
-            <Avatar name={user.name} image={user.avatar} size="md" />
-          ) : (
-            <Link href="/login" className="text-sm font-medium text-gold-500 hover:text-gold-600">
-              Sign in
-            </Link>
-          )}
-        </div>
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden border-t border-gray-100 py-3 space-y-1">
+            {/* Mobile Search */}
+            <div className="md:hidden px-2 pb-3">
+              <div className="relative">
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="search"
+                  placeholder="Search recipes, chefs..."
+                  className="w-full pl-9 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-gold-400 outline-none"
+                />
+              </div>
+            </div>
+            {NAV_LINKS.map((link) => {
+              const isActive = pathname === link.href || pathname.startsWith(link.href + '/');
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={cn(
+                    'block px-4 py-2.5 text-sm font-medium rounded-lg transition-colors',
+                    isActive
+                      ? 'text-gold-700 bg-gold-50'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  )}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </div>
     </nav>
   );

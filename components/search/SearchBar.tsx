@@ -79,7 +79,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ className, onResultSelect 
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:border-gold-500 focus:ring-1 focus:ring-gold-500 font-inter"
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:border-gold-500 focus:ring-1 focus:ring-gold-500 font-sans"
         />
         {query && (
           <button
@@ -117,16 +117,16 @@ export const SearchBar: React.FC<SearchBarProps> = ({ className, onResultSelect 
                       {result.type === 'masterclass' && '🎓'}
                     </div>
                     <div className="flex-1">
-                      <p className="font-medium text-charcoal-800">{result.title}</p>
+                      <p className="font-medium text-gray-900">{result.title}</p>
                       {result.subtitle && (
-                        <p className="text-sm text-charcoal-600">{result.subtitle}</p>
+                        <p className="text-sm text-gray-500">{result.subtitle}</p>
                       )}
                     </div>
                   </Link>
                 ))}
               </div>
             ) : (
-              <div className="px-4 py-6 text-center text-charcoal-600">
+              <div className="px-4 py-6 text-center text-gray-500">
                 No results found for "{query}"
               </div>
             )}

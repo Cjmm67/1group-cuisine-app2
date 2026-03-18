@@ -48,10 +48,10 @@ export default function SuppliersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-playfair text-5xl font-bold text-charcoal-800 mb-2">
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight tracking-tight mb-2">
           Supplier Directory
         </h1>
-        <p className="text-lg text-charcoal-600">
+        <p className="text-lg text-gray-500">
           Connect with premium suppliers for your kitchen
         </p>
       </div>
@@ -68,7 +68,7 @@ export default function SuppliersPage() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            className="px-4 py-2 border border-gray-300 rounded-lg font-inter focus:border-gold-500 focus:ring-1 focus:ring-gold-500"
+            className="px-4 py-2 border border-gray-300 rounded-lg font-sans focus:border-gold-500 focus:ring-1 focus:ring-gold-500"
           >
             <option value="rating">Sort: Rating</option>
             <option value="name">Sort: Name A-Z</option>
@@ -76,7 +76,7 @@ export default function SuppliersPage() {
         </div>
 
         <div>
-          <p className="text-sm font-medium text-charcoal-700 mb-2">Type</p>
+          <p className="text-sm font-medium text-gray-700 mb-2">Type</p>
           <div className="flex flex-wrap gap-2">
             {allTypes.map((type) => (
               <button
@@ -87,7 +87,7 @@ export default function SuppliersPage() {
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   selectedType === type
                     ? 'bg-gold-500 text-white'
-                    : 'bg-gray-100 text-charcoal-700 hover:bg-gray-200'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
                 {type}
@@ -96,7 +96,7 @@ export default function SuppliersPage() {
           </div>
         </div>
 
-        <p className="text-sm text-charcoal-600 pt-2 border-t border-gray-200">
+        <p className="text-sm text-gray-500 pt-2 border-t border-gray-200">
           Found <span className="font-semibold">{filteredSuppliers.length}</span> suppliers
         </p>
       </div>
@@ -108,7 +108,7 @@ export default function SuppliersPage() {
             <CardContent className="py-6">
               <div className="flex items-start justify-between gap-4 mb-3">
                 <div>
-                  <h3 className="font-playfair text-xl font-semibold text-charcoal-800">
+                  <h3 className="text-xl font-semibold text-gray-900">
                     {supplier.name}
                   </h3>
                   <div className="flex items-center gap-2 mt-2">
@@ -123,13 +123,13 @@ export default function SuppliersPage() {
 
                 <div className="flex items-center gap-1 text-right">
                   <Star size={18} className="text-yellow-500 fill-yellow-500" />
-                  <span className="font-semibold text-charcoal-800">
+                  <span className="font-semibold text-gray-900">
                     {supplier.rating.toFixed(1)}
                   </span>
                 </div>
               </div>
 
-              <p className="text-charcoal-600 mb-4">{supplier.description}</p>
+              <p className="text-gray-500 mb-4">{supplier.description}</p>
 
               <div className="flex flex-wrap gap-2 mb-4">
                 {supplier.type.map((t) => (
@@ -140,7 +140,7 @@ export default function SuppliersPage() {
               </div>
 
               <div className="mb-4 pb-4 border-b border-gray-200">
-                <p className="text-sm font-medium text-charcoal-700 mb-2">Specialties</p>
+                <p className="text-sm font-medium text-gray-700 mb-2">Specialties</p>
                 <div className="flex flex-wrap gap-1">
                   {supplier.specialties.map((specialty) => (
                     <Badge key={specialty} variant="primary" size="sm">
@@ -150,7 +150,7 @@ export default function SuppliersPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 text-sm text-charcoal-600 mb-4">
+              <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
                 <MapPin size={16} />
                 <span>{supplier.location}</span>
               </div>
@@ -170,7 +170,7 @@ export default function SuppliersPage() {
 
       {filteredSuppliers.length === 0 && (
         <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
-          <p className="text-lg text-charcoal-600">
+          <p className="text-lg text-gray-500">
             No suppliers match your criteria
           </p>
         </div>

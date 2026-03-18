@@ -48,7 +48,7 @@ export default function SearchPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-playfair text-5xl font-bold text-charcoal-800 mb-4">
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight tracking-tight mb-4">
           Search
         </h1>
         <div className="max-w-2xl">
@@ -65,7 +65,7 @@ export default function SearchPage() {
       {query && (
         <>
           <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <p className="text-sm text-charcoal-600">
+            <p className="text-sm text-gray-500">
               Found <span className="font-semibold">{totalResults}</span> results for "{query}"
             </p>
           </div>
@@ -79,7 +79,7 @@ export default function SearchPage() {
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   selectedType === type
                     ? 'bg-gold-500 text-white'
-                    : 'bg-gray-100 text-charcoal-700 hover:bg-gray-200'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
                 {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -101,7 +101,7 @@ export default function SearchPage() {
           {/* Recipes */}
           {(selectedType === 'all' || selectedType === 'recipes') && results.recipes.length > 0 && (
             <section className="space-y-4">
-              <h2 className="font-playfair text-2xl font-bold text-charcoal-800">
+              <h2 className="text-2xl font-bold text-gray-900">
                 Recipes ({results.recipes.length})
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -115,7 +115,7 @@ export default function SearchPage() {
           {/* Chefs */}
           {(selectedType === 'all' || selectedType === 'chefs') && results.chefs.length > 0 && (
             <section className="space-y-4">
-              <h2 className="font-playfair text-2xl font-bold text-charcoal-800">
+              <h2 className="text-2xl font-bold text-gray-900">
                 Chefs ({results.chefs.length})
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -130,7 +130,7 @@ export default function SearchPage() {
           {(selectedType === 'all' || selectedType === 'masterclasses') &&
             results.masterclasses.length > 0 && (
               <section className="space-y-4">
-                <h2 className="font-playfair text-2xl font-bold text-charcoal-800">
+                <h2 className="text-2xl font-bold text-gray-900">
                   Masterclasses ({results.masterclasses.length})
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -143,10 +143,10 @@ export default function SearchPage() {
 
           {totalResults === 0 && (
             <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
-              <p className="text-lg text-charcoal-600 mb-4">
+              <p className="text-lg text-gray-500 mb-4">
                 No results found for "{query}"
               </p>
-              <p className="text-charcoal-500">Try different keywords or browse our categories</p>
+              <p className="text-gray-400">Try different keywords or browse our categories</p>
             </div>
           )}
         </>
@@ -154,22 +154,22 @@ export default function SearchPage() {
 
       {!query && (
         <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
-          <p className="text-lg text-charcoal-600 mb-4">
+          <p className="text-lg text-gray-500 mb-4">
             Enter a search term to get started
           </p>
-          <p className="text-charcoal-500 mb-6">
+          <p className="text-gray-400 mb-6">
             Search for recipes, chefs, masterclasses, and more
           </p>
 
           <div className="space-y-4 mt-8 text-left max-w-md mx-auto">
             <div>
-              <p className="font-semibold text-charcoal-800 mb-2">Popular Searches</p>
+              <p className="font-semibold text-gray-900 mb-2">Popular Searches</p>
               <div className="flex flex-wrap gap-2">
                 {['Risotto', 'Massimo Bottura', 'French Cuisine', 'Sustainable Cooking'].map((term) => (
                   <button
                     key={term}
                     onClick={() => setQuery(term)}
-                    className="px-3 py-1.5 bg-gray-100 text-charcoal-700 rounded-lg text-sm hover:bg-gray-200 transition-colors"
+                    className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors"
                   >
                     {term}
                   </button>

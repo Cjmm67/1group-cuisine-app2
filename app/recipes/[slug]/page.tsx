@@ -28,7 +28,7 @@ export default function RecipeDetailPage({ params }: RecipeDetailPageProps) {
 
       {/* Related Recipes Section */}
       <div className="mt-12 pt-12 border-t border-gray-200">
-        <h2 className="font-playfair text-3xl font-bold text-charcoal-800 mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-6">
           More from {recipe.chef.name}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -40,8 +40,8 @@ export default function RecipeDetailPage({ params }: RecipeDetailPageProps) {
                 key={r.id}
                 className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
               >
-                <h3 className="font-semibold text-charcoal-800">{r.title}</h3>
-                <p className="text-sm text-charcoal-600 mt-1">{r.description}</p>
+                <h3 className="font-semibold text-gray-900">{r.title}</h3>
+                <p className="text-sm text-gray-500 mt-1">{r.description}</p>
               </div>
             ))}
         </div>

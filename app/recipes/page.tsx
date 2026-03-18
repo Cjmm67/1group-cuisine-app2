@@ -48,10 +48,10 @@ export default function RecipesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-playfair text-5xl font-bold text-charcoal-800 mb-2">
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight tracking-tight mb-2">
           Recipe Collection
         </h1>
-        <p className="text-lg text-charcoal-600">
+        <p className="text-lg text-gray-500">
           Explore {MOCK_RECIPES.length} recipes with advanced filtering
         </p>
       </div>
@@ -67,7 +67,7 @@ export default function RecipesPage() {
           {/* Controls */}
           <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="text-sm text-charcoal-600">
+              <div className="text-sm text-gray-500">
                 <span className="font-semibold">{filteredRecipes.length}</span> recipes
                 {activeFilterCount > 0 && (
                   <span className="ml-2 text-gold-600">
@@ -80,7 +80,7 @@ export default function RecipesPage() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-inter focus:border-gold-500 focus:ring-1 focus:ring-gold-500"
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-sans focus:border-gold-500 focus:ring-1 focus:ring-gold-500"
                 >
                   <option value="rating">Sort: Rating</option>
                   <option value="recent">Sort: Recent</option>
@@ -94,7 +94,7 @@ export default function RecipesPage() {
                     className={`p-2 rounded-lg transition-colors ${
                       viewMode === 'grid'
                         ? 'bg-gold-100 text-gold-600'
-                        : 'bg-gray-100 text-charcoal-600 hover:bg-gray-200'
+                        : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                     }`}
                     title="Grid view"
                   >
@@ -105,7 +105,7 @@ export default function RecipesPage() {
                     className={`p-2 rounded-lg transition-colors ${
                       viewMode === 'list'
                         ? 'bg-gold-100 text-gold-600'
-                        : 'bg-gray-100 text-charcoal-600 hover:bg-gray-200'
+                        : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                     }`}
                     title="List view"
                   >
@@ -131,7 +131,7 @@ export default function RecipesPage() {
             </div>
           ) : (
             <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
-              <p className="text-lg text-charcoal-600 mb-4">
+              <p className="text-lg text-gray-500 mb-4">
                 No recipes found matching your filters
               </p>
               <Button

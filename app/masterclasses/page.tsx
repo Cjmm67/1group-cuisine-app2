@@ -47,10 +47,10 @@ export default function MasterclassesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-playfair text-5xl font-bold text-charcoal-800 mb-2">
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight tracking-tight mb-2">
           Masterclasses
         </h1>
-        <p className="text-lg text-charcoal-600">
+        <p className="text-lg text-gray-500">
           Learn from the world's finest chefs
         </p>
       </div>
@@ -68,7 +68,7 @@ export default function MasterclassesPage() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            className="px-4 py-2 border border-gray-300 rounded-lg font-inter focus:border-gold-500 focus:ring-1 focus:ring-gold-500"
+            className="px-4 py-2 border border-gray-300 rounded-lg font-sans focus:border-gold-500 focus:ring-1 focus:ring-gold-500"
           >
             <option value="rating">Sort: Rating</option>
             <option value="recent">Sort: Recent</option>
@@ -86,7 +86,7 @@ export default function MasterclassesPage() {
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 selectedLevel === level
                   ? 'bg-gold-500 text-white'
-                  : 'bg-gray-100 text-charcoal-700 hover:bg-gray-200'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
               {level.charAt(0).toUpperCase() + level.slice(1)}
@@ -94,7 +94,7 @@ export default function MasterclassesPage() {
           ))}
         </div>
 
-        <p className="text-sm text-charcoal-600">
+        <p className="text-sm text-gray-500">
           Showing <span className="font-semibold">{filteredMasterclasses.length}</span> of{' '}
           <span className="font-semibold">{MOCK_MASTERCLASSES.length}</span> masterclasses
         </p>
@@ -109,7 +109,7 @@ export default function MasterclassesPage() {
 
       {filteredMasterclasses.length === 0 && (
         <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
-          <p className="text-lg text-charcoal-600 mb-4">
+          <p className="text-lg text-gray-500 mb-4">
             No masterclasses found matching your criteria
           </p>
         </div>

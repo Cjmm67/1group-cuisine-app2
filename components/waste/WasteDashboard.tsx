@@ -56,11 +56,11 @@ export const WasteDashboard: React.FC<WasteDashboardProps> = ({ logs }) => {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-sm text-charcoal-600 mb-2">Total Waste Logged</p>
-              <p className="text-3xl font-bold text-charcoal-800">
+              <p className="text-sm text-gray-500 mb-2">Total Waste Logged</p>
+              <p className="text-2xl font-bold text-gray-900 tracking-tight">
                 {totalWaste.toFixed(1)}
               </p>
-              <p className="text-xs text-charcoal-500 mt-1">grams</p>
+              <p className="text-xs text-gray-400 mt-1">grams</p>
             </div>
           </CardContent>
         </Card>
@@ -68,11 +68,11 @@ export const WasteDashboard: React.FC<WasteDashboardProps> = ({ logs }) => {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-sm text-charcoal-600 mb-2">Average per Day</p>
-              <p className="text-3xl font-bold text-charcoal-800">
+              <p className="text-sm text-gray-500 mb-2">Average per Day</p>
+              <p className="text-2xl font-bold text-gray-900 tracking-tight">
                 {avgWastePerDay.toFixed(0)}
               </p>
-              <p className="text-xs text-charcoal-500 mt-1">grams</p>
+              <p className="text-xs text-gray-400 mt-1">grams</p>
             </div>
           </CardContent>
         </Card>
@@ -80,9 +80,9 @@ export const WasteDashboard: React.FC<WasteDashboardProps> = ({ logs }) => {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-sm text-charcoal-600 mb-2">Logs Created</p>
-              <p className="text-3xl font-bold text-charcoal-800">{logs.length}</p>
-              <p className="text-xs text-charcoal-500 mt-1">entries</p>
+              <p className="text-sm text-gray-500 mb-2">Logs Created</p>
+              <p className="text-2xl font-bold text-gray-900 tracking-tight">{logs.length}</p>
+              <p className="text-xs text-gray-400 mt-1">entries</p>
             </div>
           </CardContent>
         </Card>
@@ -91,7 +91,7 @@ export const WasteDashboard: React.FC<WasteDashboardProps> = ({ logs }) => {
       {dailyData.length > 0 && (
         <Card>
           <CardHeader>
-            <h3 className="font-playfair text-lg font-bold text-charcoal-800">
+            <h3 className="text-lg font-bold text-gray-900">
               Daily Waste Trend
             </h3>
           </CardHeader>
@@ -112,7 +112,7 @@ export const WasteDashboard: React.FC<WasteDashboardProps> = ({ logs }) => {
       {categoryData.length > 0 && (
         <Card>
           <CardHeader>
-            <h3 className="font-playfair text-lg font-bold text-charcoal-800">
+            <h3 className="text-lg font-bold text-gray-900">
               Waste by Category
             </h3>
           </CardHeader>
@@ -143,7 +143,7 @@ export const WasteDashboard: React.FC<WasteDashboardProps> = ({ logs }) => {
       {logs.length > 0 && (
         <Card>
           <CardHeader>
-            <h3 className="font-playfair text-lg font-bold text-charcoal-800">Recent Logs</h3>
+            <h3 className="text-lg font-bold text-gray-900">Recent Logs</h3>
           </CardHeader>
           <CardContent className="space-y-4">
             {logs.slice().reverse().slice(0, 5).map((log) => {
@@ -154,14 +154,14 @@ export const WasteDashboard: React.FC<WasteDashboardProps> = ({ logs }) => {
                   className="flex items-start justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
                 >
                   <div className="flex-1">
-                    <p className="font-semibold text-charcoal-800">
+                    <p className="font-semibold text-gray-900">
                       {formatDate(log.date)}
                     </p>
-                    <p className="text-sm text-charcoal-600 mt-1">
+                    <p className="text-sm text-gray-500 mt-1">
                       {log.items.length} items • {logTotal.toFixed(0)}g total
                     </p>
                     {log.notes && (
-                      <p className="text-sm text-charcoal-600 italic mt-2">"{log.notes}"</p>
+                      <p className="text-sm text-gray-500 italic mt-2">"{log.notes}"</p>
                     )}
                     <div className="flex flex-wrap gap-2 mt-2">
                       {log.items.map((item, idx) => (

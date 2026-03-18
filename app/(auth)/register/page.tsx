@@ -26,10 +26,10 @@ export default function RegisterPage() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <div className="text-center">
-            <h1 className="font-playfair text-3xl font-bold text-charcoal-800 mb-2">
+            <h1 className="text-2xl font-bold text-gray-900 tracking-tight mb-2">
               Create Account
             </h1>
-            <p className="text-charcoal-600">Join the culinary community</p>
+            <p className="text-gray-500">Join the culinary community</p>
           </div>
         </CardHeader>
 
@@ -87,12 +87,12 @@ export default function RegisterPage() {
             </Button>
           </form>
 
-          <div className="mt-6 text-xs text-charcoal-500 text-center">
+          <div className="mt-6 text-xs text-gray-400 text-center">
             By signing up, you agree to our Terms of Service and Privacy Policy
           </div>
 
           <div className="mt-4 pt-4 border-t border-gray-200 text-center">
-            <p className="text-sm text-charcoal-600">
+            <p className="text-sm text-gray-500">
               Already have an account?{' '}
               <Link href="/login" className="text-gold-500 font-medium hover:text-gold-600">
                 Sign in

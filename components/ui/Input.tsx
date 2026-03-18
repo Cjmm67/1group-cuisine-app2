@@ -12,7 +12,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-charcoal-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
             {label}
           </label>
         )}
@@ -25,8 +25,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             ref={ref}
             className={cn(
-              'w-full px-4 py-2 border border-gray-300 rounded-lg font-inter',
-              'placeholder-gray-400 text-charcoal-800',
+              'w-full px-4 py-2 border border-gray-300 rounded-lg font-sans',
+              'placeholder-gray-400 text-gray-900',
               'focus:border-gold-500 focus:ring-1 focus:ring-gold-500',
               'disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed',
               'transition-colors duration-250',
