@@ -1,15 +1,7 @@
 import type { Metadata } from 'next';
-import { DM_Sans } from 'next/font/google';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import './globals.css';
-
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  variable: '--font-dm-sans',
-  display: 'swap',
-  weight: ['300', '400', '500', '600', '700'],
-});
 
 export const metadata: Metadata = {
   title: '1-Group Cuisine | Professional Culinary Platform',
@@ -25,14 +17,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={dmSans.variable}>
-      <body className="bg-white text-gray-900 font-sans antialiased">
+    <html lang="en">
+      <body className="bg-white text-gray-900 antialiased">
         <div className="min-h-screen flex flex-col">
           <Navbar />
           <main className="flex-1">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              {children}
-            </div>
+            {children}
           </main>
           <Footer />
         </div>

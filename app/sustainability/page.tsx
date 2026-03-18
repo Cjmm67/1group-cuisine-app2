@@ -54,7 +54,7 @@ export default function SustainabilityPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="container-page py-10 space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 tracking-tight tracking-tight mb-2 flex items-center gap-3">
           <Leaf size={40} className="text-green-600" />

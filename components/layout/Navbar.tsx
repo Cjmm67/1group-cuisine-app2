@@ -2,10 +2,9 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Search, Menu, X } from 'lucide-react';
-import { Avatar } from '@/components/ui/Avatar';
-import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
 const NAV_LINKS = [
@@ -18,18 +17,17 @@ const NAV_LINKS = [
 ];
 
 export const Navbar = () => {
-  const { user } = useAuth();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-white/90 backdrop-blur-lg border-b border-gray-100 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
+      <div className="container-page">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
             <div className="w-8 h-8 bg-gradient-to-br from-gold-500 to-gold-700 rounded-lg flex items-center justify-center">
-              <span className="text-white font-semibold text-sm">1G</span>
+              <span className="text-white font-bold text-sm">1G</span>
             </div>
             <span className="hidden sm:inline text-lg font-semibold text-gray-900 tracking-tight">
               1-Group Cuisine
@@ -57,8 +55,8 @@ export const Navbar = () => {
             })}
           </div>
 
-          {/* Right Side */}
-          <div className="flex items-center gap-3">
+          {/* Right Side: Search + Logo + Sign In */}
+          <div className="flex items-center gap-4">
             {/* Search */}
             <div className="hidden md:block">
               <div className="relative">
@@ -71,17 +69,22 @@ export const Navbar = () => {
               </div>
             </div>
 
-            {/* User / Sign In */}
-            {user ? (
-              <Avatar name={user.name} image={user.avatar} size="md" />
-            ) : (
-              <Link
-                href="/login"
-                className="text-sm font-medium text-white bg-gold-600 hover:bg-gold-700 px-4 py-2 rounded-lg transition-colors"
-              >
-                Sign in
-              </Link>
-            )}
+            {/* 1-Group Logo */}
+            <Image
+              src="/1group-logo.png"
+              alt="1-Group"
+              width={44}
+              height={44}
+              className="hidden sm:block"
+            />
+
+            {/* Sign In */}
+            <Link
+              href="/login"
+              className="text-sm font-medium text-white bg-gold-600 hover:bg-gold-700 px-4 py-2 rounded-lg transition-colors"
+            >
+              Sign in
+            </Link>
 
             {/* Mobile Menu Toggle */}
             <button
@@ -97,7 +100,6 @@ export const Navbar = () => {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="lg:hidden border-t border-gray-100 py-3 space-y-1">
-            {/* Mobile Search */}
             <div className="md:hidden px-2 pb-3">
               <div className="relative">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />

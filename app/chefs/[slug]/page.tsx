@@ -20,5 +20,5 @@ export default function ChefDetailPage({ params }: ChefDetailPageProps) {
     notFound();
   }
 
-  return <ChefProfile chef={chef} />;
+  return <div className="container-page py-10"><ChefProfile chef={chef} /></div>;
 }
