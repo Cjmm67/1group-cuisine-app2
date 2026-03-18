@@ -39,8 +39,8 @@ export default function MarketplacePage() {
   }, [searchQuery, selectedLevel, selectedType]);
 
   return (
-    <div className="container-page py-10 space-y-6">
-      <div>
+    <div className="container-page py-10 space-y-8">
+      <div className="text-center">
         <h1 className="text-2xl font-bold text-gray-900 tracking-tight tracking-tight mb-2">
           Job Marketplace
         </h1>

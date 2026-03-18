@@ -34,7 +34,7 @@ export const Navbar = () => {
             </span>
           </Link>
 
-          {/* Desktop Nav Links */}
+          {/* Desktop Nav Links — centered */}
           <div className="hidden lg:flex items-center gap-1">
             {NAV_LINKS.map((link) => {
               const isActive = pathname === link.href || pathname.startsWith(link.href + '/');
@@ -55,7 +55,7 @@ export const Navbar = () => {
             })}
           </div>
 
-          {/* Right Side: Search + Logo + Sign In */}
+          {/* Right Side: Search + 1-Group Logo (square) + Sign In */}
           <div className="flex items-center gap-4">
             {/* Search */}
             <div className="hidden md:block">
@@ -64,19 +64,21 @@ export const Navbar = () => {
                 <input
                   type="search"
                   placeholder="Search..."
-                  className="w-48 lg:w-56 pl-9 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-gold-400 focus:ring-1 focus:ring-gold-400 transition-all outline-none"
+                  className="w-44 lg:w-52 pl-9 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-gold-400 focus:ring-1 focus:ring-gold-400 transition-all outline-none"
                 />
               </div>
             </div>
 
-            {/* 1-Group Logo */}
-            <Image
-              src="/1group-logo.png"
-              alt="1-Group"
-              width={44}
-              height={44}
-              className="hidden sm:block"
-            />
+            {/* 1-Group Logo — square container, top right */}
+            <div className="w-10 h-10 rounded-lg border border-gray-200 bg-white flex items-center justify-center overflow-hidden flex-shrink-0">
+              <Image
+                src="/1group-logo.png"
+                alt="1-Group"
+                width={36}
+                height={36}
+                className="object-contain"
+              />
+            </div>
 
             {/* Sign In */}
             <Link

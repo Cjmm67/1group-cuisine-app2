@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { RecipeCard } from '@/components/recipe/RecipeCard';
 import { ChefCard } from '@/components/chef/ChefCard';
 import { MasterclassCard } from '@/components/masterclass/MasterclassCard';
@@ -45,16 +44,6 @@ export default function Home() {
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
         <div className="relative container-page py-24 sm:py-32 lg:py-40">
           <div className="max-w-3xl mx-auto text-center">
-            {/* 1-Group Logo */}
-            <div className="flex justify-center mb-8">
-              <Image
-                src="/1group-logo.png"
-                alt="1-Group"
-                width={80}
-                height={80}
-                className="rounded-xl opacity-90"
-              />
-            </div>
             <p className="inline-block text-gold-400 text-sm font-medium tracking-widest uppercase mb-6">
               Singapore&apos;s Premier Culinary Platform
             </p>
@@ -125,11 +114,9 @@ export default function Home() {
       {/* ─── Venues ─── */}
       <section className="bg-gray-50 py-20">
         <div className="container-page">
-          <div className="flex items-end justify-between mb-10">
-            <div>
-              <p className="text-gold-600 text-sm font-medium tracking-widest uppercase mb-2">Our Portfolio</p>
-              <h2 className="text-3xl font-bold text-gray-900 tracking-tight">1-Group Venues</h2>
-            </div>
+          <div className="text-center mb-10">
+            <p className="text-gold-600 text-sm font-medium tracking-widest uppercase mb-2">Our Portfolio</p>
+            <h2 className="text-3xl font-bold text-gray-900 tracking-tight">1-Group Venues</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {venues.map((venue) => (
@@ -148,57 +135,57 @@ export default function Home() {
 
       {/* ─── Featured Recipes ─── */}
       <section className="container-page py-24">
-        <div className="flex items-end justify-between mb-10">
-          <div>
-            <p className="text-gold-600 text-sm font-medium tracking-widest uppercase mb-2">From Our Chefs</p>
-            <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Featured Recipes</h2>
-          </div>
-          <Link href="/recipes" className="text-gold-600 hover:text-gold-700 text-sm font-medium flex items-center gap-1 transition-colors">
-            View All <ArrowRight size={16} />
-          </Link>
+        <div className="text-center mb-10">
+          <p className="text-gold-600 text-sm font-medium tracking-widest uppercase mb-2">From Our Chefs</p>
+          <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Featured Recipes</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {featuredRecipes.map((recipe) => (
             <RecipeCard key={recipe.id} recipe={recipe} />
           ))}
         </div>
+        <div className="text-center mt-10">
+          <Link href="/recipes" className="inline-flex items-center gap-1.5 text-gold-600 hover:text-gold-700 text-sm font-medium transition-colors">
+            View All Recipes <ArrowRight size={16} />
+          </Link>
+        </div>
       </section>
 
       {/* ─── Featured Chefs ─── */}
       <section className="bg-gray-50 py-24">
         <div className="container-page">
-          <div className="flex items-end justify-between mb-10">
-            <div>
-              <p className="text-gold-600 text-sm font-medium tracking-widest uppercase mb-2">World-Class Talent</p>
-              <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Renowned Chefs</h2>
-            </div>
-            <Link href="/chefs" className="text-gold-600 hover:text-gold-700 text-sm font-medium flex items-center gap-1 transition-colors">
-              View All <ArrowRight size={16} />
-            </Link>
+          <div className="text-center mb-10">
+            <p className="text-gold-600 text-sm font-medium tracking-widest uppercase mb-2">World-Class Talent</p>
+            <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Renowned Chefs</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {featuredChefs.map((chef) => (
               <ChefCard key={chef.id} chef={chef} />
             ))}
           </div>
+          <div className="text-center mt-10">
+            <Link href="/chefs" className="inline-flex items-center gap-1.5 text-gold-600 hover:text-gold-700 text-sm font-medium transition-colors">
+              View All Chefs <ArrowRight size={16} />
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* ─── Masterclasses ─── */}
       <section className="container-page py-24">
-        <div className="flex items-end justify-between mb-10">
-          <div>
-            <p className="text-gold-600 text-sm font-medium tracking-widest uppercase mb-2">Learn From The Best</p>
-            <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Masterclasses</h2>
-          </div>
-          <Link href="/masterclasses" className="text-gold-600 hover:text-gold-700 text-sm font-medium flex items-center gap-1 transition-colors">
-            View All <ArrowRight size={16} />
-          </Link>
+        <div className="text-center mb-10">
+          <p className="text-gold-600 text-sm font-medium tracking-widest uppercase mb-2">Learn From The Best</p>
+          <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Masterclasses</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {featuredMasterclasses.map((masterclass) => (
             <MasterclassCard key={masterclass.id} masterclass={masterclass} />
           ))}
+        </div>
+        <div className="text-center mt-10">
+          <Link href="/masterclasses" className="inline-flex items-center gap-1.5 text-gold-600 hover:text-gold-700 text-sm font-medium transition-colors">
+            View All Masterclasses <ArrowRight size={16} />
+          </Link>
         </div>
       </section>
 
