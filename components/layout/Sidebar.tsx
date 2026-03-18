@@ -28,7 +28,7 @@ const MENU_ITEMS = [
     icon: Users,
   },
   {
-    label: 'Masterclasses',
+    label: '1-Cheflix',
     href: '/masterclasses',
     icon: ChefHat,
   },

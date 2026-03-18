@@ -4,7 +4,7 @@ import { Masterclass } from '@/types/index';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
-import { formatCurrency, slugify } from '@/lib/utils';
+import { slugify } from '@/lib/utils';
 import { Users, Play } from 'lucide-react';
 
 interface MasterclassCardProps {
@@ -76,8 +76,8 @@ export const MasterclassCard: React.FC<MasterclassCardProps> = ({ masterclass })
                 {masterclass.rating.toFixed(1)}
               </span>
             </div>
-            <span className="text-lg font-bold text-gold-600">
-              {formatCurrency(masterclass.price)}
+            <span className="text-sm font-semibold text-gold-600">
+              Watch
             </span>
           </div>
         </div>

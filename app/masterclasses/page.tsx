@@ -48,10 +48,10 @@ export default function MasterclassesPage() {
     <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-10 space-y-8">
       <div className="text-center">
         <h1 className="text-2xl font-bold text-gray-900 tracking-tight tracking-tight mb-2">
-          Masterclasses
+          1-Cheflix
         </h1>
         <p className="text-lg text-gray-500">
-          Learn from the world's finest chefs
+          Video library from the world&apos;s greatest chefs
         </p>
       </div>
 
@@ -72,7 +72,6 @@ export default function MasterclassesPage() {
           >
             <option value="rating">Sort: Rating</option>
             <option value="recent">Sort: Recent</option>
-            <option value="price">Sort: Price</option>
           </select>
         </div>
 

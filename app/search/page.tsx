@@ -54,7 +54,7 @@ export default function SearchPage() {
         <div className="max-w-2xl">
           <Input
             icon={<Search size={18} />}
-            placeholder="Search recipes, chefs, masterclasses..."
+            placeholder="Search recipes, chefs, videos..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             autoFocus
@@ -131,7 +131,7 @@ export default function SearchPage() {
             results.masterclasses.length > 0 && (
               <section className="space-y-4">
                 <h2 className="text-2xl font-bold text-gray-900">
-                  Masterclasses ({results.masterclasses.length})
+                  1-Cheflix ({results.masterclasses.length})
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {results.masterclasses.map((masterclass) => (
@@ -158,7 +158,7 @@ export default function SearchPage() {
             Enter a search term to get started
           </p>
           <p className="text-gray-400 mb-6">
-            Search for recipes, chefs, masterclasses, and more
+            Search for recipes, chefs, 1-Cheflix, and more
           </p>
 
           <div className="space-y-4 mt-8 text-left max-w-md mx-auto">

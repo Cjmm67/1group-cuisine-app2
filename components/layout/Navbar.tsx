@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 const NAV_LINKS = [
   { label: 'Recipes', href: '/recipes' },
   { label: 'Chefs', href: '/chefs' },
-  { label: 'Masterclasses', href: '/masterclasses' },
+  { label: '1-Cheflix', href: '/masterclasses' },
   { label: 'Marketplace', href: '/marketplace' },
   { label: 'Sustainability', href: '/sustainability' },
   { label: 'Suppliers', href: '/suppliers' },

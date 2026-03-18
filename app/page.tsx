@@ -68,7 +68,7 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             { icon: Sparkles, title: 'Discover', desc: 'Browse world-class recipes from renowned chefs and explore diverse cuisines.' },
-            { icon: GraduationCap, title: 'Learn', desc: 'Master culinary techniques through detailed instructions and expert masterclasses.' },
+            { icon: GraduationCap, title: 'Learn', desc: 'Master culinary techniques through detailed instructions and expert video content.' },
             { icon: ChefHat, title: 'Create', desc: 'Apply your knowledge to create stunning dishes and elevate your culinary skills.' },
           ].map((item) => {
             const Icon = item.icon;
@@ -137,7 +137,7 @@ export default function Home() {
       {/* ── Masterclasses ── */}
       <section className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-14">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">Masterclasses</h2>
+          <h2 className="text-xl font-bold text-gray-900">1-Cheflix</h2>
           <Link href="/masterclasses" className="text-gold-600 hover:text-gold-700 text-sm font-medium flex items-center gap-1">
             View all <ArrowRight size={14} />
           </Link>
