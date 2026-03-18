@@ -122,6 +122,7 @@ export interface Masterclass {
   chef: Chef;
   description: string;
   image: string;
+  videoId?: string;
   level: 'beginner' | 'intermediate' | 'advanced';
   cuisine: string[];
   duration: number;
