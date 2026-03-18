@@ -30,7 +30,7 @@ export default function MasterclassDetailPage({ params }: MasterclassDetailPageP
   const totalDuration = masterclass.episodes.reduce((sum, ep) => sum + ep.duration, 0);
 
   return (
-    <div className="container-page py-10 space-y-8">
+    <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-10 space-y-8">
       {/* Header */}
       <div className="bg-gradient-to-r from-gold-500 to-gold-700 rounded-lg p-8 text-white">
         <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">

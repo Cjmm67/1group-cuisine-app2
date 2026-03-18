@@ -46,7 +46,7 @@ export default function SearchPage() {
   const totalResults = results.recipes.length + results.chefs.length + results.masterclasses.length;
 
   return (
-    <div className="container-page py-10 space-y-8">
+    <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-10 space-y-8">
       <div className="text-center">
         <h1 className="text-2xl font-bold text-gray-900 tracking-tight tracking-tight mb-4">
           Search

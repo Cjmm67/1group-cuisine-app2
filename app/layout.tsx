@@ -5,7 +5,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: '1-Group Cuisine | Professional Culinary Platform',
-  description: 'Professional culinary platform for Singapore\'s 1-Group hospitality portfolio. Discover recipes, chefs, masterclasses, and more.',
+  description: 'Professional culinary platform for Singapore\'s 1-Group hospitality portfolio.',
   keywords: ['culinary', 'recipes', 'chefs', 'Singapore', 'professional cooking'],
   authors: [{ name: '1-Group Cuisine' }],
   viewport: 'width=device-width, initial-scale=1',
@@ -18,14 +18,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-white text-gray-900 antialiased">
-        <div className="min-h-screen flex flex-col">
-          <Navbar />
-          <main className="flex-1">
-            {children}
-          </main>
-          <Footer />
-        </div>
+      <body className="bg-white text-gray-900 antialiased min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-1">{children}</main>
+        <Footer />
       </body>
     </html>
   );

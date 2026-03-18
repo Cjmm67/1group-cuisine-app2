@@ -21,7 +21,7 @@ export default function RecipeDetailPage({ params }: RecipeDetailPageProps) {
   }
 
   return (
-    <div className="container-page py-10 space-y-6">
+    <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-10 space-y-6">
       <div className="space-y-4">
         <RecipeDetail recipe={recipe} />
       </div>

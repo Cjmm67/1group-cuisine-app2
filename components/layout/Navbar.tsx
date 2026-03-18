@@ -19,120 +19,121 @@ const NAV_LINKS = [
 export const Navbar = () => {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   return (
-    <nav className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
-      <div className="container-page">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
-            <div className="w-8 h-8 bg-gradient-to-br from-gold-500 to-gold-700 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">1G</span>
-            </div>
-            <span className="hidden sm:inline text-lg font-semibold text-gray-900 tracking-tight">
-              1-Group Cuisine
-            </span>
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
+      {/* Top bar */}
+      <div className="flex items-center justify-between h-14 px-4 sm:px-6 lg:px-10">
+        {/* Left: hamburger + brand */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="lg:hidden p-1.5 -ml-1.5 hover:bg-gray-100 rounded"
+          >
+            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+          <Link href="/" className="flex items-center gap-2">
+            <span className="text-xl font-bold tracking-tight text-gray-900">1-Group Cuisine</span>
           </Link>
+        </div>
 
-          {/* Desktop Nav Links — centered */}
-          <div className="hidden lg:flex items-center gap-1">
-            {NAV_LINKS.map((link) => {
-              const isActive = pathname === link.href || pathname.startsWith(link.href + '/');
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    'px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                    isActive
-                      ? 'text-gold-700 bg-gold-50'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  )}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* Right Side: Search + 1-Group Logo (square) + Sign In */}
-          <div className="flex items-center gap-4">
-            {/* Search */}
-            <div className="hidden md:block">
-              <div className="relative">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="search"
-                  placeholder="Search..."
-                  className="w-44 lg:w-52 pl-9 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-gold-400 focus:ring-1 focus:ring-gold-400 transition-all outline-none"
-                />
-              </div>
-            </div>
-
-            {/* 1-Group Logo — square container, top right */}
-            <div className="w-10 h-10 rounded-lg border border-gray-200 bg-white flex items-center justify-center overflow-hidden flex-shrink-0">
-              <Image
-                src="/1group-logo.png"
-                alt="1-Group"
-                width={36}
-                height={36}
-                className="object-contain"
-              />
-            </div>
-
-            {/* Sign In */}
-            <Link
-              href="/login"
-              className="text-sm font-medium text-white bg-gold-600 hover:bg-gold-700 px-4 py-2 rounded-lg transition-colors"
-            >
-              Sign in
-            </Link>
-
-            {/* Mobile Menu Toggle */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
+        {/* Center: search (desktop) */}
+        <div className="hidden md:flex flex-1 max-w-md mx-8">
+          <div className="relative w-full">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="search"
+              placeholder="Search recipes, chefs, ingredients..."
+              className="w-full pl-9 pr-4 py-2 text-sm bg-gray-100 border-0 rounded-full focus:bg-white focus:ring-2 focus:ring-gold-400 outline-none transition-all"
+            />
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-gray-100 py-3 space-y-1">
-            <div className="md:hidden px-2 pb-3">
-              <div className="relative">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="search"
-                  placeholder="Search recipes, chefs..."
-                  className="w-full pl-9 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-gold-400 outline-none"
-                />
-              </div>
-            </div>
-            {NAV_LINKS.map((link) => {
-              const isActive = pathname === link.href || pathname.startsWith(link.href + '/');
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={cn(
-                    'block px-4 py-2.5 text-sm font-medium rounded-lg transition-colors',
-                    isActive
-                      ? 'text-gold-700 bg-gold-50'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  )}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
+        {/* Right: sign in + 1-Group logo */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setSearchOpen(!searchOpen)}
+            className="md:hidden p-1.5 hover:bg-gray-100 rounded"
+          >
+            <Search size={20} />
+          </button>
+          <Link
+            href="/login"
+            className="hidden sm:inline-block text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+          >
+            Sign in
+          </Link>
+          <div className="w-11 h-11 rounded-md overflow-hidden border border-gray-200 bg-white flex-shrink-0">
+            <Image
+              src="/1group-logo.png"
+              alt="1-Group"
+              width={44}
+              height={44}
+              className="w-full h-full object-contain p-0.5"
+            />
           </div>
-        )}
+        </div>
       </div>
-    </nav>
+
+      {/* Nav links bar (desktop) */}
+      <nav className="hidden lg:block border-t border-gray-100">
+        <div className="flex items-center justify-center gap-0 px-4 sm:px-6 lg:px-10">
+          {NAV_LINKS.map((link) => {
+            const isActive = pathname === link.href || pathname.startsWith(link.href + '/');
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  'px-5 py-3 text-sm font-medium border-b-2 transition-colors',
+                  isActive
+                    ? 'border-gold-600 text-gold-700'
+                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
+
+      {/* Mobile search */}
+      {searchOpen && (
+        <div className="md:hidden px-4 pb-3 border-t border-gray-100 pt-3">
+          <div className="relative">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="search"
+              placeholder="Search recipes, chefs..."
+              className="w-full pl-9 pr-4 py-2.5 text-sm bg-gray-100 rounded-full outline-none focus:ring-2 focus:ring-gold-400"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Mobile menu */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden border-t border-gray-100 bg-white">
+          {NAV_LINKS.map((link) => {
+            const isActive = pathname === link.href || pathname.startsWith(link.href + '/');
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={cn(
+                  'block px-6 py-3 text-sm font-medium border-b border-gray-50',
+                  isActive ? 'text-gold-700 bg-gold-50' : 'text-gray-700 hover:bg-gray-50'
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </header>
   );
 };
