@@ -3,8 +3,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, Menu, X } from 'lucide-react';
+import { Search, Menu, X, LogOut, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/components/auth/AuthProvider';
 
 const NAV_LINKS = [
   { label: 'Recipes', href: '/recipes' },
@@ -19,6 +20,7 @@ export const Navbar = () => {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const { user, logout, isAdmin } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
@@ -49,7 +51,7 @@ export const Navbar = () => {
           </div>
         </div>
 
-        {/* Right: sign in */}
+        {/* Right: user controls */}
         <div className="flex items-center gap-3">
           <button
             onClick={() => setSearchOpen(!searchOpen)}
@@ -57,12 +59,36 @@ export const Navbar = () => {
           >
             <Search size={20} />
           </button>
-          <Link
-            href="/login"
-            className="hidden sm:inline-block text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
-          >
-            Sign in
-          </Link>
+          {user ? (
+            <>
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="hidden sm:inline-flex items-center gap-1 text-sm font-medium text-gold-600 hover:text-gold-700 transition-colors"
+                >
+                  <Shield size={14} />
+                  Admin
+                </Link>
+              )}
+              <span className="hidden sm:inline-block text-sm text-gray-500">
+                {user.name}
+              </span>
+              <button
+                onClick={logout}
+                className="inline-flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors"
+                title="Sign out"
+              >
+                <LogOut size={16} />
+              </button>
+            </>
+          ) : (
+            <Link
+              href="/login"
+              className="hidden sm:inline-block text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+            >
+              Sign in
+            </Link>
+          )}
         </div>
       </div>
 

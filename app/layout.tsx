@@ -3,6 +3,7 @@ import { DM_Sans } from 'next/font/google';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { SchemaMarkup, organizationSchema } from '@/components/seo/SchemaMarkup';
+import { AuthProvider } from '@/components/auth/AuthProvider';
 import './globals.css';
 
 const dmSans = DM_Sans({
@@ -93,9 +94,11 @@ export default function RootLayout({
         <SchemaMarkup data={organizationSchema} />
       </head>
       <body className="bg-white text-gray-900 antialiased min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <AuthProvider>
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );
