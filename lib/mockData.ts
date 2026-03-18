@@ -285,7 +285,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-2',
     title: 'The Crunchy Part of the Lasagna',
-    chef: MOCK_CHEFS[1],
+    chef: MOCK_CHEFS[0],
     restaurant: 'Osteria Francescana',
     description: 'Bottura\'s deconstructed lasagna focusing on the caramelized, crunchy corner parts — the piece everyone fights over — elevated into a work of contemporary culinary art.',
     cuisines: [
@@ -363,7 +363,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-3',
     title: 'Celeriac and Truffle Shawarma',
-    chef: MOCK_CHEFS[2],
+    chef: MOCK_CHEFS[1],
     restaurant: 'Noma',
     description: 'René Redzepi\'s showstopper from Noma\'s vegetable season — a whole celeriac slow-roasted on a vertical spit like a shawarma, shaved tableside and served with black truffle and hazelnut.',
     cuisines: [
@@ -452,7 +452,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-4',
     title: 'Langoustine on a Rock',
-    chef: MOCK_CHEFS[3],
+    chef: MOCK_CHEFS[1],
     restaurant: 'Noma',
     description: 'A pristine langoustine tail served perched on a rock, dotted with oyster emulsion and dusted with seaweed powder — the very tidal landscape in which a live langoustine might flourish.',
     cuisines: [
@@ -545,7 +545,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-5',
     title: 'Lick It Up',
-    chef: MOCK_CHEFS[4],
+    chef: MOCK_CHEFS[2],
     restaurant: 'Gaggan',
     description: 'Gaggan Anand\'s signature: the essence of a good curry with sweet, sour, spice, and savoury notes spread on a plate — a gel, jam, chutney, and purée designed to be eaten without cutlery.',
     cuisines: [
@@ -624,7 +624,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-6',
     title: 'Yogurt Explosion',
-    chef: MOCK_CHEFS[5],
+    chef: MOCK_CHEFS[2],
     restaurant: 'Gaggan',
     description: 'A tribute to Indian street-style dahi puri using molecular spherification — a delicate sphere that bursts with tangy yogurt, tamarind, and spiced chutneys in one explosive bite.',
     cuisines: [
@@ -705,7 +705,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-7',
     title: 'Oysters and Pearls',
-    chef: MOCK_CHEFS[6],
+    chef: MOCK_CHEFS[3],
     restaurant: 'The French Laundry',
     description: 'Thomas Keller\'s most famous creation — a sabayon of pearl tapioca with Beau Soleil oysters and white sturgeon caviar. This dish has been on The French Laundry menu since its creation.',
     cuisines: [
@@ -786,7 +786,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-8',
     title: 'Salmon Cornet',
-    chef: MOCK_CHEFS[7],
+    chef: MOCK_CHEFS[3],
     restaurant: 'The French Laundry',
     description: 'Keller\'s signature amuse-bouche since 1991 — a tiny sesame tuile cone filled with crème fraîche and topped with smoked salmon tartare. More an experience than a course.',
     cuisines: [
@@ -885,7 +885,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-9',
     title: 'Potato and Roe',
-    chef: MOCK_CHEFS[8],
+    chef: MOCK_CHEFS[4],
     restaurant: 'Core by Clare Smyth',
     description: 'Clare Smyth\'s most celebrated dish — a baked potato with dulse beurre blanc, herring and trout roe. Humble British produce transformed into something extraordinary.',
     cuisines: [
@@ -966,7 +966,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-10',
     title: 'Lamb Carrot',
-    chef: MOCK_CHEFS[9],
+    chef: MOCK_CHEFS[4],
     restaurant: 'Core by Clare Smyth',
     description: 'Carrot slowly confited in lamb fat until tender and juicy, served with pressure-cooked neck of lamb, the cooking juices reduced to a rich glaze, balanced with sheep\'s milk yogurt.',
     cuisines: [
@@ -1046,7 +1046,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-11',
     title: 'Green Lentils with Caviar',
-    chef: MOCK_CHEFS[0],
+    chef: MOCK_CHEFS[5],
     restaurant: 'Alain Ducasse au Plaza Athénée',
     description: 'Alain Ducasse\'s signature pairing of volcanic green lentils from Puy with a generous portion of golden caviar, a flavoured eel jelly, and delicate grain pancakes.',
     cuisines: [
@@ -1126,7 +1126,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-12',
     title: 'Sound of the Sea',
-    chef: MOCK_CHEFS[1],
+    chef: MOCK_CHEFS[6],
     restaurant: 'The Fat Duck',
     description: 'Heston Blumenthal\'s multi-sensory masterpiece — seafood arranged on edible sand, served with headphones playing waves and seagulls. The most complete expression of his dining philosophy.',
     cuisines: [
@@ -1206,7 +1206,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-13',
     title: 'Kir Breton',
-    chef: MOCK_CHEFS[2],
+    chef: MOCK_CHEFS[7],
     restaurant: 'Atelier Crenn',
     description: 'Dominique Crenn\'s signature — a spherical tribute to her Breton roots featuring apple cider gelée topped with crème de cassis-infused apple sorbet, capturing a classic French aperitif.',
     cuisines: [
@@ -1289,7 +1289,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-14',
     title: 'Bread of the Forest',
-    chef: MOCK_CHEFS[3],
+    chef: MOCK_CHEFS[8],
     restaurant: 'Narisawa',
     description: 'Narisawa\'s signature creation — apple and cinnamon-enriched bread dough still fermenting tableside over a small candle, embodying his Satoyama philosophy of cooking with nature.',
     cuisines: [
@@ -1370,7 +1370,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-15',
     title: 'Soča River Trout with Horseradish',
-    chef: MOCK_CHEFS[4],
+    chef: MOCK_CHEFS[9],
     restaurant: 'Hiša Franko',
     description: 'Ana Roš\'s two-day dry-aged Soča river trout, cooked on Hibachi BBQ, served with brown butter fish sauce and freshly grated horseradish from the Alpine valleys.',
     cuisines: [
