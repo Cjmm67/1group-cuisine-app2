@@ -40,10 +40,12 @@ export const ChefCard: React.FC<ChefCardProps> = ({ chef }) => {
 
           <div className="flex flex-wrap gap-2 justify-center">
             {michelinStars > 0 && (
-              <Badge variant="warning">
+              <Badge variant="warning" className="flex items-center gap-1">
                 {Array.from({ length: michelinStars })
-                  .map(() => '⭐')
-                  .join('')}
+                  .map((_, i) => (
+                    <Star key={i} size={12} fill="currentColor" />
+                  ))}
+                <span className="ml-1">{michelinStars}</span>
               </Badge>
             )}
             {has50Best && (
@@ -54,6 +56,18 @@ export const ChefCard: React.FC<ChefCardProps> = ({ chef }) => {
           <p className="text-xs text-charcoal-600">
             {chef.yearsExperience} years experience
           </p>
+
+          <div className="flex items-center justify-center gap-4 text-xs text-charcoal-600 py-2">
+            <span className="font-medium">
+              {chef.recipes.length}
+              {chef.recipes.length === 1 ? ' recipe' : ' recipes'}
+            </span>
+            <span className="w-1 h-1 bg-gold-300 rounded-full"></span>
+            <span className="font-medium">
+              {chef.masterclasses.length}
+              {chef.masterclasses.length === 1 ? ' class' : ' classes'}
+            </span>
+          </div>
 
           <div className="space-y-2">
             <div>
@@ -78,10 +92,6 @@ export const ChefCard: React.FC<ChefCardProps> = ({ chef }) => {
               </div>
             </div>
           </div>
-
-          <p className="text-xs text-charcoal-500 pt-2 border-t border-gray-200">
-            {chef.recipes.length} recipes • {chef.masterclasses.length} classes
-          </p>
         </div>
       </Card>
     </Link>

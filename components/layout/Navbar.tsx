@@ -12,7 +12,7 @@ export const Navbar = () => {
   const { user } = useAuth();
 
   return (
-    <nav className="bg-white border-b border-gray-200 sticky top-0 z-40">
+    <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-40 transition-all duration-300">
       <div className="px-4 py-3 flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <button

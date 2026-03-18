@@ -4,7 +4,7 @@ import { Recipe } from '@/types/index';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { formatTime, getDifficultyColor, slugify } from '@/lib/utils';
-import { Clock, Users } from 'lucide-react';
+import { Clock, Users, Leaf, AlertCircle } from 'lucide-react';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -12,11 +12,13 @@ interface RecipeCardProps {
 
 export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
   const totalTime = formatTime(recipe.prepTime + recipe.cookTime);
+  const allergenCount = recipe.allergens.length;
+  const isSustainable = recipe.sustainability.score > 70;
 
   return (
     <Link href={`/recipes/${slugify(recipe.title)}`}>
-      <Card variant="interactive" className="overflow-hidden h-full">
-        <div className="aspect-video bg-gradient-to-br from-gold-100 to-gold-50 flex items-center justify-center text-center p-4">
+      <Card variant="interactive" className="overflow-hidden h-full card-with-hover">
+        <div className="aspect-video bg-gradient-to-br from-gold-100 to-gold-50 flex items-center justify-center text-center p-4 image-zoom-hover relative">
           {recipe.image ? (
             <img
               src={recipe.image}
@@ -26,6 +28,26 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
           ) : (
             <span className="text-sm text-gold-700">{recipe.title}</span>
           )}
+
+          {/* Sustainability Badge */}
+          {isSustainable && (
+            <div className="absolute top-3 right-3">
+              <Badge variant="secondary" size="sm" className="bg-green-100 text-green-700 border-green-200">
+                <Leaf size={12} className="mr-1" />
+                Sustainable
+              </Badge>
+            </div>
+          )}
+
+          {/* Allergen Count Badge */}
+          {allergenCount > 0 && (
+            <div className="absolute top-3 left-3">
+              <Badge variant="warning" size="sm" className="bg-orange-100 text-orange-700 border-orange-200">
+                <AlertCircle size={12} className="mr-1" />
+                {allergenCount}
+              </Badge>
+            </div>
+          )}
         </div>
 
         <div className="p-4 space-y-3">
@@ -33,7 +55,12 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
             <h3 className="font-playfair text-lg font-semibold text-charcoal-800 line-clamp-2">
               {recipe.title}
             </h3>
-            <p className="text-sm text-gold-600 font-medium mt-1">{recipe.chef.name}</p>
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-sm text-gold-600 font-medium">{recipe.chef.name}</p>
+              {recipe.restaurant && (
+                <p className="text-xs text-charcoal-500">{recipe.restaurant}</p>
+              )}
+            </div>
           </div>
 
           <p className="text-sm text-charcoal-600 line-clamp-2">{recipe.description}</p>
@@ -75,7 +102,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
               </div>
               <div className="w-full h-1.5 bg-gray-200 rounded-full mt-1 overflow-hidden">
                 <div
-                  className="h-full bg-green-500 transition-all"
+                  className="h-full bg-gradient-to-r from-green-400 to-green-600 transition-all"
                   style={{ width: `${recipe.sustainability.score}%` }}
                 ></div>
               </div>
