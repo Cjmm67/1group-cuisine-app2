@@ -1668,7 +1668,7 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
   },
   {
     id: 'mc-8',
-    title: 'Alain Passard — L\\'Arpège',
+    title: 'Alain Passard — L\'Arpège',
     chef: MOCK_CHEFS[0],
     description: 'The French master who famously removed red meat from his three-star menu reveals the art of vegetable-forward haute cuisine and his legendary rooftop gardens.',
     image: 'https://img.youtube.com/vi/WVosXS7fzd8/maxresdefault.jpg',
@@ -1680,7 +1680,7 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
       {
         id: 'ep-8',
         order: 1,
-        title: 'Alain Passard — L\\'Arpège, Paris, France',
+        title: 'Alain Passard — L\'Arpège, Paris, France',
         description: 'Watch on Cheflix',
         duration: 90,
         relatedRecipeIds: [],
