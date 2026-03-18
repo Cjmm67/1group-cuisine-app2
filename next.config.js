@@ -39,6 +39,22 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'www.theworlds50best.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.squarespace-cdn.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.oumi.sg',
+      },
+      {
+        protocol: 'https',
+        hostname: 'firerestaurant.sg',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.monti.sg',
+      },
     ],
   },
   typescript: {
