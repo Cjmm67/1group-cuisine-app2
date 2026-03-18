@@ -55,6 +55,22 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'www.monti.sg',
       },
+      {
+        protocol: 'https',
+        hostname: 'www.robbreport.com.sg',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.luxurysocietyasia.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ieatishootipost.sg',
+      },
+      {
+        protocol: 'https',
+        hostname: '1-atico.sg',
+      },
     ],
   },
   typescript: {

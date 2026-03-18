@@ -178,7 +178,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-11',
     name: 'Felix Chong',
-    avatar: 'https://www.monti.sg/wp-content/uploads/2026/02/MONTI-10th-Anniversary-Website-Image.jpg',
+    avatar: 'https://www.luxurysocietyasia.com/wp-content/uploads/4ELu-naY.jpeg',
     bio: 'Felix Chong is the Associate Culinary Director at 1-Group, overseeing Mediterranean cuisine development across the portfolio. A Singaporean chef with over two decades mastering Italian cuisine — from stagings at Otto e Mezzo in Hong Kong to earning Ospitalità Italiana certification at Monti — Felix brings classical European technique to the waterfront with a quiet Southeast Asian sensibility. 2025 Barilla Pasta Champion, Singapore.',
     cuisine: ['Modern Italian', 'Mediterranean'],
     accolades: [
@@ -194,7 +194,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-12',
     name: 'Lamley Chua',
-    avatar: 'https://www.oumi.sg/wp-content/uploads/2025/03/6-768x513.jpg',
+    avatar: 'https://ieatishootipost.sg/wp-content/uploads/2024/06/Action1-1024x1024.jpg',
     bio: 'Lamley Chua is 1-Group\'s Executive Chef for Asian Cuisines, helming both Flnt and Oumi. His culinary journey began at 15, inspired by teppanyaki performance at Benihana, and spans two decades across Japanese techniques — from sashimi and sushi to robatayaki and tempura. At Oumi, he marries traditional Japanese kappo with produce from the world\'s highest food forest. At Flnt, he channels Nikkei fire and whisky-bar energy.',
     cuisine: ['Contemporary Japanese', 'Nikkei', 'Kappo'],
     accolades: [
@@ -210,7 +210,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-13',
     name: 'Tom Kung',
-    avatar: 'https://firerestaurant.sg/wp-content/uploads/2021/02/FIRE-02-updated.jpg',
+    avatar: 'https://images.squarespace-cdn.com/content/v1/5c6cef6e797f7425a8d88a6f/730a4f3c-6cb4-4e76-88bd-cf494d6bc267/14082024_AlkaffMansion_Colossal_Upload_Clean_062.jpg',
     bio: 'Tom Kung is 1-Group\'s Executive Chef for Spanish Cuisine Development, leading the kitchen at Una. Trained for three years under renowned Spanish-Italian chef Jean Philippe Patruno, Tom\'s cooking is rooted firmly in the Iberian tradition — the patience of slow preparations, the confidence of sofrito and romesco, the generosity of the Spanish table. Under his direction, Una holds the prestigious "Restaurants from Spain" certification from ICEX.',
     cuisine: ['Spanish', 'Contemporary Iberian', 'Mediterranean'],
     accolades: [
@@ -226,7 +226,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-14',
     name: 'Soledad Nardelli',
-    avatar: 'https://firerestaurant.sg/wp-content/uploads/2021/01/WhatsApp-Image-2024-11-22-at-14.28.37-1.jpeg',
+    avatar: 'https://firerestaurant.sg/wp-content/uploads/2021/02/SoleNardelli_Portrait.jpg',
     bio: 'Soledad Nardelli is 1-Group\'s Culinary Advisor for Fire Restaurant and a pioneering figure in modern gastronomy. Argentine-born, Barcelona-based, she was named "Chef of the Future" by the International Academy of Gastronomy in 2009 and is recognised by the Argentine government as an Ambassador of Argentine Cuisine. Her approach fuses the primal intensity of South American asado with the precision of contemporary Catalan cuisine.',
     cuisine: ['Argentine', 'Live-Fire', 'Contemporary Catalan'],
     accolades: [
@@ -242,7 +242,7 @@ export const MOCK_CHEFS: Chef[] = [
   {
     id: 'chef-15',
     name: 'Diego Grimbery',
-    avatar: 'https://www.monti.sg/wp-content/uploads/2025/01/MONTI-Home-Page-Image-dining.jpg',
+    avatar: 'https://www.robbreport.com.sg/wp-content/uploads/2024/08/AA_UNA_Consultant-Chef-Diego-Grimberg.jpg',
     bio: 'Diego Grimbery is 1-Group\'s Culinary Advisor behind Una\'s menu direction. Argentine by heritage, Spanish by conviction, Diego gained prominence as head chef at Albert Adrià\'s Enigma and subsequently as Executive Chef of Michelin-starred Hofmann Restaurant in Barcelona. His years in Catalonia have shaped a culinary voice rooted in contemporary Spanish cooking — the product-driven intensity of Catalonia, the bold simplicity of Basque and Castilian traditions.',
     cuisine: ['Contemporary Spanish', 'Catalan', 'Argentine-Spanish'],
     accolades: [
@@ -1341,7 +1341,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'fish', name: 'Fish', code: 'fish' },
     ],
     foodCostPercent: 42,
-    image: 'https://firerestaurant.sg/wp-content/uploads/2021/02/FIRE-02-updated.jpg',
+    image: 'https://1-atico.sg/wp-content/uploads/2026/02/250703_ATICO_EDITED-355-scaled.jpg',
     menuContext: ['a_la_carte', 'sharing'],
     sustainability: { lowCarbon: false, seasonal: false, zeroWaste: false, score: 45 },
     rating: 4.8,
@@ -1480,7 +1480,7 @@ export const MOCK_RECIPES: Recipe[] = [
     ],
     allergens: [],
     foodCostPercent: 45,
-    image: 'https://www.monti.sg/wp-content/uploads/2025/01/MONTI-Home-Page-Image-dining.jpg',
+    image: 'https://images.squarespace-cdn.com/content/v1/5c6cef6e797f7425a8d88a6f/730a4f3c-6cb4-4e76-88bd-cf494d6bc267/14082024_AlkaffMansion_Colossal_Upload_Clean_062.jpg',
     menuContext: ['a_la_carte', 'sharing'],
     sustainability: { lowCarbon: false, seasonal: true, zeroWaste: false, score: 48 },
     rating: 4.9,
