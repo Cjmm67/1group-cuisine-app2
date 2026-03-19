@@ -8,6 +8,7 @@ import { MasterclassCard } from '@/components/masterclass/MasterclassCard';
 import { Badge } from '@/components/ui/Badge';
 import { SchemaMarkup, websiteSchema, venueSchemas, buildFAQSchema } from '@/components/seo/SchemaMarkup';
 import { MOCK_RECIPES, MOCK_CHEFS, MOCK_MASTERCLASSES } from '@/lib/mockData';
+import { slugify } from '@/lib/utils';
 import { ArrowRight, Sparkles, ChefHat, GraduationCap } from 'lucide-react';
 
 const homeFAQs = buildFAQSchema([
@@ -84,7 +85,7 @@ export default function Home() {
       {/* ── Featured Recipe Hero ── */}
       {heroRecipe && heroRecipe.image && (
         <section className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 -mt-8 relative z-10">
-          <Link href={`/recipes/${heroRecipe.title.toLowerCase().replace(/\s+/g, '-')}`} className="block">
+          <Link href={`/recipes/${slugify(heroRecipe.title)}`} className="block">
             <div className="relative rounded-xl overflow-hidden aspect-[21/9] bg-gray-200 image-zoom-hover">
               <img src={heroRecipe.image} alt={heroRecipe.title} className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />

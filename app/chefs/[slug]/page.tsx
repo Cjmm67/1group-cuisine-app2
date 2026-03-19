@@ -5,6 +5,7 @@ import { ChefProfile } from '@/components/chef/ChefProfile';
 import { SchemaMarkup, buildChefSchema } from '@/components/seo/SchemaMarkup';
 import { MOCK_CHEFS } from '@/lib/mockData';
 import { notFound } from 'next/navigation';
+import { slugify } from '@/lib/utils';
 
 interface ChefDetailPageProps {
   params: {
@@ -14,7 +15,7 @@ interface ChefDetailPageProps {
 
 export default function ChefDetailPage({ params }: ChefDetailPageProps) {
   const chef = MOCK_CHEFS.find(
-    (c) => c.name.toLowerCase().replace(/\s+/g, '-') === params.slug.toLowerCase()
+    (c) => slugify(c.name) === params.slug.toLowerCase()
   );
 
   if (!chef) {

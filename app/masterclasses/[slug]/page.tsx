@@ -9,6 +9,7 @@ import { EpisodeList } from '@/components/masterclass/EpisodeList';
 import { Avatar } from '@/components/ui/Avatar';
 import { MOCK_MASTERCLASSES } from '@/lib/mockData';
 import { notFound } from 'next/navigation';
+import { slugify } from '@/lib/utils';
 import { formatCurrency, formatTime } from '@/lib/utils';
 import { PlayCircle, Users, Star } from 'lucide-react';
 
@@ -20,7 +21,7 @@ interface MasterclassDetailPageProps {
 
 export default function MasterclassDetailPage({ params }: MasterclassDetailPageProps) {
   const masterclass = MOCK_MASTERCLASSES.find(
-    (mc) => mc.title.toLowerCase().replace(/\s+/g, '-') === params.slug.toLowerCase()
+    (mc) => slugify(mc.title) === params.slug.toLowerCase()
   );
 
   if (!masterclass) {
@@ -137,7 +138,7 @@ export default function MasterclassDetailPage({ params }: MasterclassDetailPageP
         <CardContent className="space-y-4">
           <p className="text-gray-700">{masterclass.chef.bio}</p>
 
-          <Link href={`/chefs/${masterclass.chef.name.toLowerCase().replace(/\s+/g, '-')}`}>
+          <Link href={`/chefs/${slugify(masterclass.chef.name)}`}>
             <Button variant="outline">View Full Profile</Button>
           </Link>
         </CardContent>

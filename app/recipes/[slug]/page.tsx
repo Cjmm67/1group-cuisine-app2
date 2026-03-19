@@ -5,6 +5,7 @@ import { RecipeDetail } from '@/components/recipe/RecipeDetail';
 import { SchemaMarkup, buildRecipeSchema } from '@/components/seo/SchemaMarkup';
 import { MOCK_RECIPES } from '@/lib/mockData';
 import { notFound } from 'next/navigation';
+import { slugify } from '@/lib/utils';
 
 interface RecipeDetailPageProps {
   params: {
@@ -14,7 +15,7 @@ interface RecipeDetailPageProps {
 
 export default function RecipeDetailPage({ params }: RecipeDetailPageProps) {
   const recipe = MOCK_RECIPES.find(
-    (r) => r.title.toLowerCase().replace(/\s+/g, '-') === params.slug.toLowerCase()
+    (r) => slugify(r.title) === params.slug.toLowerCase()
   );
 
   if (!recipe) {
