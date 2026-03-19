@@ -17,11 +17,11 @@ export const ChefCard: React.FC<ChefCardProps> = ({ chef }) => {
   return (
     <Link href={`/chefs/${slugify(chef.name)}`}>
       <Card variant="interactive" className="overflow-hidden h-full card-hover group">
-        <div className="pt-8 pb-4 flex flex-col items-center">
+        <div className="pt-6 sm:pt-8 pb-3 sm:pb-4 flex flex-col items-center">
           <Avatar name={chef.name} image={chef.avatar} size="lg" />
         </div>
 
-        <div className="px-5 pb-5 text-center space-y-3">
+        <div className="px-3 sm:px-5 pb-4 sm:pb-5 text-center space-y-2 sm:space-y-3">
           <div>
             <h3 className="text-base font-semibold text-gray-900 group-hover:text-gold-700 transition-colors">
               {chef.name}

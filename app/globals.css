@@ -42,4 +42,50 @@
   .image-zoom-hover:hover img {
     transform: scale(1.04);
   }
+
+  /* ── Mobile touch & scroll utilities ── */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .touch-pan-x {
+    touch-action: pan-x;
+  }
+}
+
+/* ── Mobile-specific global fixes ── */
+
+/* Safe area insets for notched devices (iPhone X+) */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Prevent iOS zoom on input focus (font-size must be >= 16px) */
+@media screen and (max-width: 767px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Disable card hover lift on touch devices — avoids sticky hover states */
+@media (hover: none) {
+  .card-hover:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  .image-zoom-hover:hover img {
+    transform: none;
+  }
+}
+
+/* Smoother momentum scrolling on iOS */
+.overflow-y-auto,
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
 }

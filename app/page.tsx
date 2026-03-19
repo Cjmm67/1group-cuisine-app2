@@ -86,7 +86,7 @@ export default function Home() {
       {heroRecipe && heroRecipe.image && (
         <section className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 -mt-8 relative z-10">
           <Link href={`/recipes/${slugify(heroRecipe.title)}`} className="block">
-            <div className="relative rounded-xl overflow-hidden aspect-[21/9] bg-gray-200 image-zoom-hover">
+            <div className="relative rounded-xl overflow-hidden aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] bg-gray-200 image-zoom-hover">
               <img src={heroRecipe.image} alt={heroRecipe.title} className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
@@ -127,9 +127,9 @@ export default function Home() {
       <section className="border-y border-gray-200 bg-gray-50">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-10">
           <h2 className="text-lg font-bold text-gray-900 mb-5 text-center">Our Venues</h2>
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide touch-pan-x sm:flex-wrap sm:justify-center sm:overflow-visible sm:pb-0">
             {venues.map((v) => (
-              <div key={v.name} className="bg-white border border-gray-200 rounded-lg px-5 py-3 text-center hover:border-gold-300 hover:shadow-sm transition-all">
+              <div key={v.name} className="bg-white border border-gray-200 rounded-lg px-5 py-3 text-center hover:border-gold-300 hover:shadow-sm transition-all flex-shrink-0 min-w-[160px] sm:min-w-0 sm:flex-shrink">
                 <p className="font-semibold text-sm text-gray-900">{v.name}</p>
                 <p className="text-xs text-gray-500">{v.cuisine}</p>
               </div>

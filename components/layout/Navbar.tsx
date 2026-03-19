@@ -140,14 +140,35 @@ export const Navbar = () => {
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className={cn(
-                  'block px-6 py-3 text-sm font-medium border-b border-gray-50',
-                  isActive ? 'text-gold-700 bg-gold-50' : 'text-gray-700 hover:bg-gray-50'
+                  'block px-6 py-3.5 text-sm font-medium border-b border-gray-50',
+                  isActive ? 'text-gold-700 bg-gold-50' : 'text-gray-700 hover:bg-gray-50 active:bg-gray-100'
                 )}
               >
                 {link.label}
               </Link>
             );
           })}
+          {/* Mobile-only: admin + user info */}
+          {user && isAdmin && (
+            <Link
+              href="/admin"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-6 py-3.5 text-sm font-medium text-gold-600 border-b border-gray-50 active:bg-gold-50"
+            >
+              <span className="flex items-center gap-2"><Shield size={14} /> Admin Panel</span>
+            </Link>
+          )}
+          {user && (
+            <div className="px-6 py-3.5 flex items-center justify-between border-b border-gray-50">
+              <span className="text-sm text-gray-500">{user.name}</span>
+              <button
+                onClick={() => { logout(); setMobileMenuOpen(false); }}
+                className="text-sm font-medium text-gray-500 flex items-center gap-1 active:text-gray-700"
+              >
+                <LogOut size={14} /> Sign out
+              </button>
+            </div>
+          )}
         </div>
       )}
     </header>

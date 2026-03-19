@@ -204,8 +204,7 @@ export function CulinaryChat() {
       {/* Chat Panel */}
       {isOpen && (
         <div
-          className="fixed bottom-0 right-0 z-50 sm:bottom-6 sm:right-6 w-full sm:w-[400px] sm:rounded-2xl overflow-hidden shadow-2xl flex flex-col animate-slide-up"
-          style={{ height: 'min(600px, calc(100vh - 80px))' }}
+          className="fixed bottom-0 right-0 z-50 sm:bottom-6 sm:right-6 w-full sm:w-[400px] h-[100dvh] sm:h-[520px] sm:max-h-[80vh] sm:rounded-2xl overflow-hidden shadow-2xl flex flex-col animate-slide-up"
         >
           {/* Header */}
           <div
@@ -340,7 +339,7 @@ export function CulinaryChat() {
           {/* Input Area */}
           <form
             onSubmit={handleSubmit}
-            className="px-3 py-3 bg-white border-t border-gray-100 flex-shrink-0 flex items-center gap-2"
+            className="px-3 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-white border-t border-gray-100 flex-shrink-0 flex items-center gap-2"
           >
             <input
               ref={inputRef}

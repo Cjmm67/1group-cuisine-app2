@@ -23,7 +23,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
   return (
     <div className="space-y-8">
       <div>
-        <div className="aspect-video bg-gradient-to-br from-gold-100 to-gold-50 rounded-lg overflow-hidden flex items-center justify-center mb-6">
+        <div className="aspect-[4/3] sm:aspect-video bg-gradient-to-br from-gold-100 to-gold-50 rounded-lg overflow-hidden flex items-center justify-center mb-6">
           {recipe.image ? (
             <img
               src={recipe.image}
@@ -36,10 +36,10 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
         </div>
 
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight mb-2">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight mb-2">
             {recipe.title}
           </h1>
-          <p className="text-lg text-gray-500">{recipe.description}</p>
+          <p className="text-base sm:text-lg text-gray-500">{recipe.description}</p>
         </div>
 
         <div className="flex items-center gap-6 mb-6 pb-6 border-b border-gray-200">

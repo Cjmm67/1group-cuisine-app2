@@ -16,12 +16,12 @@ export const ChefProfile: React.FC<ChefProfileProps> = ({ chef }) => {
 
   return (
     <div className="space-y-8">
-      <div className="bg-gradient-to-r from-gold-500 to-gold-700 rounded-lg p-8 text-white">
-        <div className="flex flex-col sm:flex-row gap-8 items-start sm:items-center">
-          <Avatar name={chef.name} image={chef.avatar} size="lg" className="w-24 h-24" />
+      <div className="bg-gradient-to-r from-gold-500 to-gold-700 rounded-lg p-5 sm:p-8 text-white">
+        <div className="flex flex-col sm:flex-row gap-5 sm:gap-8 items-center sm:items-start text-center sm:text-left">
+          <Avatar name={chef.name} image={chef.avatar} size="lg" className="w-20 h-20 sm:w-24 sm:h-24" />
 
           <div className="flex-1">
-            <h1 className="text-4xl font-bold mb-2">{chef.name}</h1>
+            <h1 className="text-2xl sm:text-4xl font-bold mb-1 sm:mb-2">{chef.name}</h1>
             {chef.restaurant && (
               <p className="text-xl font-medium text-white/90 mb-4">{chef.restaurant}</p>
             )}
@@ -110,7 +110,7 @@ export const ChefProfile: React.FC<ChefProfileProps> = ({ chef }) => {
       {chef.recipes.length > 0 && (
         <div>
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Recipes</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {chef.recipes.slice(0, 6).map((recipe) => (
               <RecipeCard key={recipe.id} recipe={recipe} />
             ))}

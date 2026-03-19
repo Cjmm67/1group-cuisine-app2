@@ -8,8 +8,8 @@ export const Footer = () => {
   return (
     <footer className="bg-gray-950 text-gray-300 mt-24">
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
-          <div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 mb-12">
+          <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2.5 mb-4">
               <div className="w-8 h-8 bg-gradient-to-br from-gold-500 to-gold-700 rounded-lg flex items-center justify-center">
                 <span className="text-white font-semibold text-sm">1G</span>

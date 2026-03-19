@@ -92,6 +92,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={dmSans.className}>
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
         <SchemaMarkup data={organizationSchema} />
       </head>
       <body className="bg-white text-gray-900 antialiased min-h-screen flex flex-col">
