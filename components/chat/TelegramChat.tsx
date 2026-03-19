@@ -16,6 +16,79 @@ const QUICK_PROMPTS = [
   'SFA food safety basics',
 ];
 
+/** Simple markdown renderer for chat messages */
+function renderMarkdown(text: string) {
+  const lines = text.split('\n');
+  const elements: React.ReactNode[] = [];
+  let listItems: string[] = [];
+  let listType: 'ul' | 'ol' | null = null;
+
+  const flushList = () => {
+    if (listItems.length > 0 && listType) {
+      const Tag = listType;
+      elements.push(
+        <Tag key={`list-${elements.length}`} className={`${listType === 'ol' ? 'list-decimal' : 'list-disc'} pl-4 my-1.5 space-y-0.5`}>
+          {listItems.map((item, i) => (
+            <li key={i} className="text-sm leading-relaxed">{formatInline(item)}</li>
+          ))}
+        </Tag>
+      );
+      listItems = [];
+      listType = null;
+    }
+  };
+
+  const formatInline = (str: string): React.ReactNode => {
+    // Bold **text**
+    const parts = str.split(/(\*\*[^*]+\*\*)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={i} className="font-semibold text-gray-900">{part.slice(2, -2)}</strong>;
+      }
+      return part;
+    });
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    // Bullet list
+    if (/^[-•]\s/.test(trimmed)) {
+      if (listType !== 'ul') flushList();
+      listType = 'ul';
+      listItems.push(trimmed.replace(/^[-•]\s+/, ''));
+      continue;
+    }
+
+    // Numbered list
+    if (/^\d+[.)]\s/.test(trimmed)) {
+      if (listType !== 'ol') flushList();
+      listType = 'ol';
+      listItems.push(trimmed.replace(/^\d+[.)]\s+/, ''));
+      continue;
+    }
+
+    flushList();
+
+    // Empty line
+    if (!trimmed) {
+      if (elements.length > 0) {
+        elements.push(<div key={`br-${i}`} className="h-1.5" />);
+      }
+      continue;
+    }
+
+    // Regular paragraph
+    elements.push(
+      <p key={`p-${i}`} className="text-sm leading-relaxed">{formatInline(trimmed)}</p>
+    );
+  }
+
+  flushList();
+  return elements;
+}
+
 export function CulinaryChat() {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -146,7 +219,7 @@ export function CulinaryChat() {
               </div>
             </div>
             <button
-              onClick={() => setIsOpen(false)}
+              onClick={() => { setIsOpen(false); setMessages([]); }}
               className="text-gray-400 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10"
               aria-label="Close chat"
             >
@@ -221,19 +294,18 @@ export function CulinaryChat() {
                   </div>
                 )}
                 <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+                  className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
                     msg.role === 'user'
-                      ? 'text-white rounded-br-md'
+                      ? 'text-white text-sm leading-relaxed rounded-br-md'
                       : 'bg-white text-gray-700 border border-gray-100 shadow-sm rounded-bl-md'
                   }`}
                   style={msg.role === 'user' ? { backgroundColor: '#C5A572' } : undefined}
                 >
-                  {msg.content.split('\n').map((line, j) => (
-                    <React.Fragment key={j}>
-                      {line}
-                      {j < msg.content.split('\n').length - 1 && <br />}
-                    </React.Fragment>
-                  ))}
+                  {msg.role === 'user' ? (
+                    <span className="text-sm leading-relaxed">{msg.content}</span>
+                  ) : (
+                    <div className="space-y-1">{renderMarkdown(msg.content)}</div>
+                  )}
                 </div>
               </div>
             ))}
