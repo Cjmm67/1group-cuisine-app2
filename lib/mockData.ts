@@ -369,6 +369,20 @@ export const MOCK_CHEFS: Chef[] = [
     masterclasses: [],
     createdAt: new Date(),
   },
+  {
+    id: 'chef-25',
+    name: 'Christopher Millar',
+    avatar: '/chefs/christopher-millar-avatar.jpg',
+    bio: 'Christopher Millar is the Senior Director of International Business Development & Marketing at 1-Group Singapore. An Australian-born chef with over 25 years of culinary experience spanning London, Melbourne, Sydney, and Singapore, Millar has been a driving force behind 1-Group\'s culinary vision since 2003. His philosophy centres on sourcing the finest ingredients directly from producers — from Mayura Station wagyu to Singapore kelong seafood — and building relationships that translate into exceptional dining experiences across 1-Group\'s portfolio of venues.',
+    cuisine: ['Progressive Australian', 'Modern European', 'Farm-to-Table'],
+    accolades: [],
+    restaurant: '1-Group Singapore',
+    yearsExperience: 25,
+    specialties: ['Wagyu', 'Producer Relationships', 'Culinary Direction', 'Progressive Australian Cuisine'],
+    recipes: [],
+    masterclasses: [],
+    createdAt: new Date(),
+  },
 ];
 
 export const MOCK_RECIPES: Recipe[] = [
@@ -3507,6 +3521,31 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
     ],
     rating: 4.9,
     enrollmentCount: 3200,
+    createdAt: new Date(),
+  },
+  {
+    id: 'mc-22',
+    title: 'The Vital Ingredient — Kelong with Chef Christopher Millar',
+    chef: MOCK_CHEFS[22],
+    description: 'Chef Christopher Millar ventures out to a traditional Singapore kelong — an offshore wooden fishing platform — to source the freshest seafood directly from the sea. This journey captures the heart of Millar\'s culinary philosophy: building direct relationships with producers and understanding ingredients from their origin. From hauling nets to selecting the day\'s catch, the film follows how these vital ingredients make their way from ocean to plate at 1-Group\'s restaurants.',
+    image: '/chefs/millar-video-thumbnail.jpg',
+    videoId: 'JpRZ4dOTkyQ',
+    level: 'intermediate',
+    cuisine: ['Progressive Australian', 'Sustainable Seafood'],
+    duration: 10,
+    price: 0,
+    episodes: [
+      {
+        id: 'ep-22',
+        order: 1,
+        title: 'Christopher Millar — Kelong Seafood Sourcing, Singapore',
+        description: 'The Vital Ingredient: Executive Chef Christopher Millar visits a Singapore kelong to source the freshest seafood for 1-Group\'s restaurants',
+        duration: 10,
+        relatedRecipeIds: [],
+      },
+    ],
+    rating: 4.8,
+    enrollmentCount: 2100,
     createdAt: new Date(),
   },
 ];
