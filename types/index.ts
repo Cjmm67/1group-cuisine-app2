@@ -123,6 +123,7 @@ export interface Masterclass {
   description: string;
   image: string;
   videoId?: string;
+  michelinLogo?: string;
   level: 'beginner' | 'intermediate' | 'advanced';
   cuisine: string[];
   duration: number;

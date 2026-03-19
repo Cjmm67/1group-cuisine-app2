@@ -17,9 +17,11 @@ export const MasterclassCard: React.FC<MasterclassCardProps> = ({ masterclass })
   const [isPlaying, setIsPlaying] = useState(false);
 
   const videoId = masterclass.videoId;
-  const thumbnailUrl = videoId
-    ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
-    : masterclass.image;
+  const thumbnailUrl = masterclass.image.startsWith('/chefs/')
+    ? masterclass.image
+    : videoId
+      ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
+      : masterclass.image;
   const embedUrl = videoId
     ? `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`
     : null;
@@ -98,6 +100,17 @@ export const MasterclassCard: React.FC<MasterclassCardProps> = ({ masterclass })
         </div>
 
         <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">{masterclass.description}</p>
+
+        {masterclass.michelinLogo && (
+          <div className="flex items-center gap-2 px-2.5 py-1.5 bg-red-50 rounded-lg border border-red-100">
+            <img
+              src={masterclass.michelinLogo}
+              alt="MICHELIN Guide"
+              className="w-5 h-5 flex-shrink-0"
+            />
+            <span className="text-xs font-semibold text-red-700 tracking-wide">MICHELIN Guide Insider Series</span>
+          </div>
+        )}
 
         <div className="flex flex-wrap gap-1.5">
           {masterclass.cuisine.slice(0, 2).map((c) => (

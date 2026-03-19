@@ -53,6 +53,17 @@ export default function MasterclassDetailPage({ params }: MasterclassDetailPageP
             <h1 className="text-4xl font-bold mb-4">{masterclass.title}</h1>
             <p className="text-lg text-white/90 mb-6">{masterclass.description}</p>
 
+            {masterclass.michelinLogo && (
+              <div className="flex items-center gap-2.5 px-3 py-2 bg-white/15 backdrop-blur-sm rounded-lg border border-white/20 mb-6 w-fit">
+                <img
+                  src={masterclass.michelinLogo}
+                  alt="MICHELIN Guide"
+                  className="w-7 h-7 flex-shrink-0"
+                />
+                <span className="text-sm font-semibold text-white tracking-wide">MICHELIN Guide Insider Series</span>
+              </div>
+            )}
+
             <div className="flex items-center gap-4 mb-6">
               <Avatar name={masterclass.chef.name} image={masterclass.chef.avatar} size="md" />
               <div>
