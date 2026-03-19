@@ -1271,7 +1271,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'shellfish', name: 'Shellfish', code: 'shellfish' },
     ],
     foodCostPercent: 28,
-    image: 'https://images.squarespace-cdn.com/content/v1/5c6cef6e797f7425a8d88a6f/1702526631976-B5H3KGI3PWORRB99AM5X/Paella+De+Marisco+%282%29+min.jpg',
+    image: '/chefs/paella-de-marisco.jpg',
     menuContext: ['a_la_carte', 'sharing'],
     sustainability: { lowCarbon: false, seasonal: true, zeroWaste: false, score: 62 },
     rating: 4.9,
