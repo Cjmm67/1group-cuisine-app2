@@ -1080,7 +1080,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'milk', name: 'Milk', code: 'milk' },
     ],
     foodCostPercent: 22,
-    image: 'https://www.monti.sg/wp-content/uploads/2026/02/MONTI-10th-Anniversary-Website-Image.jpg',
+    image: '/chefs/aglio-olio-tiger-prawns.jpg',
     menuContext: ['a_la_carte', 'dinner'],
     sustainability: { lowCarbon: false, seasonal: true, zeroWaste: false, score: 65 },
     rating: 4.7,
