@@ -1880,7 +1880,7 @@ export const MOCK_RECIPES: Recipe[] = [
     ],
     allergens: [{ id: 'gluten', name: 'Gluten', code: 'gluten' }, { id: 'milk', name: 'Milk', code: 'milk' }],
     foodCostPercent: 22,
-    image: '',
+    image: '/chefs/calvert-tarte-chocolat.jpg',
     menuContext: ['tasting_menu', 'a_la_carte'],
     sustainability: { lowCarbon: true, seasonal: false, zeroWaste: false, score: 50 },
     rating: 4.9,
