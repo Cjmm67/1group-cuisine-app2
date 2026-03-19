@@ -105,21 +105,21 @@ export default function Home() {
       <section className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-14">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
-            { icon: Sparkles, title: 'Discover', desc: 'Browse world-class recipes from renowned chefs and explore diverse cuisines.' },
-            { icon: GraduationCap, title: 'Learn', desc: 'Master culinary techniques through detailed instructions and expert video content.' },
-            { icon: ChefHat, title: 'Create', desc: 'Apply your knowledge to create stunning dishes and elevate your culinary skills.' },
+            { icon: Sparkles, title: 'Discover', desc: 'Browse world-class recipes from renowned chefs and explore diverse cuisines.', href: '/recipes' },
+            { icon: GraduationCap, title: 'Learn', desc: 'Master culinary techniques through detailed instructions and expert video content.', href: '/masterclasses' },
+            { icon: ChefHat, title: 'Create', desc: 'Apply your knowledge to create stunning dishes and elevate your culinary skills.', href: '/create' },
           ].map((item) => {
             const Icon = item.icon;
             return (
-              <div key={item.title} className="flex gap-4 items-start p-5 bg-gray-50 rounded-xl">
-                <div className="w-10 h-10 rounded-lg bg-gold-100 flex items-center justify-center flex-shrink-0">
+              <Link key={item.title} href={item.href} className="flex gap-4 items-start p-5 bg-gray-50 rounded-xl hover:bg-gold-50 hover:shadow-sm transition-all active:scale-[0.98] group">
+                <div className="w-10 h-10 rounded-lg bg-gold-100 flex items-center justify-center flex-shrink-0 group-hover:bg-gold-200 transition-colors">
                   <Icon className="w-5 h-5 text-gold-700" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">{item.title}</h3>
+                  <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-gold-700 transition-colors">{item.title}</h3>
                   <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

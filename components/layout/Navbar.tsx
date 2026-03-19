@@ -10,10 +10,10 @@ import { useAuth } from '@/components/auth/AuthProvider';
 const NAV_LINKS = [
   { label: 'Recipes', href: '/recipes' },
   { label: 'Chefs', href: '/chefs' },
+  { label: 'Create', href: '/create' },
   { label: '1-Cheflix', href: '/masterclasses' },
   { label: 'Marketplace', href: '/marketplace' },
   { label: 'Sustainability', href: '/sustainability' },
-  { label: 'Suppliers', href: '/suppliers' },
 ];
 
 export const Navbar = () => {
