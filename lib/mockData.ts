@@ -1130,7 +1130,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'milk', name: 'Milk', code: 'milk' },
     ],
     foodCostPercent: 30,
-    image: 'https://www.monti.sg/wp-content/uploads/2025/01/MONTI-Home-Page-Image-dining.jpg',
+    image: '/chefs/gnocchi-porcini-truffle.jpg',
     menuContext: ['a_la_carte', 'tasting_menu'],
     sustainability: { lowCarbon: true, seasonal: true, zeroWaste: false, score: 72 },
     rating: 4.9,
