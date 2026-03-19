@@ -138,23 +138,6 @@ export const MOCK_CHEFS: Chef[] = [
     masterclasses: [],
     createdAt: new Date(),
   },
-  {
-    id: 'chef-10',
-    name: 'Ana Roš',
-    avatar: 'https://thebestchefawards.com/wp-content/uploads/2025/09/Ana-Ros_portrait-photo-683x1024.webp',
-    bio: 'Ana Roš put Slovenia on the global culinary map through Hiša Franko in the remote Soča Valley, where she forages, ferments, and draws on Alpine-Mediterranean ingredients. Self-taught, now Slovenia\'s first and only three-Michelin-star chef.',
-    cuisine: ['Slovenian', 'Nordic', 'Contemporary'],
-    accolades: [
-      { type: 'michelin', stars: 2, year: 2023, restaurant: 'Hiša Franko' },
-      { type: 'fifty_best', year: 2023 },
-    ],
-    restaurant: 'Hiša Franko',
-    yearsExperience: 29,
-    specialties: ['Foraging', 'Sustainability', 'Alpine Cuisine'],
-    recipes: [],
-    masterclasses: [],
-    createdAt: new Date(),
-  },
   // ============================================================
   // 1-GROUP RESIDENT CHEFS & CULINARY ADVISORS
   // ============================================================
@@ -246,7 +229,7 @@ export const MOCK_CHEFS: Chef[] = [
     cuisine: ['Neo-French', 'French-Japanese', 'Contemporary European'],
     accolades: [
       { type: 'michelin', stars: 3, year: 2024, restaurant: 'Sézanne' },
-      { type: 'fifty_best', rank: 7, year: 2025, list: "World's 50 Best" },
+      { type: 'fifty_best', year: 2025 },
     ],
     restaurant: 'Sézanne',
     yearsExperience: 18,
@@ -262,7 +245,7 @@ export const MOCK_CHEFS: Chef[] = [
     bio: 'Riccardo Camanini commands Lido 84 on the shores of Lake Garda, balancing Italian soul with daring technical ambition. His cacio e pepe en vessie — pasta cooked inside a pig\'s bladder — became an iconic dish of the 2020s. World\'s 50 Best #16 (2025).',
     cuisine: ['Creative Italian', 'Lakeside Italian', 'Modern Italian'],
     accolades: [
-      { type: 'fifty_best', rank: 16, year: 2025, list: "World's 50 Best" },
+      { type: 'fifty_best', year: 2025 },
     ],
     restaurant: 'Lido 84',
     yearsExperience: 22,
@@ -279,7 +262,7 @@ export const MOCK_CHEFS: Chef[] = [
     cuisine: ['Essentialist Italian', 'Abruzzese', 'Minimalist Fine Dining'],
     accolades: [
       { type: 'michelin', stars: 3, year: 2023, restaurant: 'Reale' },
-      { type: 'fifty_best', rank: 18, year: 2025, list: "World's 50 Best" },
+      { type: 'fifty_best', year: 2025 },
     ],
     restaurant: 'Reale',
     yearsExperience: 24,
@@ -295,7 +278,7 @@ export const MOCK_CHEFS: Chef[] = [
     bio: 'Aitor Arregui continues his father\'s legacy at Elkano in Getaria, where whole turbot grilled over charcoal has achieved legendary status. The restaurant\'s singular focus on Basque seafood — kokotxas, txipirones, and turbot — treated with ancestral grilling techniques makes it a pilgrimage site. World\'s 50 Best #24 (2025).',
     cuisine: ['Basque Seafood', 'Charcoal Grill', 'Spanish Coastal'],
     accolades: [
-      { type: 'fifty_best', rank: 24, year: 2025, list: "World's 50 Best" },
+      { type: 'fifty_best', year: 2025 },
     ],
     restaurant: 'Elkano',
     yearsExperience: 20,
@@ -311,7 +294,7 @@ export const MOCK_CHEFS: Chef[] = [
     bio: 'Juan Luis Martínez, Venezuelan-born and Lima-based, explores the culinary bridge between Venezuela and Peru at Mérito. His cooking honours Afro-Latin and Caribbean flavour traditions often underrepresented in fine dining, creating dishes of vibrant colour and deep cultural resonance. World\'s 50 Best #26 (2025).',
     cuisine: ['Venezuelan-Peruvian', 'Afro-Latin', 'Caribbean-South American'],
     accolades: [
-      { type: 'fifty_best', rank: 26, year: 2025, list: "World's 50 Best" },
+      { type: 'fifty_best', year: 2025 },
     ],
     restaurant: 'Mérito',
     yearsExperience: 18,
@@ -328,7 +311,7 @@ export const MOCK_CHEFS: Chef[] = [
     cuisine: ['Modern Korean', 'Korean-French', 'Contemporary Hansik'],
     accolades: [
       { type: 'michelin', stars: 3, year: 2025, restaurant: 'Mingles' },
-      { type: 'fifty_best', rank: 29, year: 2025, list: "World's 50 Best" },
+      { type: 'fifty_best', year: 2025 },
     ],
     restaurant: 'Mingles',
     yearsExperience: 20,
@@ -344,7 +327,7 @@ export const MOCK_CHEFS: Chef[] = [
     bio: 'Hiroyasu Kawate runs Florilège in Tokyo\'s Aoyama district with a sustainability-forward approach rare in Japanese fine dining. His signature dish of aged duck symbolises his philosophy: every part of the animal used, nothing wasted. Florilège bridges French-influenced technique with a distinctly Japanese environmental consciousness. World\'s 50 Best #35 (2025).',
     cuisine: ['Contemporary French-Japanese', 'Sustainable Fine Dining'],
     accolades: [
-      { type: 'fifty_best', rank: 35, year: 2025, list: "World's 50 Best" },
+      { type: 'fifty_best', year: 2025 },
     ],
     restaurant: 'Florilège',
     yearsExperience: 18,
@@ -361,7 +344,7 @@ export const MOCK_CHEFS: Chef[] = [
     cuisine: ['Modern Portuguese', 'Avant-Garde Portuguese', 'Lisbon Contemporary'],
     accolades: [
       { type: 'michelin', stars: 2, year: 2024, restaurant: 'Belcanto' },
-      { type: 'fifty_best', rank: 41, year: 2025, list: "World's 50 Best" },
+      { type: 'fifty_best', year: 2025 },
     ],
     restaurant: 'Belcanto',
     yearsExperience: 25,
@@ -377,7 +360,7 @@ export const MOCK_CHEFS: Chef[] = [
     bio: 'Yusuke Takada leads La Cime in Osaka with a quietly radical approach that fuses Japanese sensibility with French technique and global ingredients. His innovative use of Kansai-region produce and delicate, painterly presentation has earned rapid international acclaim. World\'s 50 Best #43 (2025).',
     cuisine: ['Modern French-Japanese', 'Kansai Cuisine', 'Contemporary Osaka'],
     accolades: [
-      { type: 'fifty_best', rank: 43, year: 2025, list: "World's 50 Best" },
+      { type: 'fifty_best', year: 2025 },
     ],
     restaurant: 'La Cime',
     yearsExperience: 16,
@@ -1129,60 +1112,6 @@ export const MOCK_RECIPES: Recipe[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
   },
-  {
-    id: 'recipe-15',
-    title: 'Soča River Trout with Horseradish',
-    chef: MOCK_CHEFS[8],
-    restaurant: 'Hiša Franko',
-    description: 'Ana Roš\'s two-day dry-aged Soča river trout, cooked on Hibachi BBQ, served with brown butter fish sauce and freshly grated horseradish from the Alpine valleys.',
-    cuisines: [
-      { id: 'chinese', name: 'Chinese', parent: 'asian' },
-      { id: 'cantonese', name: 'Cantonese', parent: 'chinese' },
-    ],
-    techniques: [
-      { id: 'steaming', name: 'Steaming', category: 'wet_heat', description: 'Cooking with steam' },
-      { id: 'folding', name: 'Folding', category: 'pastry', description: 'Shaping dumpling wrappers' },
-    ],
-    station: { id: 'entremetier', name: 'Entremetier', description: 'Vegetable station' },
-    difficulty: 'advanced',
-    prepTime: 10,
-    cookTime: 15,
-    servings: 6,
-    ingredients: [
-      { id: 'i112', name: 'Soca River Trout (whole)', weight: 1, unit: 'pcs', allergens: ['fish'], group: 'seafood', sustainability: 'sustainable' },
-      { id: 'i113', name: 'Fresh Horseradish Root', weight: 30, unit: 'g', allergens: [], group: 'vegetable', sustainability: 'seasonal' },
-      { id: 'i114', name: 'Brown Butter', weight: 60, unit: 'g', allergens: ['milk'], group: 'dairy', sustainability: 'standard' },
-      { id: 'i115', name: 'Fish Sauce (house-fermented)', weight: 10, unit: 'ml', allergens: ['fish'], group: 'other', sustainability: 'standard' },
-      { id: 'i116', name: 'Alpine Herbs (wild foraged)', weight: 5, unit: 'g', allergens: [], group: 'herb', sustainability: 'seasonal' },
-      { id: 'i117', name: 'Piran Sea Salt', weight: 3, unit: 'g', allergens: [], group: 'seasoning', sustainability: 'standard' },
-    ],
-    steps: [
-      { id: 's53', order: 1, instruction: 'Dry-age the trout: wrap in muslin, hang in cold room for two days. This concentrates flavour and firms flesh — a technique Ros developed for the wild trout of the Soca Valley.', techniques: ['curing'], station: { id: 'garde_manger', name: 'Garde Manger', description: 'Cold station' }, duration: 2880 },
-      { id: 's54', order: 2, instruction: 'Cook on Hibachi: grill dry-aged trout over binchotan charcoal. Skin-down first until crisp, turn gently. Flesh should be just set, still translucent at the bone.', techniques: ['grilling'], station: { id: 'grillardin', name: 'Grillardin', description: 'Grill station' }, duration: 10 },
-      { id: 's55', order: 3, instruction: 'Make brown butter fish sauce: heat butter until nutty and golden brown. Stir in house-fermented fish sauce off heat — rich, umami-laden dressing.', techniques: [], station: { id: 'saucier', name: 'Saucier', description: 'Sauce station' }, duration: 5 },
-      { id: 's56', order: 4, instruction: 'To plate: lay trout on alpine herbs. Spoon brown butter fish sauce over. Grate fresh horseradish from Alpine valleys directly over the fish tableside. Season with Piran sea salt.', techniques: [], station: null, duration: 3 },
-    ],
-    allergens: [
-      { id: 'crustaceans', name: 'Crustaceans', code: 'crustaceans' },
-      { id: 'cereals', name: 'Cereals containing gluten', code: 'gluten' },
-      { id: 'eggs', name: 'Eggs', code: 'eggs' },
-      { id: 'soy', name: 'Soy', code: 'soy' },
-      { id: 'sesame', name: 'Sesame', code: 'sesame' },
-    ],
-    foodCostPercent: 28,
-    image: 'https://thebestchefawards.com/wp-content/uploads/2026/03/Ana_Ros_Dish-1_credit-Ciril-Jazbec-682x1024.webp',
-    menuContext: ['a_la_carte', 'brunch'],
-    sustainability: {
-      lowCarbon: true,
-      seasonal: true,
-      zeroWaste: false,
-      score: 71,
-    },
-    rating: 4.8,
-    reviews: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
   // ============================================================
   // 1-GROUP RESIDENT CHEF RECIPES
   // ============================================================
@@ -1190,7 +1119,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-16',
     title: 'Spaghetti Aglio Olio with Tiger Prawns',
-    chef: MOCK_CHEFS[9],
+    chef: MOCK_CHEFS[8],
     restaurant: 'Monti',
     description: 'Felix Chong\'s signature weeknight pasta — a dish of deceptive simplicity where timing is everything. Fresh tiger prawns, slowly toasted garlic, a whisper of chilli padi, and the emulsification of butter and pasta water into a glossy sauce that clings to every strand.',
     cuisines: [
@@ -1239,7 +1168,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-17',
     title: 'Monti Handmade Gnocchi with Porcini and Truffle',
-    chef: MOCK_CHEFS[9],
+    chef: MOCK_CHEFS[8],
     restaurant: 'Monti',
     description: 'Felix Chong\'s handmade gnocchi — light pillows of potato dressed in a wild porcini mushroom sauce with a drizzle of truffle oil. This dish reflects what Monti does best: Italian soul, technical precision, and the restraint to let premium ingredients speak for themselves.',
     cuisines: [
@@ -1290,7 +1219,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-18',
     title: 'Tempura Crepe with Scampi Roe and Avocado',
-    chef: MOCK_CHEFS[10],
+    chef: MOCK_CHEFS[9],
     restaurant: 'Oumi',
     description: 'Lamley Chua\'s signature at Oumi — a gruyere cheese tempura cooked on the teppan until it turns crackling crisp, then lavished with azure blue wild Australian scampi roe, Japanese flying fish roe, creamy avocado, and Ao-togarashi yoghurt for a lick of spice. Kappo dining at its most contemporary.',
     cuisines: [
@@ -1336,7 +1265,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-19',
     title: 'Binchotan-Grilled Wagyu with Ponzu and Shiso',
-    chef: MOCK_CHEFS[10],
+    chef: MOCK_CHEFS[9],
     restaurant: 'Flnt',
     description: 'Lamley Chua\'s Flnt signature — premium wagyu seared over binchotan Japanese oak charcoal, served with a bright ponzu dressing, shiso leaf, and grated daikon. The charcoal heat of Flnt meets the precision of a chef trained across two decades of Japanese technique.',
     cuisines: [
@@ -1382,7 +1311,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-20',
     title: 'Paella De Marisco',
-    chef: MOCK_CHEFS[11],
+    chef: MOCK_CHEFS[10],
     restaurant: 'Una',
     description: 'Tom Kung\'s signature paella — built on a closely guarded house-made stock recipe, using short-grained Bomba rice steeped until each grain is swollen with deep seafood flavour. Crowned with a medley of fresh prawns, mussels, and clams, this is the dish that earned Una its "Restaurants from Spain" certification.',
     cuisines: [
@@ -1431,7 +1360,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-21',
     title: 'Asado-Grilled Bone-In Ribeye with Chimichurri',
-    chef: MOCK_CHEFS[12],
+    chef: MOCK_CHEFS[11],
     restaurant: 'Fire Restaurant',
     description: 'Soledad Nardelli\'s essential expression of Argentine fire cooking — a bone-in ribeye slow-grilled over open flame in the asado tradition, served with her house chimichurri. For Soledad, fire is not a heat source but a flavour system. This is the dish that connects her Argentine heritage to her Barcelona training.',
     cuisines: [
@@ -1477,7 +1406,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-22',
     title: 'Rubia Gallega Costillas a la Parrilla',
-    chef: MOCK_CHEFS[13],
+    chef: MOCK_CHEFS[12],
     restaurant: 'Una',
     description: 'Diego Grimbery\'s centrepiece for Una\'s tenth anniversary menu — Spain\'s prized Rubia Gallega beef, slow-grilled asado-style over open flame. The Gold grade prime rib, native to Galicia in northwestern Spain, is served with fricandó sauce, pumpkin purée, and oyster mushrooms. Diego brought this cut to Singapore for the first time.',
     cuisines: [
@@ -1521,7 +1450,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-23',
     title: 'Shamo Chicken Poached in Yellow Wine with Girolle Mushrooms',
-    chef: MOCK_CHEFS[14],
+    chef: MOCK_CHEFS[13],
     restaurant: 'Sézanne',
     description: 'Daniel Calvert\'s signature at Sézanne — local Shamo chicken poached in vin jaune, stuffed with seasonal girolle mushrooms. The dish exemplifies his philosophy of European technique meeting Japan\'s finest seasonal produce, presented with the precision that earned three Michelin stars.',
     cuisines: [
@@ -1562,7 +1491,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-24',
     title: 'Cacio e Pepe en Vessie',
-    chef: MOCK_CHEFS[15],
+    chef: MOCK_CHEFS[14],
     restaurant: 'Lido 84',
     description: 'Riccardo Camanini\'s iconic dish — cacio e pepe cooked inside a pig\'s bladder (en vessie), a technique that traps steam to create impossibly creamy pasta without any cream. The bladder is inflated, charred, and sliced open tableside. This dish became a global symbol of Italian cuisine\'s reinvention.',
     cuisines: [
@@ -1602,7 +1531,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-25',
     title: 'Absolute Tomato',
-    chef: MOCK_CHEFS[16],
+    chef: MOCK_CHEFS[15],
     restaurant: 'Reale',
     description: 'Niko Romito\'s manifesto dish — a single San Marzano tomato reduced to its purest expression. The tomato is concentrated over hours until its natural sugars, acidity, and umami reach transcendent intensity. Served with nothing but a thread of olive oil. This is \'absolute cuisine\' — the idea that perfection lies in reduction, not addition.',
     cuisines: [
@@ -1641,7 +1570,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-26',
     title: 'Whole Charcoal-Grilled Turbot',
-    chef: MOCK_CHEFS[17],
+    chef: MOCK_CHEFS[16],
     restaurant: 'Elkano',
     description: 'Aitor Arregui\'s legendary whole turbot — the dish that has made Elkano a pilgrimage site. A wild-caught turbot from the Bay of Biscay, simply seasoned and grilled whole over charcoal using the traditional Basque parilla technique. The skin chars to a smoky crust while the flesh stays impossibly moist and sweet.',
     cuisines: [
@@ -1681,7 +1610,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-27',
     title: 'Cachapa with Smoked Eel and Ají Amarillo',
-    chef: MOCK_CHEFS[18],
+    chef: MOCK_CHEFS[17],
     restaurant: 'Mérito',
     description: 'Juan Luis Martínez\'s bridge between Venezuela and Peru — a cachapa (sweet corn pancake from his Venezuelan heritage) filled with smoked eel and brightened with Peruvian ají amarillo. This dish embodies Mérito\'s mission: honouring the Afro-Latin and Caribbean flavour traditions often overlooked in fine dining.',
     cuisines: [
@@ -1721,7 +1650,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-28',
     title: 'Doenjang-Aged Hanwoo Beef with Seasonal Banchan',
-    chef: MOCK_CHEFS[19],
+    chef: MOCK_CHEFS[18],
     restaurant: 'Mingles',
     description: 'Mingoo Kang\'s signature expression of modern Korean cuisine — premium Hanwoo beef dry-aged in doenjang (Korean fermented soybean paste), which imparts a complex umami depth impossible to achieve through conventional ageing. Served with a curated selection of seasonal banchan that changes with Korea\'s lunar calendar.',
     cuisines: [
@@ -1762,7 +1691,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-29',
     title: 'Aged Duck — Nose to Tail',
-    chef: MOCK_CHEFS[20],
+    chef: MOCK_CHEFS[19],
     restaurant: 'Florilège',
     description: 'Hiroyasu Kawate\'s signature and philosophy on a plate — a whole duck aged for two weeks, then every part used across a single dish. The breast is roasted pink, the leg confited, the carcass reduced to a deep jus, and the liver turned into a silky parfait. Nothing wasted, everything honoured.',
     cuisines: [
@@ -1801,7 +1730,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-30',
     title: 'Deconstructed Bacalhau à Brás',
-    chef: MOCK_CHEFS[21],
+    chef: MOCK_CHEFS[20],
     restaurant: 'Belcanto',
     description: 'José Avillez\'s reinvention of Portugal\'s most beloved salt cod dish. Traditional bacalhau à Brás — shredded salt cod with eggs, potatoes, and olives — is deconstructed into an avant-garde presentation: a salt cod brandade, crispy potato strands, a slow-cooked egg yolk, and olive oil caviar. Portugal\'s soul food, reimagined for Belcanto\'s two-star kitchen.',
     cuisines: [
@@ -1842,7 +1771,7 @@ export const MOCK_RECIPES: Recipe[] = [
   {
     id: 'recipe-31',
     title: 'Kansai Vegetables with Dashi Gelée',
-    chef: MOCK_CHEFS[22],
+    chef: MOCK_CHEFS[21],
     restaurant: 'La Cime',
     description: 'Yusuke Takada\'s quietly radical vegetable course — a constellation of Kansai-region seasonal vegetables, each prepared with a different technique (raw, blanched, pickled, charred), unified by a crystal-clear dashi gelée. The dish reads as a landscape painting of Osaka\'s seasons.',
     cuisines: [
@@ -2104,30 +2033,6 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
     ],
     rating: 4.8,
     enrollmentCount: 1896,
-    createdAt: new Date(),
-  },
-  {
-    id: 'mc-10',
-    title: 'Ana Roš — Hiša Franko',
-    chef: MOCK_CHEFS[8],
-    description: 'Slovenia\'s self-taught star takes you into the Soča Valley, where hyperlocal sourcing, wild ingredients, and fierce independence created one of Europe\'s most original kitchens.',
-    image: '',
-    level: 'intermediate',
-    cuisine: ['Slovenian Alpine'],
-    duration: 90,
-    price: 0,
-    episodes: [
-      {
-        id: 'ep-10',
-        order: 1,
-        title: 'Ana Roš — Hiša Franko, Kobarid, Slovenia',
-        description: 'Watch on Cheflix',
-        duration: 90,
-        relatedRecipeIds: [],
-      },
-    ],
-    rating: 4.9,
-    enrollmentCount: 1983,
     createdAt: new Date(),
   },
   {
