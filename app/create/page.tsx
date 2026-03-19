@@ -14,50 +14,60 @@ interface Message {
 
 const MODES = [
   {
+    id: 'menu-intelligence',
+    title: 'Menu Intelligence',
+    subtitle: 'Upload Menu → Brand DNA & Benchmarking',
+    description: 'Upload or paste your menu for instant Brand DNA analysis, competitive benchmarking against Singapore and international restaurants, gap identification, and dish concepts inspired by the world\'s best.',
+    icon: BookOpen,
+    colour: 'from-gold-500 to-gold-700',
+    prompt: 'I want to analyse a menu. I\'ll paste or describe the menu contents now. Run the full Brand DNA Analysis, competitive benchmarking, and opportunity map.',
+    mode: 'Menu Intelligence Engine',
+  },
+  {
     id: 'dish-builder',
     title: 'Dish Builder',
     subtitle: 'Idea → Complete Recipe',
-    description: 'Turn a spark — an ingredient, a memory, a technique — into a fully developed, production-ready dish with costing, allergens, and plating.',
+    description: 'Turn a spark — an ingredient, a memory, a technique — into a fully developed, production-ready dish with costing, allergens, and plating. References comparable dishes from restaurants globally.',
     icon: Flame,
     colour: 'from-orange-500 to-red-600',
-    prompt: 'I want to create a new dish. Help me develop it from concept to a complete kitchen recipe card.',
+    prompt: 'I want to create a new dish. Help me develop it from concept to a complete kitchen recipe card with global restaurant references.',
     mode: 'Dish Builder',
   },
   {
     id: 'flavour-explorer',
     title: 'Flavour Explorer',
     subtitle: 'Ingredient → Pairing Ideas',
-    description: 'Explore what works with a given ingredient through molecular science, classical tradition, and progressive unexpected combinations.',
+    description: 'Explore what works with a given ingredient through molecular science, classical tradition, and progressive combinations — grounded in real restaurant examples.',
     icon: Sparkles,
     colour: 'from-amber-500 to-yellow-600',
-    prompt: 'I want to explore flavour pairings for an ingredient. Give me molecular, classical, and progressive pairing ideas.',
+    prompt: 'I want to explore flavour pairings for an ingredient. Give me molecular, classical, and progressive pairing ideas with real restaurant references.',
     mode: 'Flavour Explorer',
   },
   {
     id: 'menu-architect',
     title: 'Menu Architect',
     subtitle: 'Brief → Complete Menu',
-    description: 'Build a tasting menu, à la carte section, banquet set, or seasonal rotation with narrative arc, pressure-testing, and costing.',
-    icon: BookOpen,
+    description: 'Build a tasting menu, à la carte section, banquet set, or seasonal rotation — benchmarked against comparable restaurants with narrative arc and costing.',
+    icon: UtensilsCrossed,
     colour: 'from-emerald-500 to-teal-600',
-    prompt: 'I need to build a menu. Help me design the full sequence with narrative arc, costing, and kitchen feasibility.',
+    prompt: 'I need to build a menu. Help me design the full sequence benchmarked against comparable restaurants globally.',
     mode: 'Menu Architect',
   },
   {
     id: 'adaptation-engine',
     title: 'Adaptation Engine',
     subtitle: 'Existing Dish → Transformed',
-    description: 'Adapt a dish for dietary needs, seasonal changes, cost reduction, scaling to banquet, or translating between venues.',
+    description: 'Adapt a dish for dietary needs, seasonal changes, cost reduction, scaling to banquet, or translating between venues — with references to how top restaurants handle the same.',
     icon: RefreshCw,
     colour: 'from-blue-500 to-indigo-600',
-    prompt: 'I have an existing dish that needs to be adapted. Help me transform it while keeping its identity.',
+    prompt: 'I have an existing dish that needs to be adapted. Help me transform it with references to how other restaurants approach this.',
     mode: 'Adaptation Engine',
   },
   {
     id: 'plating-coach',
     title: 'Plating Coach',
-    subtitle: 'Photo → Actionable Feedback',
-    description: 'Get specific, actionable plating feedback — composition, colour, height, sauce work, garnish, vessel — plus alternative concepts.',
+    subtitle: 'Description → Actionable Feedback',
+    description: 'Get specific, actionable plating feedback — composition, colour, height, sauce work, garnish, vessel — referencing plating from benchmark restaurants.',
     icon: Palette,
     colour: 'from-purple-500 to-pink-600',
     prompt: 'I want feedback on a dish presentation. I\'ll describe the plating or share what I have.',
@@ -67,10 +77,10 @@ const MODES = [
     id: 'rd-lab',
     title: 'R&D Lab',
     subtitle: 'Technique → Test Protocol',
-    description: 'Experiment with fermentation, smoking, curing, hydrocolloids, or any technique — with food science, test protocols, and HACCP notes.',
+    description: 'Experiment with fermentation, smoking, curing, hydrocolloids, or any technique — with food science, test protocols, HACCP notes, and who\'s leading globally.',
     icon: FlaskConical,
     colour: 'from-cyan-500 to-blue-600',
-    prompt: 'I want to experiment with a technique or process. Help me design a test protocol with food science backing.',
+    prompt: 'I want to experiment with a technique or process. Help me design a test protocol with food science and references to who\'s leading in this space.',
     mode: 'R&D Lab',
   },
 ];
@@ -244,7 +254,7 @@ export default function CreatePage() {
               Create Stunning Dishes
             </h1>
             <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">
-              Your AI creative partner for dish development, flavour exploration, menu design, and culinary R&D.
+              Upload your menu for instant Brand DNA analysis and competitive benchmarking, or dive into dish development, flavour exploration, and culinary R&D.
               Choose a mode to begin.
             </p>
           </div>
@@ -348,15 +358,17 @@ export default function CreatePage() {
               </div>
               <h3 className="text-lg font-bold text-gray-900 mb-2">Creative Studio</h3>
               <p className="text-sm text-gray-500 max-w-md mx-auto mb-6">
-                Describe your idea, share an ingredient, or tell me what you're working on.
+                Paste a menu for instant Brand DNA analysis, describe a dish idea, share an ingredient, or tell me what you're working on.
                 I'll figure out the best way to help.
               </p>
               <div className="flex flex-wrap gap-2 justify-center">
                 {[
                   'I want to do something with crab',
+                  'Analyse our current Kaarla menu',
+                  'Build a 7-course tasting menu',
                   'Explore pairings for yuzu',
-                  'Build a 7-course tasting menu for Kaarla',
                   'Make my lobster dish gluten-free',
+                  'What are Singapore\'s top fire restaurants doing?',
                 ].map((q) => (
                   <button
                     key={q}
