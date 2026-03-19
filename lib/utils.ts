@@ -72,19 +72,16 @@ export function filterRecipes(
     }
 
     if (filters.cuisines && filters.cuisines.length > 0) {
-      const matchesCuisine = recipe.cuisines.some((c) => {
-        // Direct match
-        if (filters.cuisines!.includes(c.id)) return true;
-        // Match on parent (e.g. recipe has 'italian' with parent 'european', filter has 'european')
-        if (c.parent && filters.cuisines!.includes(c.parent)) return true;
-        // Match on grandparent (e.g. recipe has 'french_breton' with parent 'french', and 'french' parent is 'european')
-        if (c.parent) {
-          // Check if any selected filter is an ancestor
-          const parentCuisine = recipe.cuisines.find((p) => p.id === c.parent);
-          if (parentCuisine?.parent && filters.cuisines!.includes(parentCuisine.parent)) return true;
-        }
-        return false;
-      });
+      const recipeCuisineIds = new Set<string>();
+      for (const c of recipe.cuisines || []) {
+        if (c.id) recipeCuisineIds.add(c.id);
+        if (c.parent) recipeCuisineIds.add(c.parent);
+        // Also check name match (case insensitive)
+        if (c.name) recipeCuisineIds.add(c.name.toLowerCase());
+      }
+      const matchesCuisine = filters.cuisines.some(
+        (f) => recipeCuisineIds.has(f) || recipeCuisineIds.has(f.toLowerCase())
+      );
       if (!matchesCuisine) return false;
     }
 

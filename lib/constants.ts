@@ -351,7 +351,7 @@ export const SUSTAINABILITY_SCORE_RANGES = {
   improving: { min: 0, max: 39, color: 'text-red-600', bg: 'bg-red-50' },
 };
 
-export const DEFAULT_FOOD_COST_RANGE: [number, number] = [15, 50];
+export const DEFAULT_FOOD_COST_RANGE: [number, number] = [0, 100];
 export const MAX_FOOD_COST = 70;
 
 export const INGREDIENT_GROUPS = [
