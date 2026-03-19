@@ -4,6 +4,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { SchemaMarkup, organizationSchema } from '@/components/seo/SchemaMarkup';
 import { AuthProvider } from '@/components/auth/AuthProvider';
+import { TelegramChat } from '@/components/chat/TelegramChat';
 import './globals.css';
 
 const dmSans = DM_Sans({
@@ -98,6 +99,7 @@ export default function RootLayout({
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />
+          <TelegramChat />
         </AuthProvider>
       </body>
     </html>
