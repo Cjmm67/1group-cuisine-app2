@@ -7,40 +7,8 @@ import { WasteLog } from '@/types/index';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Leaf } from 'lucide-react';
 
-const SAMPLE_WASTE_LOGS: WasteLog[] = [
-  {
-    id: '1',
-    chefId: 'chef-1',
-    date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-    items: [
-      { id: '1', ingredient: 'Carrot Trim', weight: 250, unit: 'g', category: 'trim' },
-      { id: '2', ingredient: 'Celery Tops', weight: 150, unit: 'g', category: 'trim' },
-    ],
-    notes: 'Used for stock',
-  },
-  {
-    id: '2',
-    chefId: 'chef-1',
-    date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-    items: [
-      { id: '3', ingredient: 'Wilted Lettuce', weight: 300, unit: 'g', category: 'spoilage' },
-    ],
-    notes: 'Replaced with fresh supply',
-  },
-  {
-    id: '3',
-    chefId: 'chef-1',
-    date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-    items: [
-      { id: '4', ingredient: 'Fish Bones', weight: 500, unit: 'g', category: 'trim' },
-      { id: '5', ingredient: 'Mushroom Stems', weight: 100, unit: 'g', category: 'trim' },
-    ],
-    notes: 'Perfect for stock and demi-glace',
-  },
-];
-
 export default function SustainabilityPage() {
-  const [wasteLogs, setWasteLogs] = useState<WasteLog[]>(SAMPLE_WASTE_LOGS);
+  const [wasteLogs, setWasteLogs] = useState<WasteLog[]>([]);
 
   const handleSubmitWasteLog = (log: Partial<WasteLog>) => {
     const newLog: WasteLog = {
