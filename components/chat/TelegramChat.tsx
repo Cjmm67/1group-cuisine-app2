@@ -169,28 +169,36 @@ export function CulinaryChat() {
 
   return (
     <>
-      {/* Floating Button */}
+      {/* Floating Button with Label */}
       {!isOpen && (
-        <button
-          onClick={handleOpen}
-          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-xl active:scale-95"
-          style={{ backgroundColor: '#C5A572' }}
-          aria-label="Open culinary chat"
-        >
-          <ChefHat size={26} className="text-white" />
-          {!hasInteracted && (
-            <span className="absolute -top-1 -right-1 flex h-4 w-4">
-              <span
-                className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-                style={{ backgroundColor: '#C5A572' }}
-              />
-              <span
-                className="relative inline-flex rounded-full h-4 w-4 border-2 border-white"
-                style={{ backgroundColor: '#C5A572' }}
-              />
-            </span>
-          )}
-        </button>
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-2">
+          <div
+            className="px-3 py-1.5 rounded-lg shadow-md text-xs font-semibold text-white whitespace-nowrap animate-fade-in"
+            style={{ backgroundColor: '#2D2D2D', border: '1px solid rgba(197, 165, 114, 0.3)' }}
+          >
+            <span style={{ color: '#C5A572' }}>1-Group</span> Culinary Assistant
+          </div>
+          <button
+            onClick={handleOpen}
+            className="w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-xl active:scale-95"
+            style={{ backgroundColor: '#C5A572' }}
+            aria-label="Open culinary chat"
+          >
+            <ChefHat size={26} className="text-white" />
+            {!hasInteracted && (
+              <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                <span
+                  className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                  style={{ backgroundColor: '#C5A572' }}
+                />
+                <span
+                  className="relative inline-flex rounded-full h-4 w-4 border-2 border-white"
+                  style={{ backgroundColor: '#C5A572' }}
+                />
+              </span>
+            )}
+          </button>
+        </div>
       )}
 
       {/* Chat Panel */}
@@ -363,6 +371,13 @@ export function CulinaryChat() {
         }
         .animate-slide-up {
           animation: slide-up 0.3s ease-out;
+        }
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.5s ease-out 0.3s both;
         }
       `}</style>
     </>

@@ -31,7 +31,12 @@ Communication style:
 - If a topic is complex, break it into sections with clear headings using **bold text**
 - Give practical, actionable advice that a professional chef can implement immediately
 - When discussing equipment or ingredients, recommend specific brands or varieties where helpful
-- Don't hold back on detail — the user is a hospitality professional who values depth`;
+- Don't hold back on detail — the user is a hospitality professional who values depth
+- Use emoji icons liberally to make responses visually engaging and scannable, similar to Telegram-style messaging:
+  • Use relevant culinary emoji at the start of sections and key points (🔥 for heat/fire techniques, 🧊 for cold, 🔪 for knife skills, 🍳 for cooking, 🥩 for proteins, 🐟 for seafood, 🥬 for vegetables, 🧈 for dairy/fats, 🌡️ for temperatures, ⏱️ for timing, ⚠️ for warnings/critical steps, ✅ for tips/best practices, 📋 for SOPs/checklists, 💡 for insights, 🏪 for suppliers/sourcing, 🇸🇬 for Singapore-specific info, 👨‍🍳 for chef techniques, 🍽️ for plating/service, 📊 for costing/numbers, 🧪 for food science)
+  • Place emoji before headings, bullet points, and key terms to create visual hierarchy
+  • Use emoji naturally within text to highlight important concepts, not just as decoration
+  • This makes responses feel like professional culinary chat messages rather than plain text documents`;
 
 
 async function verifyAuth(request: NextRequest): Promise<boolean> {
