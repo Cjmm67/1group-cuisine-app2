@@ -1,5 +1,4 @@
 import { SignJWT, jwtVerify } from 'jose';
-import bcrypt from 'bcryptjs';
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'default-1cuisinesg-secret-change-in-production'
@@ -14,7 +13,7 @@ export interface AuthUser {
 interface StoredUser {
   email: string;
   name: string;
-  passwordHash: string;
+  password: string;
   role: 'master_admin' | 'admin';
 }
 
@@ -22,20 +21,17 @@ interface StoredUser {
 export function getUsers(): StoredUser[] {
   const users: StoredUser[] = [];
 
-  // Master admin from dedicated env vars
   const masterEmail = process.env.MASTER_ADMIN_EMAIL;
   const masterPassword = process.env.MASTER_ADMIN_PASSWORD;
   if (masterEmail && masterPassword) {
     users.push({
-      email: masterEmail.toLowerCase(),
+      email: masterEmail.toLowerCase().trim(),
       name: 'Master Admin',
-      passwordHash: bcrypt.hashSync(masterPassword, 10),
+      password: masterPassword,
       role: 'master_admin',
     });
   }
 
-  // Additional admin users from JSON env var
-  // Format: [{"email":"x@y.com","name":"Name","password":"pass"}]
   const adminUsersJson = process.env.ADMIN_USERS;
   if (adminUsersJson) {
     try {
@@ -43,9 +39,9 @@ export function getUsers(): StoredUser[] {
       for (const user of adminUsers) {
         if (user.email && user.password) {
           users.push({
-            email: user.email.toLowerCase(),
+            email: user.email.toLowerCase().trim(),
             name: user.name || user.email.split('@')[0],
-            passwordHash: bcrypt.hashSync(user.password, 10),
+            password: user.password,
             role: 'admin',
           });
         }
@@ -64,12 +60,10 @@ export async function validateCredentials(
   password: string
 ): Promise<AuthUser | null> {
   const users = getUsers();
-  const user = users.find((u) => u.email === email.toLowerCase());
+  const user = users.find((u) => u.email === email.toLowerCase().trim());
 
   if (!user) return null;
-
-  const valid = bcrypt.compareSync(password, user.passwordHash);
-  if (!valid) return null;
+  if (user.password !== password) return null;
 
   return {
     email: user.email,

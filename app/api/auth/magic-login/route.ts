@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const runtime = 'nodejs';
 import { jwtVerify } from 'jose';
 import { createToken } from '@/lib/auth';
 
