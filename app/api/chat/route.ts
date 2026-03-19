@@ -1,0 +1,110 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { jwtVerify } from 'jose';
+
+export const runtime = 'nodejs';
+export const maxDuration = 30;
+
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || 'default-1cuisinesg-secret-change-in-production'
+);
+
+const SYSTEM_PROMPT = `You are the 1-Group Culinary Agent — an AI kitchen assistant for 1-Group Singapore, a premium multi-venue hospitality group operating 24 venues across Singapore and Malaysia.
+
+Your expertise covers:
+- Professional cooking techniques, food science, and culinary theory
+- Kitchen SOPs, HACCP, food safety, and training content
+- Kitchen technology, AI in F&B, and industry innovation
+- Singapore F&B industry trends, regulations, and market insights
+- Menu development, recipe scaling, costing (COGS), and mise en place
+- 1-Group venues: 1-Altitude, Kaarla, Oumi, MONTI, Sol & Luna, Sol & Ora, UNA, Fire Restaurant, FLNT, Camille, Wildseed Café, Wildseed Bar & Grill, Botanico, 1-Arden, 1-Flowerhill
+
+Communication style:
+- Professional but approachable — like a senior chef mentoring their team
+- Concise and actionable — chefs are busy, get to the point
+- Use proper F&B terminology (mise en place, covers, pax, daypart, FOH/BOH, BEO, etc.)
+- When giving cooking advice, include temperatures, times, and technique details
+- For Singapore-specific questions, reference local context (NEA regulations, SFA guidelines, hawker culture, etc.)
+- Keep responses focused — 2-4 paragraphs max unless asked for detail
+- Use metric measurements (grams, Celsius, litres)`;
+
+async function verifyAuth(request: NextRequest): Promise<boolean> {
+  const token = request.cookies.get('auth-token')?.value;
+  if (!token) return false;
+  try {
+    await jwtVerify(token, JWT_SECRET);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function POST(request: NextRequest) {
+  // Auth check
+  const isAuth = await verifyAuth(request);
+  if (!isAuth) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Check API key
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json(
+      { error: 'Chat is not configured. Add ANTHROPIC_API_KEY to environment variables.' },
+      { status: 503 }
+    );
+  }
+
+  try {
+    const body = await request.json();
+    const { messages } = body;
+
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      return NextResponse.json({ error: 'Messages are required' }, { status: 400 });
+    }
+
+    // Format messages for Anthropic API
+    const formattedMessages = messages.map((msg: { role: string; content: string }) => ({
+      role: msg.role === 'user' ? 'user' : 'assistant',
+      content: msg.content,
+    }));
+
+    // Call Anthropic API
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1024,
+        system: SYSTEM_PROMPT,
+        messages: formattedMessages,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('Anthropic API error:', response.status, errorData);
+      return NextResponse.json(
+        { error: 'Failed to get response from AI assistant' },
+        { status: 502 }
+      );
+    }
+
+    const data = await response.json();
+    const assistantMessage = data.content
+      ?.filter((block: { type: string }) => block.type === 'text')
+      .map((block: { text: string }) => block.text)
+      .join('\n') || 'Sorry, I could not generate a response.';
+
+    return NextResponse.json({ message: assistantMessage });
+  } catch (err) {
+    console.error('Chat API error:', err);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
