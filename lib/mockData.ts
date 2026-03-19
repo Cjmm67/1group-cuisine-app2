@@ -1222,7 +1222,7 @@ export const MOCK_RECIPES: Recipe[] = [
       { id: 'fish', name: 'Fish', code: 'fish' },
     ],
     foodCostPercent: 42,
-    image: 'https://1-atico.sg/wp-content/uploads/2026/02/250703_ATICO_EDITED-355-scaled.jpg',
+    image: '/chefs/wagyu-ponzu-shiso.jpg',
     menuContext: ['a_la_carte', 'sharing'],
     sustainability: { lowCarbon: false, seasonal: false, zeroWaste: false, score: 45 },
     rating: 4.8,
