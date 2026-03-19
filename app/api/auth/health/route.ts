@@ -9,13 +9,42 @@ export async function GET(request: NextRequest) {
   const hasToken = !!request.cookies.get('auth-token')?.value;
   const jwtSource = hasJwtSecret ? 'env' : 'default';
 
+  // Parse ADMIN_USERS and show diagnostic info
+  let adminUsersDiag: any = 'not set';
+  const adminUsersRaw = process.env.ADMIN_USERS;
+  if (adminUsersRaw) {
+    try {
+      const parsed = JSON.parse(adminUsersRaw);
+      if (Array.isArray(parsed)) {
+        adminUsersDiag = {
+          status: 'valid JSON array',
+          count: parsed.length,
+          users: parsed.map((u: any) => ({
+            email: u.email || '❌ MISSING',
+            name: u.name || '(no name)',
+            hasPassword: !!u.password,
+            passwordLength: u.password ? u.password.length : 0,
+          })),
+        };
+      } else {
+        adminUsersDiag = { status: '❌ NOT an array — must be wrapped in [ ]', raw_type: typeof parsed };
+      }
+    } catch (e: any) {
+      adminUsersDiag = {
+        status: '❌ INVALID JSON — parse error',
+        error: e.message,
+        raw_preview: adminUsersRaw.substring(0, 100) + (adminUsersRaw.length > 100 ? '...' : ''),
+      };
+    }
+  }
+
   return NextResponse.json({
     status: hasEmail && hasPassword ? 'configured' : 'NOT CONFIGURED',
     env: {
       MASTER_ADMIN_EMAIL: hasEmail ? `set (${process.env.MASTER_ADMIN_EMAIL})` : '❌ NOT SET',
       MASTER_ADMIN_PASSWORD: hasPassword ? 'set (hidden)' : '❌ NOT SET',
       JWT_SECRET: hasJwtSecret ? 'set (custom)' : '⚠️ using default fallback',
-      ADMIN_USERS: process.env.ADMIN_USERS ? 'set' : 'not set (optional)',
+      ADMIN_USERS: adminUsersDiag,
       CHEF_PASSWORD: process.env.CHEF_PASSWORD ? 'set (hidden)' : 'not set (chef login disabled)',
       CHEF_EMAIL_DOMAINS: process.env.CHEF_EMAIL_DOMAINS || '1-group.sg (default)',
     },
