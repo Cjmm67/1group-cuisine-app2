@@ -70,20 +70,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [user, resetTimer]);
 
-  // Fetch current user on mount
+  // Fetch current user on mount — with retry
   useEffect(() => {
+    let retries = 0;
     const fetchUser = async () => {
       try {
-        const res = await fetch('/api/auth/me');
+        const res = await fetch('/api/auth/me', { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
-          setUser(data.user);
-        } else {
-          setUser(null);
+          if (data.user) {
+            setUser(data.user);
+            setLoading(false);
+            return;
+          }
         }
-      } catch {
+        // If 401, user is genuinely not logged in
+        if (res.status === 401) {
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+        // Other errors — retry up to 2 times
+        if (retries < 2) {
+          retries++;
+          setTimeout(fetchUser, 1000);
+          return;
+        }
         setUser(null);
-      } finally {
+        setLoading(false);
+      } catch {
+        if (retries < 2) {
+          retries++;
+          setTimeout(fetchUser, 1000);
+          return;
+        }
+        setUser(null);
         setLoading(false);
       }
     };

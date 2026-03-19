@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -19,7 +19,6 @@ function LoginForm() {
   const [forgotSent, setForgotSent] = useState(false);
   const [forgotLoading, setForgotLoading] = useState(false);
   const { login } = useAuth();
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,7 +30,7 @@ function LoginForm() {
 
     if (result.success) {
       const redirect = searchParams.get('redirect') || '/';
-      router.push(redirect);
+      window.location.href = redirect;
     } else {
       setError(result.error || 'Invalid credentials');
     }
