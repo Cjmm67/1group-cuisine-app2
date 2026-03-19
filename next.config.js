@@ -13,6 +13,22 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'images.getbento.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.joseavillez.pt',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.nikoromito.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.restauranteelkano.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'osteriafrancescana.it',
       },
       {
