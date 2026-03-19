@@ -1,7 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface User {
   email: string;
@@ -27,30 +27,68 @@ const AuthContext = createContext<AuthContextType>({
   isAdmin: false,
 });
 
+const INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const fetchUser = useCallback(async () => {
+  const performLogout = useCallback(async () => {
     try {
-      const res = await fetch('/api/auth/me');
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data.user);
-      } else {
-        setUser(null);
-      }
-    } catch {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch {}
+    setUser(null);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    router.push('/login');
+  }, [router]);
 
+  // Reset inactivity timer on any user activity
+  const resetTimer = useCallback(() => {
+    if (!user) return;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      performLogout();
+    }, INACTIVITY_TIMEOUT);
+  }, [user, performLogout]);
+
+  // Set up activity listeners
   useEffect(() => {
+    if (!user) return;
+
+    const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'mousemove'];
+    const handler = () => resetTimer();
+
+    events.forEach((e) => window.addEventListener(e, handler, { passive: true }));
+    resetTimer(); // Start the timer
+
+    return () => {
+      events.forEach((e) => window.removeEventListener(e, handler));
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [user, resetTimer]);
+
+  // Fetch current user on mount
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
+      } catch {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchUser();
-  }, [fetchUser]);
+  }, []);
 
   const login = async (email: string, password: string) => {
     try {
@@ -73,19 +111,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const logout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    setUser(null);
-    router.push('/login');
-  };
-
   return (
     <AuthContext.Provider
       value={{
         user,
         loading,
         login,
-        logout,
+        logout: performLogout,
         isMasterAdmin: user?.role === 'master_admin',
         isAdmin: user?.role === 'master_admin' || user?.role === 'admin',
       }}
