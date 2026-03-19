@@ -24,6 +24,9 @@ const nextConfig = {
         hostname: 'www.nikoromito.com',
       },
       {
+        hostname: 'reportergourmet.com',
+      },
+      {
         protocol: 'https',
         hostname: 'www.restauranteelkano.com',
       },
