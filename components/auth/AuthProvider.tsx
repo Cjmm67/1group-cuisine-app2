@@ -6,7 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 interface User {
   email: string;
   name: string;
-  role: 'master_admin' | 'admin';
+  role: 'master_admin' | 'admin' | 'chef';
 }
 
 interface AuthContextType {
@@ -16,6 +16,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   isMasterAdmin: boolean;
   isAdmin: boolean;
+  isChef: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -25,6 +26,7 @@ const AuthContext = createContext<AuthContextType>({
   logout: async () => {},
   isMasterAdmin: false,
   isAdmin: false,
+  isChef: false,
 });
 
 const INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5 minutes
@@ -141,6 +143,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logout: performLogout,
         isMasterAdmin: user?.role === 'master_admin',
         isAdmin: user?.role === 'master_admin' || user?.role === 'admin',
+        isChef: user?.role === 'chef',
       }}
     >
       {children}

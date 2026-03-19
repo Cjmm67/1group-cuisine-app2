@@ -35,7 +35,7 @@ export async function middleware(request: NextRequest) {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
 
-    // Admin-only routes
+    // Admin-only routes — block chef role
     if (pathname.startsWith('/admin')) {
       const role = payload.role as string;
       if (role !== 'master_admin' && role !== 'admin') {

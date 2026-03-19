@@ -188,6 +188,7 @@ export default function LoginPage() {
               1-CUISINESG
             </h1>
             <p className="text-gray-500">Sign in to access the culinary platform</p>
+            <p className="text-xs text-gray-400 mt-1">1-Group chefs: use your company email</p>
           </div>
         </CardHeader>
 

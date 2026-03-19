@@ -7,7 +7,7 @@ const JWT_SECRET = new TextEncoder().encode(
 export interface AuthUser {
   email: string;
   name: string;
-  role: 'master_admin' | 'admin';
+  role: 'master_admin' | 'admin' | 'chef';
 }
 
 interface StoredUser {
@@ -17,7 +17,16 @@ interface StoredUser {
   role: 'master_admin' | 'admin';
 }
 
-/** Get all users from environment variables */
+/** Get allowed chef email domains from env (defaults to 1-group.sg) */
+function getChefEmailDomains(): string[] {
+  const domainsEnv = process.env.CHEF_EMAIL_DOMAINS;
+  if (domainsEnv) {
+    return domainsEnv.split(',').map((d) => d.trim().toLowerCase());
+  }
+  return ['1-group.sg'];
+}
+
+/** Get all admin users from environment variables */
 export function getUsers(): StoredUser[] {
   const users: StoredUser[] = [];
 
@@ -54,22 +63,39 @@ export function getUsers(): StoredUser[] {
   return users;
 }
 
-/** Validate login credentials */
+/** Validate login credentials — checks admins first, then chef domain login */
 export async function validateCredentials(
   email: string,
   password: string
 ): Promise<AuthUser | null> {
+  const normalizedEmail = email.toLowerCase().trim();
+
+  // 1. Check admin users first (master_admin and admin roles)
   const users = getUsers();
-  const user = users.find((u) => u.email === email.toLowerCase().trim());
+  const adminUser = users.find((u) => u.email === normalizedEmail);
+  if (adminUser && adminUser.password === password) {
+    return {
+      email: adminUser.email,
+      name: adminUser.name,
+      role: adminUser.role,
+    };
+  }
 
-  if (!user) return null;
-  if (user.password !== password) return null;
+  // 2. Check chef domain login (shared password, validated email domain)
+  const chefPassword = process.env.CHEF_PASSWORD;
+  if (chefPassword && password === chefPassword) {
+    const emailDomain = normalizedEmail.split('@')[1];
+    const allowedDomains = getChefEmailDomains();
+    if (emailDomain && allowedDomains.includes(emailDomain)) {
+      return {
+        email: normalizedEmail,
+        name: normalizedEmail.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+        role: 'chef',
+      };
+    }
+  }
 
-  return {
-    email: user.email,
-    name: user.name,
-    role: user.role,
-  };
+  return null;
 }
 
 /** Create a signed JWT token */
@@ -92,7 +118,7 @@ export async function verifyToken(token: string): Promise<AuthUser | null> {
     return {
       email: payload.email as string,
       name: payload.name as string,
-      role: payload.role as 'master_admin' | 'admin',
+      role: payload.role as 'master_admin' | 'admin' | 'chef',
     };
   } catch {
     return null;

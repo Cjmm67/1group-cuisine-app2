@@ -16,6 +16,8 @@ export async function GET(request: NextRequest) {
       MASTER_ADMIN_PASSWORD: hasPassword ? 'set (hidden)' : '❌ NOT SET',
       JWT_SECRET: hasJwtSecret ? 'set (custom)' : '⚠️ using default fallback',
       ADMIN_USERS: process.env.ADMIN_USERS ? 'set' : 'not set (optional)',
+      CHEF_PASSWORD: process.env.CHEF_PASSWORD ? 'set (hidden)' : 'not set (chef login disabled)',
+      CHEF_EMAIL_DOMAINS: process.env.CHEF_EMAIL_DOMAINS || '1-group.sg (default)',
     },
     cookie: hasToken ? 'auth token present' : 'no auth token',
     jwtSource,
