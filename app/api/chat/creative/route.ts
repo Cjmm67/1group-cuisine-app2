@@ -126,10 +126,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Messages are required' }, { status: 400 });
     }
 
-    const formattedMessages = messages.map((msg: { role: string; content: string }) => ({
-      role: msg.role === 'user' ? 'user' : 'assistant',
-      content: msg.content,
-    }));
+    const formattedMessages = messages.map((msg: { role: string; content: any }) => {
+      // Support multi-modal content (text + documents/images)
+      if (Array.isArray(msg.content)) {
+        return {
+          role: msg.role === 'user' ? 'user' : 'assistant',
+          content: msg.content,
+        };
+      }
+      return {
+        role: msg.role === 'user' ? 'user' : 'assistant',
+        content: msg.content,
+      };
+    });
 
     let systemPrompt = CREATIVE_SYSTEM_PROMPT;
     if (mode) {

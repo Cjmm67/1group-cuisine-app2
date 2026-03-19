@@ -4,12 +4,21 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import {
   ChefHat, Flame, UtensilsCrossed, BookOpen, RefreshCw, Palette, FlaskConical,
-  Send, Loader2, ArrowLeft, Sparkles, X,
+  Send, Loader2, ArrowLeft, Sparkles, X, Upload, FileText, Image as ImageIcon,
 } from 'lucide-react';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+  fileName?: string;
+}
+
+interface AttachedFile {
+  name: string;
+  type: 'pdf' | 'image' | 'text';
+  textContent?: string;
+  base64?: string;
+  mediaType?: string;
 }
 
 const MODES = [
@@ -155,8 +164,10 @@ export default function CreatePage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [attachedFile, setAttachedFile] = useState<AttachedFile | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -198,13 +209,120 @@ export default function CreatePage() {
     setIsLoading(false);
   };
 
+  const handleFileSelect = async (file: File) => {
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File too large — max 10MB');
+      return;
+    }
+
+    if (file.type === 'application/pdf') {
+      // Read PDF as base64 for Anthropic API document type
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = (reader.result as string).split(',')[1];
+        setAttachedFile({
+          name: file.name,
+          type: 'pdf',
+          base64,
+          mediaType: 'application/pdf',
+        });
+      };
+      reader.readAsDataURL(file);
+    } else if (file.type.startsWith('image/')) {
+      // Read image as base64
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = (reader.result as string).split(',')[1];
+        const mediaType = file.type as string;
+        setAttachedFile({
+          name: file.name,
+          type: 'image',
+          base64,
+          mediaType,
+        });
+      };
+      reader.readAsDataURL(file);
+    } else if (file.type === 'text/plain' || file.name.endsWith('.txt') || file.name.endsWith('.csv')) {
+      const text = await file.text();
+      setAttachedFile({
+        name: file.name,
+        type: 'text',
+        textContent: text,
+      });
+    } else {
+      alert('Supported formats: PDF, images (JPG, PNG), or text files');
+    }
+  };
+
+  const handleFileDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file) handleFileSelect(file);
+  };
+
   const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+    if ((!input.trim() && !attachedFile) || isLoading) return;
     const userMsg = input.trim();
     setInput('');
+    const currentFile = attachedFile;
+    setAttachedFile(null);
 
-    const newMessages: Message[] = [...messages, { role: 'user', content: userMsg }];
-    setMessages(newMessages);
+    // Build the display message
+    const displayText = currentFile
+      ? userMsg
+        ? `📎 ${currentFile.name}\n\n${userMsg}`
+        : `📎 ${currentFile.name}\n\nAnalyse this menu — run the full Brand DNA Analysis, competitive benchmarking, and opportunity map.`
+      : userMsg;
+
+    // Build the API content blocks
+    let apiContent: any;
+    if (currentFile) {
+      const blocks: any[] = [];
+
+      if (currentFile.type === 'pdf' && currentFile.base64) {
+        blocks.push({
+          type: 'document',
+          source: {
+            type: 'base64',
+            media_type: 'application/pdf',
+            data: currentFile.base64,
+          },
+        });
+      } else if (currentFile.type === 'image' && currentFile.base64) {
+        blocks.push({
+          type: 'image',
+          source: {
+            type: 'base64',
+            media_type: currentFile.mediaType,
+            data: currentFile.base64,
+          },
+        });
+      } else if (currentFile.type === 'text' && currentFile.textContent) {
+        blocks.push({
+          type: 'text',
+          text: `[UPLOADED MENU FILE: ${currentFile.name}]\n\n${currentFile.textContent}`,
+        });
+      }
+
+      // Add user text instruction
+      blocks.push({
+        type: 'text',
+        text: userMsg || `This is a menu from a 1-Group venue. Run the full Menu Intelligence Engine: Brand DNA Analysis, competitive benchmarking against comparable restaurants in Singapore and internationally, gap analysis, and opportunity map with specific dish concepts. Be specific with restaurant references and actionable ideas.`,
+      });
+
+      apiContent = blocks;
+    } else {
+      apiContent = userMsg;
+    }
+
+    // Build message history for API (previous messages as text-only, new message may be multimodal)
+    const prevApiMessages = messages.map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
+
+    const newDisplayMessages: Message[] = [...messages, { role: 'user' as const, content: displayText, fileName: currentFile?.name }];
+    setMessages(newDisplayMessages);
     setIsLoading(true);
 
     try {
@@ -212,16 +330,16 @@ export default function CreatePage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: newMessages,
+          messages: [...prevApiMessages, { role: 'user', content: apiContent }],
           mode: activeMode?.mode,
         }),
       });
       const data = await res.json();
       if (data.message) {
-        setMessages([...newMessages, { role: 'assistant', content: data.message }]);
+        setMessages([...newDisplayMessages, { role: 'assistant', content: data.message }]);
       }
     } catch {
-      setMessages([...newMessages, { role: 'assistant', content: 'Sorry, something went wrong. Please try again.' }]);
+      setMessages([...newDisplayMessages, { role: 'assistant', content: 'Sorry, something went wrong. Please try again.' }]);
     }
     setIsLoading(false);
   };
@@ -237,6 +355,7 @@ export default function CreatePage() {
     setActiveMode(null);
     setMessages([]);
     setInput('');
+    setAttachedFile(null);
   };
 
   // ── Mode Selection View ──
@@ -431,31 +550,75 @@ export default function CreatePage() {
       </div>
 
       {/* Input */}
-      <div className="flex-shrink-0 bg-white border-t border-gray-200 px-4 sm:px-6 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-        <div className="max-w-screen-lg mx-auto flex items-end gap-2">
-          <textarea
-            ref={inputRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Describe your idea, ingredient, technique, or challenge..."
-            disabled={isLoading}
-            rows={1}
-            className="flex-1 px-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-xl outline-none transition-colors focus:border-gold-400 focus:ring-1 focus:ring-gold-400 disabled:opacity-50 placeholder:text-gray-400 resize-none"
-            style={{ minHeight: '44px', maxHeight: '120px' }}
-            onInput={(e) => {
-              const el = e.target as HTMLTextAreaElement;
-              el.style.height = '44px';
-              el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-            }}
-          />
-          <button
-            onClick={sendMessage}
-            disabled={!input.trim() || isLoading}
-            className="w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-200 disabled:opacity-30 hover:opacity-90 active:scale-95 flex-shrink-0 bg-gray-900 hover:bg-gray-800"
-          >
-            <Send size={16} className="text-white ml-0.5" />
-          </button>
+      <div
+        className="flex-shrink-0 bg-white border-t border-gray-200 px-4 sm:px-6 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+        onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('bg-gold-50'); }}
+        onDragLeave={(e) => { e.currentTarget.classList.remove('bg-gold-50'); }}
+        onDrop={(e) => { e.currentTarget.classList.remove('bg-gold-50'); handleFileDrop(e); }}
+      >
+        <div className="max-w-screen-lg mx-auto">
+          {/* Attached file preview */}
+          {attachedFile && (
+            <div className="flex items-center gap-2 mb-2 px-3 py-2 bg-gold-50 border border-gold-200 rounded-lg text-sm">
+              {attachedFile.type === 'pdf' ? <FileText size={16} className="text-gold-600 flex-shrink-0" /> : <ImageIcon size={16} className="text-gold-600 flex-shrink-0" />}
+              <span className="text-gold-800 font-medium truncate flex-1">{attachedFile.name}</span>
+              <button onClick={() => setAttachedFile(null)} className="text-gold-400 hover:text-gold-600 flex-shrink-0">
+                <X size={14} />
+              </button>
+            </div>
+          )}
+
+          <div className="flex items-end gap-2">
+            {/* Upload button */}
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isLoading}
+              className="w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-200 hover:bg-gray-100 active:bg-gray-200 disabled:opacity-30 flex-shrink-0 border border-gray-200"
+              title="Upload menu (PDF, image, or text file)"
+            >
+              <Upload size={18} className="text-gray-500" />
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png,.webp,.txt,.csv"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleFileSelect(file);
+                e.target.value = '';
+              }}
+            />
+
+            {/* Text input */}
+            <textarea
+              ref={inputRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={attachedFile ? "Add notes about this menu (optional)..." : "Describe your idea, paste a menu, or drop a file..."}
+              disabled={isLoading}
+              rows={1}
+              className="flex-1 px-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-xl outline-none transition-colors focus:border-gold-400 focus:ring-1 focus:ring-gold-400 disabled:opacity-50 placeholder:text-gray-400 resize-none"
+              style={{ minHeight: '44px', maxHeight: '120px' }}
+              onInput={(e) => {
+                const el = e.target as HTMLTextAreaElement;
+                el.style.height = '44px';
+                el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+              }}
+            />
+
+            {/* Send button */}
+            <button
+              onClick={sendMessage}
+              disabled={(!input.trim() && !attachedFile) || isLoading}
+              className="w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-200 disabled:opacity-30 hover:opacity-90 active:scale-95 flex-shrink-0 bg-gray-900 hover:bg-gray-800"
+            >
+              <Send size={16} className="text-white ml-0.5" />
+            </button>
+          </div>
+
+          <p className="text-[10px] text-gray-400 mt-1.5 text-center">Drop a PDF or image of your menu, or paste the text directly</p>
         </div>
       </div>
     </div>
