@@ -3806,6 +3806,32 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
     enrollmentCount: 2100,
     createdAt: new Date(),
   },
+  {
+    id: 'mc-23',
+    title: 'Elevating The Dining Experience At The Plenitude Suite',
+    chef: MOCK_CHEFS[22],
+    description: 'Michelin Insider: Elevating The Dining Experience At The Plenitude Suite. Chef Christopher Millar takes diners on a multi-sensory journey at the world\'s first permanent Dom Pérignon Plénitude Suite, housed within Stellar at 1-Altitude on the 62nd floor of One Raffles Place. A 10-course seasonal menu paired with Dom Pérignon champagne, immersive multimedia projections, and virtual farm-to-table trips from the Abbey of Hautvillers to Sturia caviar farms and Hervé Mons cheese caves.',
+    image: '/chefs/plenitude-suite-thumbnail.jpg',
+    michelinLogo: '/chefs/michelin-logo.png',
+    videoId: 'A2zGV3lEfnc',
+    level: 'advanced',
+    cuisine: ['Progressive Australian', 'Dom Pérignon Pairing'],
+    duration: 5,
+    price: 0,
+    episodes: [
+      {
+        id: 'ep-23',
+        order: 1,
+        title: 'Christopher Millar — The Plenitude Suite, Stellar at 1-Altitude',
+        description: 'MICHELIN Guide Insider Series: Elevating The Dining Experience At The Plenitude Suite with Dom Pérignon',
+        duration: 5,
+        relatedRecipeIds: [],
+      },
+    ],
+    rating: 4.9,
+    enrollmentCount: 2800,
+    createdAt: new Date(),
+  },
 ];
 
 MOCK_CHEFS.forEach((chef) => {
