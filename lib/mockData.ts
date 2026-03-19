@@ -3313,6 +3313,31 @@ export const MOCK_MASTERCLASSES: Masterclass[] = [
     enrollmentCount: 1722,
     createdAt: new Date(),
   },
+  {
+    id: 'mc-21',
+    title: 'In Search of the Best Fiorentina Steak — MONTI × Mayura Station',
+    chef: MOCK_CHEFS[8],
+    description: 'MICHELIN Guide Insider Series: 1-Group Culinary Director Christopher Millar and MONTI Head Chef Felix Chong travel to Mayura Station in South Australia to understand paddock-to-plate wagyu cultivation, then visit Chef Guy Grossi at Grossi Florentino in Melbourne to master the Tuscan Fiorentina steak technique. From tagging newborn calves to learning the secret of the chocolate-fed wagyu "lollimix" feed, this journey transforms how MONTI presents its signature Mayura Fiorentina.',
+    image: 'https://img.youtube.com/vi/fP3LmC-3sHs/maxresdefault.jpg',
+    videoId: 'fP3LmC-3sHs',
+    level: 'advanced',
+    cuisine: ['Italian', 'Australian Wagyu'],
+    duration: 15,
+    price: 0,
+    episodes: [
+      {
+        id: 'ep-21',
+        order: 1,
+        title: 'Christopher Millar & Felix Chong — MONTI, 1-Group Singapore',
+        description: 'MICHELIN Guide Insider Series: In Search of the Best Fiorentina Steak — from Mayura Station to Grossi Florentino to MONTI Singapore',
+        duration: 15,
+        relatedRecipeIds: [],
+      },
+    ],
+    rating: 4.9,
+    enrollmentCount: 3200,
+    createdAt: new Date(),
+  },
 ];
 
 MOCK_CHEFS.forEach((chef) => {
