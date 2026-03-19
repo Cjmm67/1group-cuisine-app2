@@ -41,15 +41,17 @@ export default function Home() {
   const heroRecipe = MOCK_RECIPES[0];
 
   const venues = [
-    { name: '1-Altitude', cuisine: 'Rooftop Bar & Lounge, Level 63 One Raffles Place' },
-    { name: 'Kaarla', cuisine: 'Modern Australian, Live-Fire' },
-    { name: 'Oumi', cuisine: 'Japanese Omakase & Kappo' },
-    { name: 'MONTI', cuisine: 'Italian, Ospitalita Italiana Certified' },
-    { name: 'Sol & Luna', cuisine: 'Spanish-Mediterranean' },
-    { name: 'UNA', cuisine: 'Spanish, ICEX Certified' },
-    { name: 'Fire Restaurant', cuisine: 'Argentine Open-Flame' },
-    { name: 'FLNT', cuisine: 'Nikkei (Japanese-Peruvian)' },
-    { name: 'Camille', cuisine: 'French Bistro, All-Day Dining' },
+    { name: '1-Arden', desc: 'Rooftop Bar, CapitaSpring', url: 'https://www.1-group.sg/1arden' },
+    { name: '1-Altitude Coast', desc: 'Beachfront Bar & Dining', url: 'https://www.1-group.sg/1altitudecoast' },
+    { name: '1-Altitude Melaka', desc: 'Rooftop Lounge, Malaysia', url: 'https://www.1-group.sg/1altitudemelaka' },
+    { name: '1-Atico', desc: 'Sky Lounge, CapitaSpring', url: 'https://www.1-group.sg/1atico' },
+    { name: '1-Flowerhill', desc: 'Garden Dining & Events', url: 'https://www.1-group.sg/1flowerhill' },
+    { name: '1-Alfaro', desc: 'Heritage Bar & Kitchen', url: 'https://www.1-group.sg/1alfaro' },
+    { name: 'MONTI', desc: 'Italian, Fullerton Pavilion', url: 'https://www.monti.sg' },
+    { name: 'The Riverhouse', desc: 'Clarke Quay Heritage', url: 'https://www.1-group.sg/theriverhouse' },
+    { name: 'The Summerhouse', desc: 'Seletar Aerospace Park', url: 'https://www.1-group.sg/thesummerhouse' },
+    { name: 'The Garage', desc: 'Botanic Gardens', url: 'https://www.1-group.sg/thegarage' },
+    { name: 'Alkaff Mansion', desc: 'Heritage Estate, Telok Blangah', url: 'https://www.1-group.sg/alkaff' },
   ];
 
   return (
@@ -129,10 +131,16 @@ export default function Home() {
           <h2 className="text-lg font-bold text-gray-900 mb-5 text-center">Our Venues</h2>
           <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide touch-pan-x sm:flex-wrap sm:justify-center sm:overflow-visible sm:pb-0">
             {venues.map((v) => (
-              <div key={v.name} className="bg-white border border-gray-200 rounded-lg px-5 py-3 text-center hover:border-gold-300 hover:shadow-sm transition-all flex-shrink-0 min-w-[160px] sm:min-w-0 sm:flex-shrink">
-                <p className="font-semibold text-sm text-gray-900">{v.name}</p>
-                <p className="text-xs text-gray-500">{v.cuisine}</p>
-              </div>
+              <a
+                key={v.name}
+                href={v.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-white border border-gray-200 rounded-lg px-5 py-3 text-center hover:border-gold-400 hover:shadow-md transition-all flex-shrink-0 min-w-[160px] sm:min-w-0 sm:flex-shrink active:scale-[0.98] group"
+              >
+                <p className="font-semibold text-sm text-gray-900 group-hover:text-gold-700 transition-colors">{v.name}</p>
+                <p className="text-xs text-gray-500">{v.desc}</p>
+              </a>
             ))}
           </div>
         </div>
