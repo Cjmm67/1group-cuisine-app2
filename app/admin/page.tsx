@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
-import { Users, ChefHat, BookOpen, Shield } from 'lucide-react';
+import { Users, ChefHat, BookOpen, Shield, Briefcase } from 'lucide-react';
 
 export default function AdminPage() {
   const { user, isMasterAdmin } = useAuth();
@@ -30,6 +30,21 @@ export default function AdminPage() {
               <div>
                 <h3 className="font-semibold text-gray-900 mb-1">Manage Recipes</h3>
                 <p className="text-sm text-gray-500">Add or edit recipes for your chef profile</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        {/* Job Positions */}
+        <Link href="/admin/jobs">
+          <Card variant="interactive" className="h-full card-hover">
+            <CardContent className="p-6 flex flex-col items-center text-center gap-4">
+              <div className="w-14 h-14 rounded-xl bg-emerald-50 flex items-center justify-center">
+                <Briefcase size={28} className="text-emerald-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-1">Job Positions</h3>
+                <p className="text-sm text-gray-500">Post and manage open positions across venues</p>
               </div>
             </CardContent>
           </Card>
