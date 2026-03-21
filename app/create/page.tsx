@@ -5,7 +5,7 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import {
   ChefHat, Flame, UtensilsCrossed, BookOpen, RefreshCw, Palette, FlaskConical,
   Send, Loader2, ArrowLeft, Sparkles, X, Upload, FileText, Image as ImageIcon,
-  ChevronRight, Check, Copy, CheckCheck, ArrowRight, Building2, AlertCircle,
+  ChevronRight, Check, Copy, CheckCheck, ArrowRight, Building2, AlertCircle, Download, Paintbrush,
 } from 'lucide-react';
 import { MOCK_CHEFS, MOCK_RECIPES } from '@/lib/mockData';
 
@@ -126,10 +126,197 @@ function MenuAnalysisPanel({ analysis }: { analysis: MenuAnalysis }) {
 }
 
 // ─── ADAPTATION RESULT PANEL ──────────────────────────────────────────────────
+// ─── PLATING SKETCH COMPONENT ────────────────────────────────────────────────
+function PlatingSketch({ adaptation, venueName, venueAccent, onSvgGenerated }: {
+  adaptation: VenueAdaptation; venueName: string; venueAccent: string; onSvgGenerated?: (svg: string) => void;
+}) {
+  const [svg, setSvg] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [zoomed, setZoomed] = useState(false);
+
+  const generate = async () => {
+    setLoading(true); setError(null);
+    try {
+      const res = await fetch('/api/chat/sketch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: adaptation.title, venueName,
+          imagePrompt: adaptation.imagePrompt,
+          components: adaptation.components,
+          assembly: adaptation.assembly,
+          venueAccent,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Sketch generation failed');
+      setSvg(data.svg);
+      if (onSvgGenerated) onSvgGenerated(data.svg);
+    } catch (err: any) {
+      setError(err.message || 'Something went wrong. Please try again.');
+    } finally { setLoading(false); }
+  };
+
+  const downloadSvg = () => {
+    if (!svg) return;
+    const blob = new Blob([svg], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${adaptation.title.toLowerCase().replace(/\s+/g, '-')}-plating-sketch.svg`;
+    a.click(); URL.revokeObjectURL(url);
+  };
+
+  if (!svg && !loading) return (
+    <div className="border border-dashed border-stone-200 rounded-xl p-6 text-center">
+      <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center" style={{ background: `${venueAccent}15` }}>
+        <Paintbrush size={22} style={{ color: venueAccent }} />
+      </div>
+      <div className="font-semibold text-stone-700 mb-1 text-sm">Plating Sketch</div>
+      <p className="text-xs text-stone-400 mb-4 max-w-xs mx-auto leading-relaxed">Generate an SVG plating diagram showing vessel, component placement, sauce work, and garnish positions.</p>
+      <button onClick={generate} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wide transition-all active:scale-97 text-white" style={{ background: venueAccent }}>
+        <Paintbrush size={14} /> Generate Sketch
+      </button>
+    </div>
+  );
+
+  if (loading) return (
+    <div className="border border-stone-200 rounded-xl p-10 text-center">
+      <div className="flex justify-center gap-2 mb-4">
+        {[0,1,2].map(i => <div key={i} className="w-2 h-2 rounded-full animate-bounce" style={{ background: venueAccent, animationDelay: `${i*0.15}s` }} />)}
+      </div>
+      <div className="text-sm font-semibold text-stone-600 mb-1">Drawing the plating diagram...</div>
+      <p className="text-xs text-stone-400">Composing vessel, elements, and labels</p>
+    </div>
+  );
+
+  if (error) return (
+    <div className="border border-red-100 rounded-xl p-6 text-center">
+      <p className="text-sm text-red-500 mb-3">{error}</p>
+      <button onClick={generate} className="text-xs font-bold uppercase tracking-wide px-4 py-2 rounded-lg border border-stone-200 hover:border-stone-400 transition-colors">Try again</button>
+    </div>
+  );
+
+  return (
+    <div>
+      <div className={`relative rounded-xl overflow-hidden border border-stone-200 bg-stone-50 ${zoomed ? 'fixed inset-4 z-50 shadow-2xl overflow-auto' : ''}`}>
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-stone-100 bg-white">
+          <div className="text-xs font-bold tracking-widest uppercase" style={{ color: venueAccent }}>Plating Sketch</div>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setZoomed(z => !z)} className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-semibold border border-stone-200 text-stone-400 hover:border-stone-400 hover:text-stone-600 transition-all">
+              {zoomed ? 'Close' : 'Expand'}
+            </button>
+            <button onClick={downloadSvg} className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wide transition-all" style={{ background: `${venueAccent}18`, color: venueAccent, border: `1px solid ${venueAccent}40` }}>
+              <Download size={11} /> SVG
+            </button>
+            <button onClick={() => { setSvg(null); generate(); }} className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-semibold border border-stone-200 text-stone-400 hover:border-stone-400 hover:text-stone-600 transition-all">
+              <Paintbrush size={11} /> Redo
+            </button>
+          </div>
+        </div>
+        <div className="p-4" dangerouslySetInnerHTML={{ __html: svg || '' }} style={{ maxWidth: '100%' }} />
+      </div>
+      {zoomed && <div className="fixed inset-0 bg-black/40 z-40" onClick={() => setZoomed(false)} />}
+    </div>
+  );
+}
+
+// ─── PDF EXPORT ───────────────────────────────────────────────────────────────
+function downloadAsPDF(result: AdaptationResult, chefName: string, originalTitle: string, venueAccent: string, svgSketch?: string | null) {
+  const { menuAnalysis: m, adaptation: a } = result;
+  const componentHtml = (a.components || []).map((comp, ci) => `
+    <div class="component">
+      <div class="component-title">Component ${ci + 1} \u2014 ${comp.name}</div>
+      <div class="two-col">
+        <div>
+          <div class="section-label">Ingredients</div>
+          ${(comp.ingredients || []).map(i => `<div class="ingredient">\u00b7 ${i}</div>`).join('')}
+          ${comp.makeAhead ? `<div class="make-ahead"><strong>Make-ahead:</strong> ${comp.makeAhead}</div>` : ''}
+        </div>
+        <div>
+          <div class="section-label">Method</div>
+          ${(comp.method || []).map((s, si) => `<div class="step"><span class="step-num">${si + 1}.</span><span>${s}</span></div>`).join('')}
+        </div>
+      </div>
+    </div>`).join('');
+
+  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>${a.title}</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:#FAF8F4;color:#2C2C2C;font-size:11px;line-height:1.6}.page{max-width:800px;margin:0 auto;padding:40px 48px}
+.header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;border-bottom:2px solid ${venueAccent};margin-bottom:28px}
+.brand{font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:${venueAccent};margin-bottom:6px}
+.venue-name{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#1B3A2D}
+.header-right{text-align:right;font-size:9px;color:#8B8578;line-height:1.8}
+.dish-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#1B3A2D;margin-bottom:6px}
+.dish-sub{font-size:11px;color:#8B8578;margin-bottom:16px}
+.philosophy{border-left:4px solid ${venueAccent};padding:12px 16px;background:${venueAccent}18;border-radius:0 6px 6px 0;margin-bottom:20px;font-size:11.5px;line-height:1.7}
+.block-label{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:${venueAccent};margin-bottom:6px}
+.meta-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px 20px;padding:14px 0;border-top:1px solid #E5E0D8;border-bottom:1px solid #E5E0D8;margin-bottom:24px}
+.meta-label{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8B8578;margin-bottom:2px}
+.meta-val{font-size:12px;font-weight:600;color:#1B3A2D}.allergen-val{color:#C44536!important}
+.sketch-box{border:1px solid #E0DDD8;border-radius:10px;padding:16px;background:#FAF8F4;margin-bottom:24px}
+.sketch-box svg{width:100%;height:auto;display:block}
+.analysis-box{background:#1B3A2D;border-radius:10px;padding:16px 20px;margin-bottom:24px}
+.analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;margin-top:10px}
+.analysis-label{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#C9A84C;margin-bottom:3px}
+.analysis-val{font-size:10px;color:#D4CFC7;line-height:1.5}
+.analysis-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:2px}
+.analysis-identity{font-size:10px;color:#A0A098;font-style:italic;margin-bottom:10px}
+.hero-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.hero-tag{background:#2D5A45;color:#C9A84C;font-size:9px;font-weight:600;padding:2px 7px;border-radius:20px}
+.component{margin-bottom:20px;padding-left:14px;border-left:2px solid ${venueAccent}}
+.component-title{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:${venueAccent};margin-bottom:10px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.section-label{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8B8578;margin-bottom:6px}
+.ingredient{padding:1.5px 0;font-size:10.5px;color:#3C3C3C}
+.make-ahead{margin-top:8px;background:#F0EDE8;padding:6px 10px;border-radius:4px;font-size:10px;color:#5C5C5C}
+.step{display:flex;gap:8px;margin-bottom:5px;font-size:10.5px;line-height:1.55}
+.step-num{color:${venueAccent};font-weight:700;min-width:16px;flex-shrink:0}
+.assembly-step{display:flex;gap:10px;padding:5px 0;border-bottom:1px solid #ECEAE6;font-size:10.5px}
+.assembly-step:last-child{border-bottom:none}
+.assembly-num{color:${venueAccent};font-weight:700;min-width:16px;flex-shrink:0}
+.plating-ref{font-size:10px;color:#8B8578;font-style:italic;margin-top:8px;line-height:1.5}
+.note{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #ECEAE6;font-size:10.5px;line-height:1.55}
+.note:last-child{border-bottom:none}
+.note-dash{color:${venueAccent};font-weight:700;flex-shrink:0}
+h2{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#2C2C2C;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #E5E0D8}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid #E5E0D8;display:flex;justify-content:space-between;font-size:9px;color:#8B8578}
+@media print{body{background:white}.page{padding:24px 32px}@page{margin:0;size:A4 portrait}}
+</style></head><body><div class="page">
+<div class="header"><div><div class="brand">ChefOS by 1-Group \u00b7 Recipe Adaptation</div><div class="venue-name">${m.venueName}</div></div><div class="header-right">Adapted from <em>${originalTitle}</em><br>Chef ${chefName}<br>${new Date().toLocaleDateString('en-SG',{day:'numeric',month:'long',year:'numeric'})}</div></div>
+<div class="dish-title">${a.title}</div>
+<div class="dish-sub">Adapted from <em>${originalTitle}</em> by Chef ${chefName} \u00b7 ${m.venueName}</div>
+<div class="block-label">Adaptation Philosophy</div>
+<div class="philosophy">${a.philosophy}</div>
+<div class="meta-row">
+<div class="meta-item"><div class="meta-label">Yield</div><div class="meta-val">${a.yield}</div></div>
+<div class="meta-item"><div class="meta-label">Prep</div><div class="meta-val">${a.prepTime}</div></div>
+<div class="meta-item"><div class="meta-label">Cook</div><div class="meta-val">${a.cookTime}</div></div>
+<div class="meta-item"><div class="meta-label">Food Cost</div><div class="meta-val">${a.estimatedFoodCost}</div></div>
+<div class="meta-item"><div class="meta-label">Menu Price</div><div class="meta-val">${a.pricePoint}</div></div>
+<div class="meta-item"><div class="meta-label">Placement</div><div class="meta-val">${a.menuPlacement}</div></div>
+${a.allergens?.length>0?`<div class="meta-item"><div class="meta-label">Allergens</div><div class="meta-val allergen-val">${a.allergens.join(' \u00b7 ')}</div></div>`:''}
+</div>
+${svgSketch?`<h2>Plating Sketch</h2><div class="sketch-box">${svgSketch}</div>`:''}
+<div class="analysis-box"><div class="analysis-label">Menu Analysis</div><div class="analysis-title">${m.venueName}</div><div class="analysis-identity">${m.cuisineIdentity}</div><div class="analysis-grid"><div><div class="analysis-label">Flavour Register</div><div class="analysis-val">${m.flavourRegister}</div></div><div><div class="analysis-label">Technique Fingerprint</div><div class="analysis-val">${m.techniqueFingerprint}</div></div><div><div class="analysis-label">Hero Ingredients</div><div class="hero-tags">${(m.heroIngredients||[]).map(i=>`<span class="hero-tag">${i}</span>`).join('')}</div></div><div><div class="analysis-label">Plating Philosophy</div><div class="analysis-val">${m.platingPhilosophy}</div></div></div></div>
+<h2>Recipe Components</h2>${componentHtml}
+<h2>Assembly &amp; Plating</h2><div style="margin-bottom:24px">${(a.assembly||[]).map((s,i)=>`<div class="assembly-step"><span class="assembly-num">${i+1}.</span><span>${s}</span></div>`).join('')}${a.platingRef?`<div class="plating-ref">${a.platingRef}</div>`:''}</div>
+<h2>Chef's Notes</h2><div style="margin-bottom:24px">${(a.chefNotes||[]).map(n=>`<div class="note"><span class="note-dash">\u2014</span><span>${n}</span></div>`).join('')}</div>
+<div class="footer"><span>ChefOS by 1-Group Singapore \u00b7 1-groupculinary.com</span><span>Generated ${new Date().toLocaleDateString('en-SG',{day:'numeric',month:'long',year:'numeric'})}</span></div>
+</div><script>window.onload=function(){window.print();}</script></body></html>`;
+
+  const w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); }
+}
+
+
 function AdaptationResultPanel({ result, chefName, originalTitle, venueAccent }: {
   result: AdaptationResult; chefName: string; originalTitle: string; venueAccent: string;
 }) {
   const { menuAnalysis, adaptation: a } = result;
+  const [svgSketch, setSvgSketch] = useState<string | null>(null);
 
   const fullText = [
     `${menuAnalysis.venueName} — Recipe Adaptation`,
@@ -168,6 +355,19 @@ function AdaptationResultPanel({ result, chefName, originalTitle, venueAccent }:
               <p className="text-xs text-stone-400 mt-1.5">Adapted from <em>{originalTitle}</em> — Chef {chefName}</p>
             </div>
             <CopyButton text={fullText} label="Copy full recipe" />
+          </div>
+          {/* Action bar */}
+          <div className="px-5 sm:px-7 py-3 bg-stone-50 border-t border-stone-100 flex items-center gap-3 flex-wrap">
+            <button
+              onClick={() => downloadAsPDF(result, chefName, originalTitle, venueAccent, svgSketch)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wide transition-all active:scale-97 text-white shadow-sm"
+              style={{ background: venueAccent }}>
+              <Download size={14} /> Download PDF
+            </button>
+            <div className="text-xs text-stone-400 hidden sm:block">·</div>
+            <div className="text-xs text-stone-400 hidden sm:block leading-tight">
+              {svgSketch ? 'Sketch will be embedded in the PDF.' : 'Generate a plating sketch below to embed it in the PDF.'}
+            </div>
           </div>
         </div>
 
@@ -270,6 +470,17 @@ function AdaptationResultPanel({ result, chefName, originalTitle, venueAccent }:
               <p className="text-sm text-stone-300 italic leading-relaxed">{a.imagePrompt}</p>
             </div>
           )}
+
+          {/* Plating Sketch */}
+          <div>
+            <div className="text-[10px] font-bold tracking-widest uppercase text-stone-500 mb-3">Plating Diagram</div>
+            <PlatingSketch
+              adaptation={a}
+              venueName={menuAnalysis.venueName}
+              venueAccent={venueAccent}
+              onSvgGenerated={(svg) => setSvgSketch(svg)}
+            />
+          </div>
         </div>
       </div>
     </div>
