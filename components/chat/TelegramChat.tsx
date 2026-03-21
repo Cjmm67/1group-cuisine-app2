@@ -124,7 +124,7 @@ export function CulinaryChat() {
     }
   };
 
-  const sendMessage = async (text: string) => {
+  const sendMessage = async (text: string, attempt = 1) => {
     if (!text.trim() || isLoading) return;
 
     const userMessage: Message = { role: 'user', content: text.trim() };
@@ -133,29 +133,53 @@ export function CulinaryChat() {
     setInput('');
     setIsLoading(true);
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 55000);
+
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: updatedMessages }),
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
       const data = await res.json();
 
       if (res.ok) {
         setMessages([...updatedMessages, { role: 'assistant', content: data.message }]);
+      } else if ((res.status === 503 || res.status === 529) && attempt < 3) {
+        // Overloaded — auto-retry after a short delay
+        setIsLoading(false);
+        await new Promise(r => setTimeout(r, 2000 * attempt));
+        return sendMessage(text, attempt + 1);
       } else {
         setMessages([
           ...updatedMessages,
-          { role: 'assistant', content: data.error || 'Sorry, something went wrong. Please try again.' },
+          { role: 'assistant', content: data.error || 'Something went wrong. Please try again.' },
         ]);
       }
-    } catch {
-      setMessages([
-        ...updatedMessages,
-        { role: 'assistant', content: 'Network error. Please check your connection and try again.' },
-      ]);
+    } catch (err: any) {
+      clearTimeout(timeoutId);
+      if (err?.name === 'AbortError') {
+        // Timed out — retry once automatically
+        if (attempt < 2) {
+          setIsLoading(false);
+          return sendMessage(text, attempt + 1);
+        }
+        setMessages([
+          ...updatedMessages,
+          { role: 'assistant', content: 'The response took too long. Please try a shorter question or try again.' },
+        ]);
+      } else {
+        setMessages([
+          ...updatedMessages,
+          { role: 'assistant', content: 'Unable to reach the assistant. Please try again in a moment.' },
+        ]);
+      }
     } finally {
+      clearTimeout(timeoutId);
       setIsLoading(false);
     }
   };

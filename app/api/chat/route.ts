@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
 export const runtime = 'nodejs';
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'default-1cuisinesg-secret-change-in-production'
@@ -38,7 +38,6 @@ Communication style:
   • Use emoji naturally within text to highlight important concepts, not just as decoration
   • This makes responses feel like professional culinary chat messages rather than plain text documents`;
 
-
 async function verifyAuth(request: NextRequest): Promise<boolean> {
   const token = request.cookies.get('auth-token')?.value;
   if (!token) return false;
@@ -51,17 +50,15 @@ async function verifyAuth(request: NextRequest): Promise<boolean> {
 }
 
 export async function POST(request: NextRequest) {
-  // Auth check
   const isAuth = await verifyAuth(request);
   if (!isAuth) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // Check API key
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
-      { error: 'Chat is not configured. Add ANTHROPIC_API_KEY to environment variables.' },
+      { error: 'Chat is not configured. Contact your administrator.' },
       { status: 503 }
     );
   }
@@ -74,13 +71,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Messages are required' }, { status: 400 });
     }
 
-    // Format messages for Anthropic API
     const formattedMessages = messages.map((msg: { role: string; content: string }) => ({
       role: msg.role === 'user' ? 'user' : 'assistant',
       content: msg.content,
     }));
 
-    // Call Anthropic API
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -99,23 +94,39 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error('Anthropic API error:', response.status, errorData);
+
+      // Surface specific Anthropic error types to the client
+      const status = response.status;
+      if (status === 529 || status === 503) {
+        return NextResponse.json(
+          { error: 'The AI service is currently overloaded. Please try again in a moment.' },
+          { status: 503 }
+        );
+      }
+      if (status === 429) {
+        return NextResponse.json(
+          { error: 'Rate limit reached. Please wait a few seconds and try again.' },
+          { status: 429 }
+        );
+      }
       return NextResponse.json(
-        { error: 'Failed to get response from AI assistant' },
+        { error: 'The AI assistant could not generate a response. Please try again.' },
         { status: 502 }
       );
     }
 
     const data = await response.json();
-    const assistantMessage = data.content
-      ?.filter((block: { type: string }) => block.type === 'text')
-      .map((block: { text: string }) => block.text)
-      .join('\n') || 'Sorry, I could not generate a response.';
+    const assistantMessage =
+      data.content
+        ?.filter((block: { type: string }) => block.type === 'text')
+        .map((block: { text: string }) => block.text)
+        .join('\n') || 'Sorry, I could not generate a response.';
 
     return NextResponse.json({ message: assistantMessage });
   } catch (err) {
     console.error('Chat API error:', err);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Something went wrong on our end. Please try again.' },
       { status: 500 }
     );
   }
