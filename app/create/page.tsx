@@ -47,7 +47,7 @@ const ALL_VENUES = [
   { id: '1-arden', name: '1-Arden', concept: 'Events · 50–200 pax', accent: '#2C3E50' },
   { id: '1-atico', name: '1-Atico', concept: 'Private Dining · Rooftop', accent: '#8B6914' },
   { id: 'botanico', name: 'Botanico', concept: 'Garden Bistro · Botanical', accent: '#4A6741' },
-  { id: 'custom', name: 'Other / External Venue', concept: 'Upload any restaurant's menu', accent: '#8B8578' },
+  { id: 'custom', name: 'Other / External Venue', concept: 'Upload any restaurant menu', accent: '#8B8578' },
 ];
 
 const LOADING_MESSAGES = [
@@ -476,10 +476,10 @@ function RecipeAdaptationEngine({ onExit }: { onExit: () => void }) {
                           </div>
                           {isSel && <div className="w-6 h-6 rounded-full bg-[#C9A84C] flex items-center justify-center flex-shrink-0 mt-0.5"><Check size={12} className="text-[#1B3A2D]" strokeWidth={3} /></div>}
                         </div>
-                        {recipe.cuisine && recipe.cuisine.length > 0 && (
+                        {recipe.cuisines && recipe.cuisines.length > 0 && (
                           <div className="flex flex-wrap gap-1.5 mt-3">
-                            {recipe.cuisine.map((tag: string) => <span key={tag} className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded bg-[#E8D5A0] text-[#A88B3D]">{tag}</span>)}
-                            {(recipe as any).allergens?.length > 0 && <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded bg-red-50 text-red-500">⚠ {(recipe as any).allergens.join(', ')}</span>}
+                            {recipe.cuisines.map((c) => <span key={c.id} className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded bg-[#E8D5A0] text-[#A88B3D]">{c.name}</span>)}
+                            {(recipe as any).allergens?.length > 0 && <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded bg-red-50 text-red-500">⚠ {recipe.allergens.map(a => a.name).join(', ')}</span>}
                           </div>
                         )}
                       </button>
