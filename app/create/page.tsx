@@ -225,6 +225,11 @@ function PlatingSketch({ adaptation, venueName, venueAccent, onSvgGenerated }: {
 // ─── PDF EXPORT ───────────────────────────────────────────────────────────────
 function downloadAsPDF(result: AdaptationResult, chefName: string, originalTitle: string, venueAccent: string, svgSketch?: string | null) {
   const { menuAnalysis: m, adaptation: a } = result;
+
+  const slug = a.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const filename = `${slug}-recipe-card.pdf`;
+  const dateStr = new Date().toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric' });
+
   const componentHtml = (a.components || []).map((comp, ci) => `
     <div class="component">
       <div class="component-title">Component ${ci + 1} \u2014 ${comp.name}</div>
@@ -241,73 +246,161 @@ function downloadAsPDF(result: AdaptationResult, chefName: string, originalTitle
       </div>
     </div>`).join('');
 
-  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>${a.title}</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap');
-*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:#FAF8F4;color:#2C2C2C;font-size:11px;line-height:1.6}.page{max-width:800px;margin:0 auto;padding:40px 48px}
-.header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;border-bottom:2px solid ${venueAccent};margin-bottom:28px}
-.brand{font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:${venueAccent};margin-bottom:6px}
-.venue-name{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#1B3A2D}
-.header-right{text-align:right;font-size:9px;color:#8B8578;line-height:1.8}
-.dish-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#1B3A2D;margin-bottom:6px}
-.dish-sub{font-size:11px;color:#8B8578;margin-bottom:16px}
-.philosophy{border-left:4px solid ${venueAccent};padding:12px 16px;background:${venueAccent}18;border-radius:0 6px 6px 0;margin-bottom:20px;font-size:11.5px;line-height:1.7}
-.block-label{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:${venueAccent};margin-bottom:6px}
-.meta-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px 20px;padding:14px 0;border-top:1px solid #E5E0D8;border-bottom:1px solid #E5E0D8;margin-bottom:24px}
-.meta-label{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8B8578;margin-bottom:2px}
-.meta-val{font-size:12px;font-weight:600;color:#1B3A2D}.allergen-val{color:#C44536!important}
-.sketch-box{border:1px solid #E0DDD8;border-radius:10px;padding:16px;background:#FAF8F4;margin-bottom:24px}
-.sketch-box svg{width:100%;height:auto;display:block}
-.analysis-box{background:#1B3A2D;border-radius:10px;padding:16px 20px;margin-bottom:24px}
-.analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;margin-top:10px}
-.analysis-label{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#C9A84C;margin-bottom:3px}
-.analysis-val{font-size:10px;color:#D4CFC7;line-height:1.5}
-.analysis-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:2px}
-.analysis-identity{font-size:10px;color:#A0A098;font-style:italic;margin-bottom:10px}
-.hero-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
-.hero-tag{background:#2D5A45;color:#C9A84C;font-size:9px;font-weight:600;padding:2px 7px;border-radius:20px}
-.component{margin-bottom:20px;padding-left:14px;border-left:2px solid ${venueAccent}}
-.component-title{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:${venueAccent};margin-bottom:10px}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.section-label{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8B8578;margin-bottom:6px}
-.ingredient{padding:1.5px 0;font-size:10.5px;color:#3C3C3C}
-.make-ahead{margin-top:8px;background:#F0EDE8;padding:6px 10px;border-radius:4px;font-size:10px;color:#5C5C5C}
-.step{display:flex;gap:8px;margin-bottom:5px;font-size:10.5px;line-height:1.55}
-.step-num{color:${venueAccent};font-weight:700;min-width:16px;flex-shrink:0}
-.assembly-step{display:flex;gap:10px;padding:5px 0;border-bottom:1px solid #ECEAE6;font-size:10.5px}
-.assembly-step:last-child{border-bottom:none}
-.assembly-num{color:${venueAccent};font-weight:700;min-width:16px;flex-shrink:0}
-.plating-ref{font-size:10px;color:#8B8578;font-style:italic;margin-top:8px;line-height:1.5}
-.note{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #ECEAE6;font-size:10.5px;line-height:1.55}
-.note:last-child{border-bottom:none}
-.note-dash{color:${venueAccent};font-weight:700;flex-shrink:0}
-h2{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#2C2C2C;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #E5E0D8}
-.footer{margin-top:32px;padding-top:16px;border-top:1px solid #E5E0D8;display:flex;justify-content:space-between;font-size:9px;color:#8B8578}
-@media print{body{background:white}.page{padding:24px 32px}@page{margin:0;size:A4 portrait}}
-</style></head><body><div class="page">
-<div class="header"><div><div class="brand">ChefOS by 1-Group \u00b7 Recipe Adaptation</div><div class="venue-name">${m.venueName}</div></div><div class="header-right">Adapted from <em>${originalTitle}</em><br>Chef ${chefName}<br>${new Date().toLocaleDateString('en-SG',{day:'numeric',month:'long',year:'numeric'})}</div></div>
-<div class="dish-title">${a.title}</div>
-<div class="dish-sub">Adapted from <em>${originalTitle}</em> by Chef ${chefName} \u00b7 ${m.venueName}</div>
-<div class="block-label">Adaptation Philosophy</div>
-<div class="philosophy">${a.philosophy}</div>
-<div class="meta-row">
-<div class="meta-item"><div class="meta-label">Yield</div><div class="meta-val">${a.yield}</div></div>
-<div class="meta-item"><div class="meta-label">Prep</div><div class="meta-val">${a.prepTime}</div></div>
-<div class="meta-item"><div class="meta-label">Cook</div><div class="meta-val">${a.cookTime}</div></div>
-<div class="meta-item"><div class="meta-label">Food Cost</div><div class="meta-val">${a.estimatedFoodCost}</div></div>
-<div class="meta-item"><div class="meta-label">Menu Price</div><div class="meta-val">${a.pricePoint}</div></div>
-<div class="meta-item"><div class="meta-label">Placement</div><div class="meta-val">${a.menuPlacement}</div></div>
-${a.allergens?.length>0?`<div class="meta-item"><div class="meta-label">Allergens</div><div class="meta-val allergen-val">${a.allergens.join(' \u00b7 ')}</div></div>`:''}
-</div>
-${svgSketch?`<h2>Plating Sketch</h2><div class="sketch-box">${svgSketch}</div>`:''}
-<div class="analysis-box"><div class="analysis-label">Menu Analysis</div><div class="analysis-title">${m.venueName}</div><div class="analysis-identity">${m.cuisineIdentity}</div><div class="analysis-grid"><div><div class="analysis-label">Flavour Register</div><div class="analysis-val">${m.flavourRegister}</div></div><div><div class="analysis-label">Technique Fingerprint</div><div class="analysis-val">${m.techniqueFingerprint}</div></div><div><div class="analysis-label">Hero Ingredients</div><div class="hero-tags">${(m.heroIngredients||[]).map(i=>`<span class="hero-tag">${i}</span>`).join('')}</div></div><div><div class="analysis-label">Plating Philosophy</div><div class="analysis-val">${m.platingPhilosophy}</div></div></div></div>
-<h2>Recipe Components</h2>${componentHtml}
-<h2>Assembly &amp; Plating</h2><div style="margin-bottom:24px">${(a.assembly||[]).map((s,i)=>`<div class="assembly-step"><span class="assembly-num">${i+1}.</span><span>${s}</span></div>`).join('')}${a.platingRef?`<div class="plating-ref">${a.platingRef}</div>`:''}</div>
-<h2>Chef's Notes</h2><div style="margin-bottom:24px">${(a.chefNotes||[]).map(n=>`<div class="note"><span class="note-dash">\u2014</span><span>${n}</span></div>`).join('')}</div>
-<div class="footer"><span>ChefOS by 1-Group Singapore \u00b7 1-groupculinary.com</span><span>Generated ${new Date().toLocaleDateString('en-SG',{day:'numeric',month:'long',year:'numeric'})}</span></div>
-</div><script>window.onload=function(){window.print();}</script></body></html>`;
+  const styles = `
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#FAF8F4;color:#2C2C2C;font-size:11px;line-height:1.6}
+    .page{max-width:760px;margin:0 auto;padding:36px 44px;background:#FAF8F4}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:18px;border-bottom:2px solid ${venueAccent};margin-bottom:24px}
+    .brand{font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:${venueAccent};margin-bottom:5px}
+    .venue-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#1B3A2D}
+    .header-right{text-align:right;font-size:9px;color:#8B8578;line-height:1.8}
+    .dish-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#1B3A2D;margin-bottom:5px}
+    .dish-sub{font-size:11px;color:#8B8578;margin-bottom:14px}
+    .philosophy{border-left:4px solid ${venueAccent};padding:11px 15px;background:${venueAccent}18;border-radius:0 6px 6px 0;margin-bottom:18px;font-size:11px;line-height:1.7}
+    .block-label{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:${venueAccent};margin-bottom:5px}
+    .meta-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:10px 18px;padding:12px 0;border-top:1px solid #E5E0D8;border-bottom:1px solid #E5E0D8;margin-bottom:20px}
+    .meta-label{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8B8578;margin-bottom:2px}
+    .meta-val{font-size:11px;font-weight:600;color:#1B3A2D}
+    .allergen-val{color:#C44536!important}
+    .sketch-box{border:1px solid #E0DDD8;border-radius:8px;padding:12px;background:#FAF8F4;margin-bottom:20px}
+    .sketch-box svg{width:100%;height:auto;display:block}
+    .analysis-box{background:#1B3A2D;border-radius:8px;padding:14px 18px;margin-bottom:20px}
+    .analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;margin-top:8px}
+    .analysis-label{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#C9A84C;margin-bottom:3px}
+    .analysis-val{font-size:10px;color:#D4CFC7;line-height:1.5}
+    .analysis-title{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:2px}
+    .analysis-identity{font-size:10px;color:#A0A098;font-style:italic;margin-bottom:8px}
+    .hero-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
+    .hero-tag{background:#2D5A45;color:#C9A84C;font-size:8px;font-weight:600;padding:2px 6px;border-radius:20px}
+    .component{margin-bottom:18px;padding-left:12px;border-left:2px solid ${venueAccent}}
+    .component-title{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:${venueAccent};margin-bottom:8px}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .section-label{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8B8578;margin-bottom:5px}
+    .ingredient{padding:1.5px 0;font-size:10px;color:#3C3C3C}
+    .make-ahead{margin-top:6px;background:#F0EDE8;padding:5px 8px;border-radius:4px;font-size:9.5px;color:#5C5C5C}
+    .step{display:flex;gap:7px;margin-bottom:4px;font-size:10px;line-height:1.5}
+    .step-num{color:${venueAccent};font-weight:700;min-width:14px;flex-shrink:0}
+    .assembly-step{display:flex;gap:9px;padding:4px 0;border-bottom:1px solid #ECEAE6;font-size:10px}
+    .assembly-step:last-child{border-bottom:none}
+    .assembly-num{color:${venueAccent};font-weight:700;min-width:14px;flex-shrink:0}
+    .plating-ref{font-size:9.5px;color:#8B8578;font-style:italic;margin-top:6px;line-height:1.5}
+    .note{display:flex;gap:9px;padding:6px 0;border-bottom:1px solid #ECEAE6;font-size:10px;line-height:1.5}
+    .note:last-child{border-bottom:none}
+    .note-dash{color:${venueAccent};font-weight:700;flex-shrink:0}
+    h2{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#2C2C2C;margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid #E5E0D8}
+    .footer{margin-top:28px;padding-top:14px;border-top:1px solid #E5E0D8;display:flex;justify-content:space-between;font-size:9px;color:#8B8578}
+  `;
 
-  const w = window.open('', '_blank');
+  const bodyHtml = `
+    <div class="header">
+      <div>
+        <div class="brand">ChefOS by 1-Group \u00b7 Recipe Adaptation</div>
+        <div class="venue-name">${m.venueName}</div>
+      </div>
+      <div class="header-right">Adapted from <em>${originalTitle}</em><br>Chef ${chefName}<br>${dateStr}</div>
+    </div>
+    <div class="dish-title">${a.title}</div>
+    <div class="dish-sub">Adapted from <em>${originalTitle}</em> by Chef ${chefName} \u00b7 ${m.venueName}</div>
+    <div class="block-label">Adaptation Philosophy</div>
+    <div class="philosophy">${a.philosophy}</div>
+    <div class="meta-row">
+      <div class="meta-item"><div class="meta-label">Yield</div><div class="meta-val">${a.yield}</div></div>
+      <div class="meta-item"><div class="meta-label">Prep</div><div class="meta-val">${a.prepTime}</div></div>
+      <div class="meta-item"><div class="meta-label">Cook</div><div class="meta-val">${a.cookTime}</div></div>
+      <div class="meta-item"><div class="meta-label">Food Cost</div><div class="meta-val">${a.estimatedFoodCost}</div></div>
+      <div class="meta-item"><div class="meta-label">Menu Price</div><div class="meta-val">${a.pricePoint}</div></div>
+      <div class="meta-item"><div class="meta-label">Placement</div><div class="meta-val">${a.menuPlacement}</div></div>
+      ${a.allergens?.length > 0 ? `<div class="meta-item"><div class="meta-label">Allergens</div><div class="meta-val allergen-val">${a.allergens.join(' \u00b7 ')}</div></div>` : ''}
+    </div>
+    ${svgSketch ? `<h2>Plating Sketch</h2><div class="sketch-box">${svgSketch}</div>` : ''}
+    <div class="analysis-box">
+      <div class="analysis-label">Menu Analysis</div>
+      <div class="analysis-title">${m.venueName}</div>
+      <div class="analysis-identity">${m.cuisineIdentity}</div>
+      <div class="analysis-grid">
+        <div><div class="analysis-label">Flavour Register</div><div class="analysis-val">${m.flavourRegister}</div></div>
+        <div><div class="analysis-label">Technique Fingerprint</div><div class="analysis-val">${m.techniqueFingerprint}</div></div>
+        <div><div class="analysis-label">Hero Ingredients</div><div class="hero-tags">${(m.heroIngredients || []).map(i => `<span class="hero-tag">${i}</span>`).join('')}</div></div>
+        <div><div class="analysis-label">Plating Philosophy</div><div class="analysis-val">${m.platingPhilosophy}</div></div>
+      </div>
+    </div>
+    <h2>Recipe Components</h2>${componentHtml}
+    <h2>Assembly &amp; Plating</h2>
+    <div style="margin-bottom:20px">
+      ${(a.assembly || []).map((s, i) => `<div class="assembly-step"><span class="assembly-num">${i + 1}.</span><span>${s}</span></div>`).join('')}
+      ${a.platingRef ? `<div class="plating-ref">${a.platingRef}</div>` : ''}
+    </div>
+    <h2>Chef's Notes</h2>
+    <div style="margin-bottom:20px">
+      ${(a.chefNotes || []).map(n => `<div class="note"><span class="note-dash">\u2014</span><span>${n}</span></div>`).join('')}
+    </div>
+    <div class="footer">
+      <span>ChefOS by 1-Group Singapore \u00b7 1-groupculinary.com</span>
+      <span>Generated ${dateStr}</span>
+    </div>
+  `;
+
+  const html = `<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8">
+<title>${a.title}</title>
+<style>${styles}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"><\/script>
+</head>
+<body>
+<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#FAF8F4;font-family:Inter,sans-serif;flex-direction:column;gap:12px" id="loading">
+  <div style="display:flex;gap:8px">
+    <div style="width:8px;height:8px;border-radius:50%;background:${venueAccent};animation:b 1.2s ease-in-out infinite"></div>
+    <div style="width:8px;height:8px;border-radius:50%;background:${venueAccent};animation:b 1.2s ease-in-out .2s infinite"></div>
+    <div style="width:8px;height:8px;border-radius:50%;background:${venueAccent};animation:b 1.2s ease-in-out .4s infinite"></div>
+  </div>
+  <div style="font-size:13px;font-weight:600;color:#2C2C2C">Generating PDF\u2026</div>
+  <div style="font-size:11px;color:#8B8578">This will download automatically</div>
+  <style>@keyframes b{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}</style>
+</div>
+<div class="page" id="recipe" style="position:absolute;left:-9999px;top:0">${bodyHtml}</div>
+<script>
+window.addEventListener('load', async function() {
+  try {
+    const { jsPDF } = window.jspdf;
+    const el = document.getElementById('recipe');
+    el.style.left = '0';
+    el.style.position = 'static';
+    await new Promise(r => setTimeout(r, 400));
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      logging: false,
+      backgroundColor: '#FAF8F4',
+      width: el.scrollWidth,
+      height: el.scrollHeight,
+      windowWidth: el.scrollWidth + 100,
+    });
+    el.style.display = 'none';
+    const imgData = canvas.toDataURL('image/jpeg', 0.92);
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+    const pageW = 210, pageH = 297;
+    const imgH = (canvas.height * pageW) / canvas.width;
+    let remaining = imgH, yOffset = 0, page = 0;
+    while (remaining > 0) {
+      if (page > 0) pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', 0, -yOffset, pageW, imgH, '', 'FAST');
+      yOffset += pageH;
+      remaining -= pageH;
+      page++;
+    }
+    pdf.save('${filename}');
+    document.getElementById('loading').innerHTML = '<div style="text-align:center"><div style="font-size:22px;margin-bottom:8px">\u2713</div><div style="font-size:13px;font-weight:600;color:#1B3A2D">PDF downloaded</div><div style="font-size:11px;color:#8B8578;margin-top:4px">Check your downloads folder</div><button onclick="window.close()" style="margin-top:16px;padding:8px 20px;background:${venueAccent};color:#fff;border:none;border-radius:6px;font-weight:600;font-size:12px;cursor:pointer">Close</button></div>';
+  } catch(e) {
+    document.getElementById('loading').innerHTML = '<div style="text-align:center"><div style="font-size:13px;color:#C44536;font-weight:600">PDF generation failed</div><div style="font-size:11px;color:#8B8578;margin-top:4px">' + e.message + '</div><button onclick="window.close()" style="margin-top:12px;padding:8px 20px;border:1px solid #ddd;border-radius:6px;font-size:12px;cursor:pointer">Close</button></div>';
+  }
+});
+<\/script>
+</body></html>`;
+
+  const w = window.open('', '_blank', 'width=500,height=300,menubar=no,toolbar=no,location=no,status=no');
   if (w) { w.document.write(html); w.document.close(); }
 }
 
