@@ -8,6 +8,7 @@ import {
   ChevronRight, Check, Copy, CheckCheck, ArrowRight, Building2, AlertCircle, Download, Paintbrush,
 } from 'lucide-react';
 import { MOCK_CHEFS, MOCK_RECIPES } from '@/lib/mockData';
+import Link from 'next/link';
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 interface Message { role: 'user' | 'assistant'; content: string; fileName?: string; }
@@ -1071,6 +1072,16 @@ export default function CreatePage() {
               </button>
             );
           })}
+
+          {/* Plating Studio — standalone interactive tool */}
+          <Link href="/create/plating"
+            className="bg-white rounded-xl border border-gray-200 hover:border-gold-300 p-5 sm:p-6 text-left hover:shadow-lg transition-all duration-200 active:scale-[0.98] group relative">
+            <div className="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-stone-100 text-stone-500">Interactive</div>
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-stone-700 to-stone-900 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><Paintbrush size={22} className="text-white" /></div>
+            <h3 className="text-base font-bold text-gray-900 mb-0.5 group-hover:text-gold-700 transition-colors">Plating Studio</h3>
+            <p className="text-xs font-medium text-gold-600 mb-2">Drag · Position · Annotate · Export SVG</p>
+            <p className="text-sm text-gray-500 leading-relaxed">Interactive 3D plating diagram tool. Build dish compositions with domes, quenelles, sauce swooshes, berries, garnishes — drag to position, annotate with labels, export production-ready SVG sketches.</p>
+          </Link>
         </div>
         <div className="mt-8 bg-white border border-gray-200 rounded-xl p-5 sm:p-6 text-center">
           <p className="text-sm text-gray-500 mb-3">Or start with a freeform idea — the studio will detect the right mode automatically.</p>
