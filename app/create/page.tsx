@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { MOCK_CHEFS, MOCK_RECIPES } from '@/lib/mockData';
 import Link from 'next/link';
+import { MotionReveal, MotionStagger } from '@/components/motion/MotionReveal';
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 interface Message { role: 'user' | 'assistant'; content: string; fileName?: string; }
@@ -62,13 +63,13 @@ const LOADING_MESSAGES = [
 ];
 
 const MODES = [
-  { id: 'recipe-adapt', title: 'Recipe Adaptation Engine', subtitle: 'Choose Venue · Upload Menu · Get Adaptation', description: 'Select a chef\'s recipe from the platform, choose a 1-Group venue, upload their current menu PDF, and receive a single full production-ready adaptation written specifically for that restaurant\'s identity.', icon: RefreshCw, colour: 'from-[#1B3A2D] to-[#2D5A45]', isStructured: true },
-  { id: 'menu-intelligence', title: 'Menu Intelligence', subtitle: 'Upload Menu → Brand DNA & Benchmarking', description: 'Upload or paste your menu for instant Brand DNA analysis, competitive benchmarking against Singapore and international restaurants, gap identification, and dish concepts inspired by the world\'s best.', icon: BookOpen, colour: 'from-gold-500 to-gold-700', prompt: 'I want to analyse a menu. I\'ll paste or describe the menu contents now. Run the full Brand DNA Analysis, competitive benchmarking, and opportunity map.', mode: 'Menu Intelligence Engine', isStructured: false },
-  { id: 'dish-builder', title: 'Dish Builder', subtitle: 'Idea → Complete Recipe', description: 'Turn a spark — an ingredient, a memory, a technique — into a fully developed, production-ready dish with costing, allergens, and plating.', icon: Flame, colour: 'from-orange-500 to-red-600', prompt: 'I want to create a new dish. Help me develop it from concept to a complete kitchen recipe card with global restaurant references.', mode: 'Dish Builder', isStructured: false },
-  { id: 'flavour-explorer', title: 'Flavour Explorer', subtitle: 'Ingredient → Pairing Ideas', description: 'Explore what works with a given ingredient through molecular science, classical tradition, and progressive combinations.', icon: Sparkles, colour: 'from-amber-500 to-yellow-600', prompt: 'I want to explore flavour pairings for an ingredient. Give me molecular, classical, and progressive pairing ideas with real restaurant references.', mode: 'Flavour Explorer', isStructured: false },
-  { id: 'menu-architect', title: 'Menu Architect', subtitle: 'Brief → Complete Menu', description: 'Build a tasting menu, à la carte section, banquet set, or seasonal rotation — benchmarked against comparable restaurants.', icon: UtensilsCrossed, colour: 'from-emerald-500 to-teal-600', prompt: 'I need to build a menu. Help me design the full sequence benchmarked against comparable restaurants globally.', mode: 'Menu Architect', isStructured: false },
-  { id: 'plating-coach', title: 'Plating Coach', subtitle: 'Description → Actionable Feedback', description: 'Get specific, actionable plating feedback — composition, colour, height, sauce work, garnish, vessel.', icon: Palette, colour: 'from-purple-500 to-pink-600', prompt: 'I want feedback on a dish presentation. I\'ll describe the plating or share what I have.', mode: 'Plating & Presentation Coach', isStructured: false },
-  { id: 'rd-lab', title: 'R&D Lab', subtitle: 'Technique → Test Protocol', description: 'Experiment with fermentation, smoking, curing, hydrocolloids — with food science, test protocols, and HACCP notes.', icon: FlaskConical, colour: 'from-cyan-500 to-blue-600', prompt: 'I want to experiment with a technique or process. Help me design a test protocol with food science and references.', mode: 'R&D Lab', isStructured: false },
+  { id: 'recipe-adapt', title: 'Recipe Adaptation Engine', subtitle: 'Choose Venue · Upload Menu · Get Adaptation', description: 'Select a chef\'s recipe from the platform, choose a 1-Group venue, upload their current menu PDF, and receive a single full production-ready adaptation written specifically for that restaurant\'s identity.', icon: RefreshCw, colour: 'from-[#1B3A2D] to-[#2D5A45]', motion: 'icon-motion-adapt', isStructured: true },
+  { id: 'menu-intelligence', title: 'Menu Intelligence', subtitle: 'Upload Menu → Brand DNA & Benchmarking', description: 'Upload or paste your menu for instant Brand DNA analysis, competitive benchmarking against Singapore and international restaurants, gap identification, and dish concepts inspired by the world\'s best.', icon: BookOpen, colour: 'from-gold-500 to-gold-700', motion: 'icon-motion-menu', prompt: 'I want to analyse a menu. I\'ll paste or describe the menu contents now. Run the full Brand DNA Analysis, competitive benchmarking, and opportunity map.', mode: 'Menu Intelligence Engine', isStructured: false },
+  { id: 'dish-builder', title: 'Dish Builder', subtitle: 'Idea → Complete Recipe', description: 'Turn a spark — an ingredient, a memory, a technique — into a fully developed, production-ready dish with costing, allergens, and plating.', icon: Flame, colour: 'from-orange-500 to-red-600', motion: 'icon-motion-flame', prompt: 'I want to create a new dish. Help me develop it from concept to a complete kitchen recipe card with global restaurant references.', mode: 'Dish Builder', isStructured: false },
+  { id: 'flavour-explorer', title: 'Flavour Explorer', subtitle: 'Ingredient → Pairing Ideas', description: 'Explore what works with a given ingredient through molecular science, classical tradition, and progressive combinations.', icon: Sparkles, colour: 'from-amber-500 to-yellow-600', motion: 'icon-motion-sparkle', prompt: 'I want to explore flavour pairings for an ingredient. Give me molecular, classical, and progressive pairing ideas with real restaurant references.', mode: 'Flavour Explorer', isStructured: false },
+  { id: 'menu-architect', title: 'Menu Architect', subtitle: 'Brief → Complete Menu', description: 'Build a tasting menu, à la carte section, banquet set, or seasonal rotation — benchmarked against comparable restaurants.', icon: UtensilsCrossed, colour: 'from-emerald-500 to-teal-600', motion: 'icon-motion-clink', prompt: 'I need to build a menu. Help me design the full sequence benchmarked against comparable restaurants globally.', mode: 'Menu Architect', isStructured: false },
+  { id: 'plating-coach', title: 'Plating Coach', subtitle: 'Description → Actionable Feedback', description: 'Get specific, actionable plating feedback — composition, colour, height, sauce work, garnish, vessel.', icon: Palette, colour: 'from-purple-500 to-pink-600', motion: 'icon-motion-palette', prompt: 'I want feedback on a dish presentation. I\'ll describe the plating or share what I have.', mode: 'Plating & Presentation Coach', isStructured: false },
+  { id: 'rd-lab', title: 'R&D Lab', subtitle: 'Technique → Test Protocol', description: 'Experiment with fermentation, smoking, curing, hydrocolloids — with food science, test protocols, and HACCP notes.', icon: FlaskConical, colour: 'from-cyan-500 to-blue-600', motion: 'icon-motion-bubble', prompt: 'I want to experiment with a technique or process. Help me design a test protocol with food science and references.', mode: 'R&D Lab', isStructured: false },
 ];
 
 // ─── MARKDOWN RENDERER ────────────────────────────────────────────────────────
@@ -1326,22 +1327,33 @@ export default function CreatePage() {
 
   if (!activeMode) return (
     <div className="min-h-screen bg-gray-50">
-      <section className="bg-gray-950 text-white">
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-12 sm:py-16 text-center">
-          <div className="inline-flex items-center gap-2 bg-gold-600/20 border border-gold-500/30 rounded-full px-4 py-1.5 mb-5"><ChefHat size={16} className="text-gold-400" /><span className="text-gold-300 text-xs font-semibold tracking-wide uppercase">AI Creative Studio</span></div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight mb-4">Create Stunning Dishes</h1>
-          <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">Select a recipe, choose a venue, upload their menu — receive a full adaptation written for that kitchen's identity. Or use any of the AI creative tools below.</p>
+      <section className="bg-gray-950 text-white relative overflow-hidden grain-overlay">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-gold-500/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-12 sm:py-16 text-center relative z-10">
+          <div className="hero-text-line" style={{ animationDelay: '100ms' }}>
+            <div className="inline-flex items-center gap-2 bg-gold-600/20 border border-gold-500/30 rounded-full px-4 py-1.5 mb-5"><ChefHat size={16} className="text-gold-400" /><span className="text-gold-300 text-xs font-semibold tracking-wide uppercase">AI Creative Studio</span></div>
+          </div>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight mb-4">
+            <span className="hero-text-line inline-block" style={{ animationDelay: '250ms' }}>Create Stunning Dishes</span>
+          </h1>
+          <div className="hero-text-line" style={{ animationDelay: '400ms' }}>
+            <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">Select a recipe, choose a venue, upload their menu — receive a full adaptation written for that kitchen&apos;s identity. Or use any of the AI creative tools below.</p>
+          </div>
         </div>
+        <div className="absolute bottom-0 left-0 right-0 h-px overflow-hidden"><div className="shimmer h-full" /></div>
       </section>
       <section className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 -mt-8 relative z-10 pb-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+        <MotionStagger animation="slide-reveal" staggerDelay={80} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {MODES.map(mode => {
             const Icon = mode.icon; const isNew = mode.id === 'recipe-adapt';
             return (
               <button key={mode.id} onClick={() => startMode(mode)}
                 className={`bg-white rounded-xl border p-5 sm:p-6 text-left hover:shadow-lg transition-all duration-200 active:scale-[0.98] group relative ${isNew ? 'border-[#C9A84C] ring-1 ring-[#C9A84C]/30' : 'border-gray-200 hover:border-gold-300'}`}>
                 {isNew && <div className="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-[#1B3A2D] text-[#C9A84C]">New</div>}
-                <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${mode.colour} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}><Icon size={22} className="text-white" /></div>
+                <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${mode.colour} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform relative icon-motion-ring ${(mode as any).motion || ''}`}>
+                  <span className="icon-inner inline-flex"><Icon size={22} className="text-white" /></span>
+                  <span className="icon-orbit-particle" /><span className="icon-orbit-particle" /><span className="icon-orbit-particle" />
+                </div>
                 <h3 className="text-base font-bold text-gray-900 mb-0.5 group-hover:text-gold-700 transition-colors">{mode.title}</h3>
                 <p className="text-xs font-medium text-gold-600 mb-2">{mode.subtitle}</p>
                 <p className="text-sm text-gray-500 leading-relaxed">{mode.description}</p>
@@ -1353,17 +1365,22 @@ export default function CreatePage() {
           <Link href="/create/plating"
             className="bg-white rounded-xl border border-gray-200 hover:border-gold-300 p-5 sm:p-6 text-left hover:shadow-lg transition-all duration-200 active:scale-[0.98] group relative">
             <div className="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-stone-100 text-stone-500">Interactive</div>
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-stone-700 to-stone-900 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><Paintbrush size={22} className="text-white" /></div>
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-stone-700 to-stone-900 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform relative icon-motion-ring icon-motion-paint">
+              <span className="icon-inner inline-flex"><Paintbrush size={22} className="text-white" /></span>
+              <span className="icon-orbit-particle" /><span className="icon-orbit-particle" /><span className="icon-orbit-particle" />
+            </div>
             <h3 className="text-base font-bold text-gray-900 mb-0.5 group-hover:text-gold-700 transition-colors">Plating Studio</h3>
             <p className="text-xs font-medium text-gold-600 mb-2">Drag · Position · Annotate · Export SVG</p>
             <p className="text-sm text-gray-500 leading-relaxed">Interactive 3D plating diagram tool. Build dish compositions with domes, quenelles, sauce swooshes, berries, garnishes — drag to position, annotate with labels, export production-ready SVG sketches.</p>
           </Link>
-        </div>
-        <div className="mt-8 bg-white border border-gray-200 rounded-xl p-5 sm:p-6 text-center">
-          <p className="text-sm text-gray-500 mb-3">Or start with a freeform idea — the studio will detect the right mode automatically.</p>
-          <button onClick={() => setActiveMode({ id: 'freeform', title: 'Creative Studio', subtitle: 'Freeform', description: '', icon: ChefHat, colour: 'from-gold-500 to-gold-700', isStructured: false } as any)}
-            className="inline-flex items-center gap-2 bg-gray-950 hover:bg-gray-800 text-white text-sm font-semibold px-6 py-3 rounded-full transition-colors active:scale-[0.97]"><UtensilsCrossed size={16} />Start Freeform Session</button>
-        </div>
+        </MotionStagger>
+        <MotionReveal animation="fade-up" duration={600} delay={600}>
+          <div className="mt-8 bg-white border border-gray-200 rounded-xl p-5 sm:p-6 text-center">
+            <p className="text-sm text-gray-500 mb-3">Or start with a freeform idea — the studio will detect the right mode automatically.</p>
+            <button onClick={() => setActiveMode({ id: 'freeform', title: 'Creative Studio', subtitle: 'Freeform', description: '', icon: ChefHat, colour: 'from-gold-500 to-gold-700', isStructured: false } as any)}
+              className="inline-flex items-center gap-2 bg-gray-950 hover:bg-gray-800 text-white text-sm font-semibold px-6 py-3 rounded-full transition-colors active:scale-[0.97] btn-magnetic"><UtensilsCrossed size={16} />Start Freeform Session</button>
+          </div>
+        </MotionReveal>
       </section>
     </div>
   );

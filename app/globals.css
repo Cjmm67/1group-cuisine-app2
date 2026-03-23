@@ -311,3 +311,171 @@
 .overflow-x-auto {
   -webkit-overflow-scrolling: touch;
 }
+
+/* ═══════════════════════════════════════════
+   TOOL ICON MOTION GRAPHICS
+   Per-tool unique animations for Create page
+   ═══════════════════════════════════════════ */
+
+/* Recipe Adapt — Continuous slow spin + reverse on hover */
+@keyframes icon-spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.icon-motion-adapt .icon-inner {
+  animation: icon-spin-slow 6s linear infinite;
+}
+.icon-motion-adapt:hover .icon-inner {
+  animation: icon-spin-slow 0.6s cubic-bezier(0.22, 1, 0.36, 1) 1;
+}
+
+/* Menu Intelligence — Book flip / pulse open */
+@keyframes icon-book-flip {
+  0%, 100% { transform: rotateY(0deg) scale(1); }
+  25% { transform: rotateY(-15deg) scale(1.05); }
+  75% { transform: rotateY(15deg) scale(1.05); }
+}
+.icon-motion-menu .icon-inner {
+  animation: icon-book-flip 3s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+/* Dish Builder — Flame flicker */
+@keyframes icon-flame {
+  0%, 100% { transform: scaleY(1) scaleX(1) translateY(0); filter: brightness(1); }
+  20% { transform: scaleY(1.12) scaleX(0.95) translateY(-1px); filter: brightness(1.15); }
+  40% { transform: scaleY(0.95) scaleX(1.05) translateY(1px); filter: brightness(1); }
+  60% { transform: scaleY(1.08) scaleX(0.97) translateY(-2px); filter: brightness(1.2); }
+  80% { transform: scaleY(0.98) scaleX(1.02) translateY(0); filter: brightness(1.05); }
+}
+.icon-motion-flame .icon-inner {
+  animation: icon-flame 1.5s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+/* Flavour Explorer — Sparkle twinkle with scale pops */
+@keyframes icon-sparkle {
+  0%, 100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+  15% { transform: scale(1.15) rotate(8deg); filter: brightness(1.3); }
+  30% { transform: scale(0.95) rotate(-3deg); filter: brightness(1); }
+  50% { transform: scale(1.1) rotate(-6deg); filter: brightness(1.25); }
+  70% { transform: scale(0.98) rotate(4deg); filter: brightness(1); }
+}
+.icon-motion-sparkle .icon-inner {
+  animation: icon-sparkle 2.5s ease-in-out infinite;
+}
+
+/* Menu Architect — Utensils cross / clink */
+@keyframes icon-clink {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-8deg); }
+  40% { transform: rotate(6deg); }
+  50% { transform: rotate(-4deg) scale(1.08); }
+  60% { transform: rotate(2deg); }
+  80% { transform: rotate(0deg); }
+}
+.icon-motion-clink .icon-inner {
+  animation: icon-clink 3s ease-in-out infinite;
+}
+
+/* Plating Coach — Palette / colour wheel spin */
+@keyframes icon-palette-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes icon-palette-sway {
+  0%, 100% { transform: rotate(-5deg) scale(1); }
+  50% { transform: rotate(5deg) scale(1.06); }
+}
+.icon-motion-palette .icon-inner {
+  animation: icon-palette-sway 2.8s ease-in-out infinite;
+}
+.icon-motion-palette:hover .icon-inner {
+  animation: icon-palette-spin 1.2s cubic-bezier(0.22, 1, 0.36, 1) 1;
+}
+
+/* R&D Lab — Flask bubbling */
+@keyframes icon-bubble {
+  0%, 100% { transform: translateY(0) scale(1); }
+  15% { transform: translateY(-2px) scale(1.04); }
+  30% { transform: translateY(1px) scale(0.98); }
+  50% { transform: translateY(-3px) scale(1.06); }
+  65% { transform: translateY(0px) scale(1); }
+  80% { transform: translateY(-1px) scale(1.02); }
+}
+.icon-motion-bubble .icon-inner {
+  animation: icon-bubble 2.2s ease-in-out infinite;
+}
+
+/* Plating Studio — Paintbrush stroke */
+@keyframes icon-paint {
+  0%, 100% { transform: rotate(0deg) translateX(0); }
+  20% { transform: rotate(-12deg) translateX(-2px); }
+  50% { transform: rotate(8deg) translateX(2px); }
+  80% { transform: rotate(-4deg) translateX(-1px); }
+}
+.icon-motion-paint .icon-inner {
+  animation: icon-paint 2.5s ease-in-out infinite;
+  transform-origin: bottom right;
+}
+
+/* Shared: all icon containers get particle ring on hover */
+@keyframes icon-ring-pulse {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.25); opacity: 0.3; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+.icon-motion-ring {
+  position: relative;
+}
+.icon-motion-ring::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  border: 2px solid currentColor;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.icon-motion-ring:hover::before {
+  animation: icon-ring-pulse 1s ease-out infinite;
+}
+
+/* Shared: ambient float for all icon containers on idle */
+@keyframes icon-idle-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+}
+
+/* Orbit particles around icon on hover */
+@keyframes orbit {
+  from { transform: rotate(0deg) translateX(22px) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(22px) rotate(-360deg); }
+}
+.icon-orbit-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.group:hover .icon-orbit-particle {
+  opacity: 1;
+  animation: orbit 2s linear infinite;
+}
+.icon-orbit-particle:nth-child(2) {
+  animation-delay: -0.67s;
+  width: 3px;
+  height: 3px;
+  background: rgba(255,255,255,0.4);
+}
+.icon-orbit-particle:nth-child(3) {
+  animation-delay: -1.33s;
+  width: 2px;
+  height: 2px;
+  background: rgba(255,255,255,0.3);
+}
