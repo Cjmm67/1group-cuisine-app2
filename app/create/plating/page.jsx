@@ -550,6 +550,10 @@ export default function PlatingStudioPage() {
   const [edit, setEdit] = useState(null);
   const [name, setName] = useState(PRESETS[0].name);
   const [panel, setPanel] = useState(true);
+  const [aiSvg, setAiSvg] = useState(null);
+  const [rendering, setRendering] = useState(false);
+  const [renderError, setRenderError] = useState(null);
+  const [showAi, setShowAi] = useState(false);
   const svgRef = useRef(null);
   const nid = useRef(200);
 
@@ -563,12 +567,51 @@ export default function PlatingStudioPage() {
   };
   const rm = (id) => { setComps(p => p.filter(c => c.id !== id)); if (sel === id) { setSel(null); setEdit(null); } };
   const upd = (id, u) => setComps(p => p.map(c => c.id === id ? { ...c, ...u } : c));
-  const load = (pr) => { setComps(pr.components.map(c => ({ ...c }))); setName(pr.name); setSel(null); setEdit(null); nid.current = Math.max(0, ...pr.components.map(c => c.id)) + 200; };
+  const load = (pr) => { setComps(pr.components.map(c => ({ ...c }))); setName(pr.name); setSel(null); setEdit(null); setAiSvg(null); setShowAi(false); nid.current = Math.max(0, ...pr.components.map(c => c.id)) + 200; };
   const exp = () => {
     if (!svgRef.current) return;
     const d = new XMLSerializer().serializeToString(svgRef.current);
     const u = URL.createObjectURL(new Blob([d], { type: "image/svg+xml" }));
     const a = document.createElement("a"); a.href = u; a.download = `${name.replace(/\s+/g, "_")}_plating.svg`; a.click(); URL.revokeObjectURL(u);
+  };
+
+  const renderRealistic = async () => {
+    setRendering(true); setRenderError(null);
+    try {
+      const componentsList = comps.map((c, i) => `${i + 1}. ${c.name} (${c.shape}, positioned ${c.x < PX ? 'left' : 'right'} of centre)`).join('\n');
+      const prompt = `Professional overhead plating diagram for "${name}".
+
+Components on the plate:
+${componentsList}
+
+Assembly: Components are arranged as described above on a bone-white rimmed plate. The composition uses deliberate negative space. Draw this as a detailed monochrome pencil-and-wash illustration with watercolor wash shading, heavy cross-hatching on shadow sides, multiple highlight layers, and annotation labels for each component.`;
+
+      const res = await fetch('/api/chat/sketch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: name,
+          venueName: '1-CUISINESG',
+          imagePrompt: prompt,
+          components: comps.map(c => ({ name: c.name })),
+          assembly: comps.map(c => `Place ${c.name} (${c.shape})`),
+          venueAccent: '#b8860b',
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Render failed');
+      setAiSvg(data.svg);
+      setShowAi(true);
+    } catch (err) {
+      setRenderError(err.message || 'Something went wrong');
+    } finally { setRendering(false); }
+  };
+
+  const downloadAiSvg = () => {
+    if (!aiSvg) return;
+    const blob = new Blob([aiSvg], { type: 'image/svg+xml' });
+    const u = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = u; a.download = `${name.replace(/\s+/g, '_')}_realistic.svg`; a.click(); URL.revokeObjectURL(u);
   };
 
   return (
@@ -685,10 +728,52 @@ export default function PlatingStudioPage() {
             <line x1={PX - 85} y1={708} x2={PX + 85} y2={708} stroke="#b8860b" strokeWidth="0.5" opacity="0.35" />
           </svg>
 
-          <div style={{ display: "flex", gap: "10px", marginTop: "8px" }}>
-            <button onClick={add} style={{ padding: "7px 18px", fontSize: "12px", fontFamily: "inherit", border: "1px solid #b8860b", borderRadius: "3px", background: "#2c2418", color: "#faf8f4", cursor: "pointer" }}>+ Add Component</button>
+          <div style={{ display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap", alignItems: "center" }}>
+            <button onClick={add} style={{ padding: "7px 18px", fontSize: "12px", fontFamily: "inherit", border: "1px solid #b8860b", borderRadius: "3px", background: "#2c2418", color: "#faf8f4", cursor: "pointer" }}>+ Add</button>
+            {sel !== null && (
+              <button onClick={() => rm(sel)} style={{ padding: "7px 18px", fontSize: "12px", fontFamily: "inherit", border: "1px solid #c0392b", borderRadius: "3px", background: "#c0392b", color: "#fff", cursor: "pointer" }}>Remove Selected</button>
+            )}
             <button onClick={exp} style={{ padding: "7px 18px", fontSize: "12px", fontFamily: "inherit", border: "1px solid #c9c0b0", borderRadius: "3px", background: "transparent", color: "#5a4e3a", cursor: "pointer" }}>Export SVG</button>
+            <button
+              onClick={renderRealistic}
+              disabled={rendering || comps.length === 0}
+              style={{
+                padding: "7px 22px", fontSize: "12px", fontFamily: "inherit", borderRadius: "3px",
+                background: rendering ? "#8a7e6b" : "linear-gradient(135deg, #b8860b, #8a6d08)",
+                color: "#fff", cursor: rendering ? "wait" : "pointer", border: "none",
+                opacity: comps.length === 0 ? 0.5 : 1, fontWeight: 600, letterSpacing: "0.03em",
+              }}>
+              {rendering ? "Rendering…" : "✦ Render Realistic"}
+            </button>
+            {showAi && aiSvg && (
+              <button onClick={() => setShowAi(false)} style={{ padding: "7px 14px", fontSize: "12px", fontFamily: "inherit", border: "1px solid #c9c0b0", borderRadius: "3px", background: "transparent", color: "#5a4e3a", cursor: "pointer" }}>← Back to Editor</button>
+            )}
           </div>
+
+          {/* Render error */}
+          {renderError && (
+            <div style={{ marginTop: "8px", padding: "8px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "4px", fontSize: "12px", color: "#991b1b" }}>
+              {renderError} <button onClick={() => setRenderError(null)} style={{ marginLeft: "8px", cursor: "pointer", background: "none", border: "none", color: "#991b1b", fontWeight: 600 }}>✕</button>
+            </div>
+          )}
+
+          {/* AI-Rendered Realistic SVG */}
+          {showAi && aiSvg && (
+            <div style={{ marginTop: "12px", width: "100%", maxWidth: "760px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span style={{ fontSize: "11px", fontWeight: 700, color: "#b8860b", textTransform: "uppercase", letterSpacing: "0.08em" }}>AI Realistic Render</span>
+                  <span style={{ fontSize: "10px", color: "#8a7e6b", fontStyle: "italic" }}>Generated by Claude</span>
+                </div>
+                <div style={{ display: "flex", gap: "6px" }}>
+                  <button onClick={downloadAiSvg} style={{ padding: "4px 12px", fontSize: "11px", fontFamily: "inherit", border: "1px solid #b8860b", borderRadius: "3px", background: "#b8860b18", color: "#b8860b", cursor: "pointer" }}>Download SVG</button>
+                  <button onClick={renderRealistic} style={{ padding: "4px 12px", fontSize: "11px", fontFamily: "inherit", border: "1px solid #c9c0b0", borderRadius: "3px", background: "transparent", color: "#5a4e3a", cursor: "pointer" }}>Re-render</button>
+                </div>
+              </div>
+              <div style={{ background: "#fdfcf8", border: "1px solid #e5e0d6", borderRadius: "4px", padding: "16px" }}
+                dangerouslySetInnerHTML={{ __html: aiSvg }} />
+            </div>
+          )}
         </div>
 
         {panel && (

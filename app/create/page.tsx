@@ -729,8 +729,12 @@ window.addEventListener('load', async function() {
 function AdaptationResultPanel({ result, chefName, originalTitle, venueAccent }: {
   result: AdaptationResult; chefName: string; originalTitle: string; venueAccent: string;
 }) {
-  const { menuAnalysis, adaptation: a } = result;
+  const { menuAnalysis, adaptation: origA } = result;
+  const [a, setA] = useState<VenueAdaptation>({ ...origA });
   const [svgSketch, setSvgSketch] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
+  const setField = (f: string, v: any) => setA(p => ({ ...p, [f]: v }));
+  const editedResult = { menuAnalysis, adaptation: a };
 
   const fullText = [
     `${menuAnalysis.venueName} — Recipe Adaptation`,
@@ -765,15 +769,25 @@ function AdaptationResultPanel({ result, chefName, originalTitle, venueAccent }:
               <div className="text-[10px] font-bold tracking-widest uppercase mb-1.5" style={{ color: venueAccent }}>
                 Adapted Recipe · {menuAnalysis.venueName}
               </div>
-              <h3 className="text-2xl font-bold text-stone-800 leading-tight" style={{ fontFamily: 'Georgia, serif' }}>{a.title}</h3>
+              <h3 className="text-2xl font-bold text-stone-800 leading-tight" style={{ fontFamily: 'Georgia, serif' }}>
+                {editing ? <input value={a.title} onChange={e => setField('title', e.target.value)} className="w-full text-2xl font-bold text-stone-800 px-1 py-0.5 border border-stone-200 rounded bg-white outline-none focus:border-[#C9A84C]" style={{ fontFamily: 'Georgia, serif' }} /> : a.title}
+              </h3>
               <p className="text-xs text-stone-400 mt-1.5">Adapted from <em>{originalTitle}</em> — Chef {chefName}</p>
             </div>
             <CopyButton text={fullText} label="Copy full recipe" />
+            <button onClick={() => setEditing(!editing)}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold uppercase tracking-wide border transition-all ${
+                editing ? 'border-green-400 text-green-700 bg-green-50' : 'border-stone-200 text-stone-500 hover:border-stone-400'
+              }`}>
+              {editing ? '✓ Done Editing' : '✎ Edit Recipe'}
+            </button>
+          </div>
+          {editing && <p className="text-[10px] text-amber-600 mt-2">Editing mode — all changes will be included in the PDF download.</p>}
           </div>
           {/* Action bar */}
           <div className="px-5 sm:px-7 py-3 bg-stone-50 border-t border-stone-100 flex items-center gap-3 flex-wrap">
             <button
-              onClick={() => downloadAsPDF(result, chefName, originalTitle, venueAccent, svgSketch)}
+              onClick={() => downloadAsPDF(editedResult, chefName, originalTitle, venueAccent, svgSketch)}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wide transition-all active:scale-97 text-white shadow-sm"
               style={{ background: venueAccent }}>
               <Download size={14} /> Download PDF
@@ -789,22 +803,22 @@ function AdaptationResultPanel({ result, chefName, originalTitle, venueAccent }:
           {/* Philosophy */}
           <div className="rounded-r-lg border-l-4 p-4" style={{ borderColor: venueAccent, background: `${venueAccent}12` }}>
             <div className="text-[10px] font-bold tracking-widest uppercase mb-2" style={{ color: venueAccent }}>Adaptation Philosophy</div>
-            <p className="text-sm text-stone-700 leading-relaxed">{a.philosophy}</p>
+            <p className="text-sm text-stone-700 leading-relaxed">{editing ? <textarea value={a.philosophy} onChange={e => setField('philosophy', e.target.value)} className="w-full text-sm text-stone-700 px-2 py-1.5 border border-stone-200 rounded bg-white outline-none focus:border-[#C9A84C] resize-y min-h-[60px]" rows={3} /> : a.philosophy}</p>
           </div>
 
           {/* Meta */}
           <div className="flex flex-wrap gap-x-6 gap-y-3 py-3 border-t border-b border-stone-100">
             {[
-              { label: 'Yield', val: a.yield },
-              { label: 'Prep', val: a.prepTime },
-              { label: 'Cook', val: a.cookTime },
-              { label: 'Food Cost', val: a.estimatedFoodCost },
-              { label: 'Menu Price', val: a.pricePoint },
-              { label: 'Placement', val: a.menuPlacement },
+              { label: 'Yield', field: 'yield', val: a.yield },
+              { label: 'Prep', field: 'prepTime', val: a.prepTime },
+              { label: 'Cook', field: 'cookTime', val: a.cookTime },
+              { label: 'Food Cost', field: 'estimatedFoodCost', val: a.estimatedFoodCost },
+              { label: 'Menu Price', field: 'pricePoint', val: a.pricePoint },
+              { label: 'Placement', field: 'menuPlacement', val: a.menuPlacement },
             ].map(m => (
               <div key={m.label}>
                 <div className="text-[10px] font-bold tracking-widest uppercase text-stone-400">{m.label}</div>
-                <div className="text-sm font-semibold text-stone-800 mt-0.5">{m.val}</div>
+                {editing ? <input value={m.val} onChange={e => setField(m.field, e.target.value)} className="text-sm font-semibold text-stone-800 mt-0.5 px-1.5 py-0.5 border border-stone-200 rounded bg-white outline-none focus:border-[#C9A84C] w-28" /> : <div className="text-sm font-semibold text-stone-800 mt-0.5">{m.val}</div>}
               </div>
             ))}
             {a.allergens?.length > 0 && (
@@ -824,24 +838,38 @@ function AdaptationResultPanel({ result, chefName, originalTitle, venueAccent }:
               <div className="mb-3">
                 <div className="text-[10px] font-bold tracking-wider uppercase text-stone-400 mb-2">Ingredients</div>
                 {(comp.ingredients||[]).map((ing, ii) => (
-                  <div key={ii} className="flex gap-2 items-baseline mb-1">
+                  <div key={ii} className="flex gap-2 items-center mb-1">
                     <span className="font-bold text-sm flex-shrink-0" style={{ color: venueAccent }}>·</span>
-                    <span className="text-sm text-stone-700 leading-relaxed">{ing}</span>
+                    {editing ? (
+                      <input value={ing} onChange={e => { const comps = [...a.components]; const ings = [...comps[ci].ingredients]; ings[ii] = e.target.value; comps[ci] = { ...comps[ci], ingredients: ings }; setField('components', comps); }}
+                        className="flex-1 text-sm text-stone-700 px-1.5 py-0.5 border border-stone-200 rounded bg-white outline-none focus:border-[#C9A84C]" />
+                    ) : (
+                      <span className="text-sm text-stone-700 leading-relaxed">{ing}</span>
+                    )}
                   </div>
                 ))}
               </div>
               <div className="mb-3">
                 <div className="text-[10px] font-bold tracking-wider uppercase text-stone-400 mb-2">Method</div>
                 {(comp.method||[]).map((step, si) => (
-                  <div key={si} className="flex gap-3 mb-2">
+                  <div key={si} className="flex gap-3 items-start mb-2">
                     <span className="font-bold text-xs flex-shrink-0 mt-0.5" style={{ color: venueAccent }}>{si + 1}.</span>
-                    <span className="text-sm text-stone-700 leading-relaxed">{step}</span>
+                    {editing ? (
+                      <textarea value={step} onChange={e => { const comps = [...a.components]; const steps = [...comps[ci].method]; steps[si] = e.target.value; comps[ci] = { ...comps[ci], method: steps }; setField('components', comps); }}
+                        className="flex-1 text-sm text-stone-700 px-1.5 py-1 border border-stone-200 rounded bg-white outline-none focus:border-[#C9A84C] resize-y min-h-[36px]" rows={2} />
+                    ) : (
+                      <span className="text-sm text-stone-700 leading-relaxed">{step}</span>
+                    )}
                   </div>
                 ))}
               </div>
-              {comp.makeAhead && (
+              {(comp.makeAhead || editing) && (
                 <div className="bg-stone-50 rounded px-3 py-2 text-sm text-stone-600">
-                  <span className="font-semibold text-stone-500">Make-ahead: </span>{comp.makeAhead}
+                  <span className="font-semibold text-stone-500">Make-ahead: </span>
+                  {editing ? (
+                    <input value={comp.makeAhead || ''} onChange={e => { const comps = [...a.components]; comps[ci] = { ...comps[ci], makeAhead: e.target.value }; setField('components', comps); }}
+                      className="w-full text-sm text-stone-600 px-1.5 py-0.5 border border-stone-200 rounded bg-white outline-none focus:border-[#C9A84C] mt-1" />
+                  ) : comp.makeAhead}
                 </div>
               )}
             </div>
@@ -852,9 +880,14 @@ function AdaptationResultPanel({ result, chefName, originalTitle, venueAccent }:
             <div className="text-[10px] font-bold tracking-widest uppercase text-stone-500 mb-3">Assembly & Plating</div>
             <div className="divide-y divide-stone-100">
               {(a.assembly||[]).map((step, si) => (
-                <div key={si} className="flex gap-3 py-2">
+                <div key={si} className="flex gap-3 items-start py-2">
                   <span className="font-bold text-xs flex-shrink-0 mt-0.5" style={{ color: venueAccent }}>{si + 1}.</span>
-                  <span className="text-sm text-stone-700 leading-relaxed">{step}</span>
+                  {editing ? (
+                    <textarea value={step} onChange={e => { const asm = [...a.assembly]; asm[si] = e.target.value; setField('assembly', asm); }}
+                      className="flex-1 text-sm text-stone-700 px-1.5 py-1 border border-stone-200 rounded bg-white outline-none focus:border-[#C9A84C] resize-y min-h-[36px]" rows={2} />
+                  ) : (
+                    <span className="text-sm text-stone-700 leading-relaxed">{step}</span>
+                  )}
                 </div>
               ))}
             </div>
@@ -866,9 +899,14 @@ function AdaptationResultPanel({ result, chefName, originalTitle, venueAccent }:
             <div className="text-[10px] font-bold tracking-widest uppercase text-stone-500 mb-3">Chef's Notes</div>
             <div className="divide-y divide-stone-100">
               {(a.chefNotes||[]).map((note, ni) => (
-                <div key={ni} className="flex gap-3 py-2.5">
+                <div key={ni} className="flex gap-3 items-start py-2.5">
                   <span className="flex-shrink-0 font-bold text-base leading-none mt-0.5" style={{ color: venueAccent }}>—</span>
-                  <span className="text-sm text-stone-700 leading-relaxed">{note}</span>
+                  {editing ? (
+                    <textarea value={note} onChange={e => { const notes = [...a.chefNotes]; notes[ni] = e.target.value; setField('chefNotes', notes); }}
+                      className="flex-1 text-sm text-stone-700 px-1.5 py-1 border border-stone-200 rounded bg-white outline-none focus:border-[#C9A84C] resize-y min-h-[36px]" rows={2} />
+                  ) : (
+                    <span className="text-sm text-stone-700 leading-relaxed">{note}</span>
+                  )}
                 </div>
               ))}
             </div>
