@@ -41,6 +41,8 @@ export const Footer = () => {
               <li><a href="https://www.una.sg" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gold-400 transition-colors">UNA — Spanish at Alkaff Mansion</a></li>
               <li><a href="https://firerestaurant.sg" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gold-400 transition-colors">Fire Restaurant — Argentine</a></li>
               <li><a href="https://www.flnt.sg" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gold-400 transition-colors">FLNT — Nikkei</a></li>
+              <li><a href="https://www.1-group.sg" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gold-400 transition-colors">La Torre</a></li>
+              <li><a href="https://www.1-group.sg" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gold-400 transition-colors">La Luna</a></li>
             </ul>
           </div>
 

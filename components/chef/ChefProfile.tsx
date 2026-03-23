@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
 import { RecipeCard } from '@/components/recipe/RecipeCard';
 import { getMichelinStars, hasAccolade } from '@/lib/utils';
-import { Star, Award } from 'lucide-react';
+import { Star, Award, ExternalLink } from 'lucide-react';
 
 interface ChefProfileProps {
   chef: Chef;
@@ -23,8 +23,15 @@ export const ChefProfile: React.FC<ChefProfileProps> = ({ chef }) => {
           <div className="flex-1">
             <h1 className="text-2xl sm:text-4xl font-bold mb-1 sm:mb-2">{chef.name}</h1>
             {chef.restaurant && (
-              <p className="text-xl font-medium text-white/90 mb-4">{chef.restaurant}</p>
+              <p className="text-xl font-medium text-white/90 mb-1">{chef.restaurant}</p>
             )}
+            {chef.website && (
+              <a href={chef.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-white transition-colors mb-4">
+                <ExternalLink size={14} />
+                {chef.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
+              </a>
+            )}
+            {!chef.website && chef.restaurant && <div className="mb-4" />}
 
             <p className="text-white/80 max-w-2xl mb-4">{chef.bio}</p>
 

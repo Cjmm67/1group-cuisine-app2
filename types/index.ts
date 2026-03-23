@@ -68,6 +68,7 @@ export interface Chef {
   cuisine: string[];
   accolades: Accolade[];
   restaurant?: string;
+  website?: string;
   yearsExperience: number;
   specialties: string[];
   recipes: Recipe[];

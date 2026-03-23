@@ -26,7 +26,7 @@ const VENUES = [
   '1-Altitude', 'Kaarla', 'Oumi', 'MONTI', 'Sol & Luna', 'Sol & Ora',
   'UNA', 'Fire Restaurant', 'FLNT', 'Camille', 'Wildseed Café',
   'Wildseed Bar & Grill', '1-Flowerhill', '1-Arden', '1-Atico',
-  'Botanico', '1-Altitude Coast', '1-Group Corporate',
+  'Botanico', '1-Altitude Coast', 'La Torre', 'La Luna', '1-Group Corporate',
 ];
 
 export default function AdminJobsPage() {
