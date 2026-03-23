@@ -13,83 +13,112 @@ function Dome({ x, y, size, color, id }) {
   const w = size * 2.8, h = size * 2.2;
   const baseY = y + h * 0.22;
   return (
-    <g>
-      {/* Ground shadow — big soft oval */}
-      <ellipse cx={x + 4} cy={baseY + h * 0.15} rx={w * 0.6} ry={h * 0.22} fill="#000" opacity="0.08" />
-      <ellipse cx={x + 2} cy={baseY + h * 0.1} rx={w * 0.55} ry={h * 0.18} fill="#000" opacity="0.04" />
+    <g filter="url(#softShadow)">
+      {/* Ground shadow — large soft multi-layer */}
+      <ellipse cx={x + 5} cy={baseY + h * 0.18} rx={w * 0.65} ry={h * 0.25} fill="#000" opacity="0.1" />
+      <ellipse cx={x + 3} cy={baseY + h * 0.12} rx={w * 0.58} ry={h * 0.2} fill="#000" opacity="0.06" />
+      <ellipse cx={x + 1} cy={baseY + h * 0.08} rx={w * 0.52} ry={h * 0.16} fill="#000" opacity="0.03" />
 
-      {/* Base platform ellipse — thick */}
+      {/* Base platform ellipse — heavier stroke */}
       <ellipse cx={x} cy={baseY} rx={w * 0.56} ry={h * 0.16}
-        fill={`url(#dome-base-${id})`} stroke="#555" strokeWidth="1.3" />
-      {/* Base rim highlight */}
+        fill={`url(#dome-base-${id})`} stroke="#444" strokeWidth="1.8" filter="url(#pencil)" />
+      {/* Base rim highlight — wider */}
       <path d={`M${x - w * 0.48},${baseY - h * 0.02} A${w * 0.5},${h * 0.14} 0 0,1 ${x + w * 0.48},${baseY - h * 0.02}`}
-        fill="none" stroke="#fff" strokeWidth="1.5" opacity="0.3" />
+        fill="none" stroke="#fff" strokeWidth="2.5" opacity="0.4" />
 
-      {/* Dome body — rich curved form */}
+      {/* Dome body — main outline heavier */}
       <path d={`M${x - w * 0.52},${baseY}
         C${x - w * 0.53},${y - h * 0.4} ${x - w * 0.2},${y - h * 0.82} ${x},${y - h * 0.85}
         C${x + w * 0.2},${y - h * 0.82} ${x + w * 0.53},${y - h * 0.4} ${x + w * 0.52},${baseY}`}
-        fill={`url(#dome-body-${id})`} stroke="#444" strokeWidth="1.4" />
+        fill={`url(#dome-body-${id})`} stroke="#333" strokeWidth="2" filter="url(#pencil)" />
 
-      {/* Dense horizontal contour lines — gives that sketch feel */}
-      {[0.12, 0.24, 0.36, 0.48, 0.62, 0.76].map((t, i) => {
+      {/* Watercolor wash layers — multiple overlapping fills for depth */}
+      <path d={`M${x - w * 0.45},${baseY - h * 0.05}
+        C${x - w * 0.46},${y - h * 0.3} ${x - w * 0.15},${y - h * 0.7} ${x},${y - h * 0.72}
+        C${x + w * 0.15},${y - h * 0.7} ${x + w * 0.46},${y - h * 0.3} ${x + w * 0.45},${baseY - h * 0.05} Z`}
+        fill={color} opacity="0.08" filter="url(#wash)" />
+      <path d={`M${x - w * 0.38},${baseY - h * 0.1}
+        C${x - w * 0.4},${y - h * 0.2} ${x - w * 0.12},${y - h * 0.6} ${x - w * 0.05},${y - h * 0.62}
+        C${x + w * 0.05},${y - h * 0.55} ${x + w * 0.15},${y - h * 0.35} ${x + w * 0.2},${baseY - h * 0.15} Z`}
+        fill={color} opacity="0.12" filter="url(#wash)" />
+      {/* Dark shadow wash on left side */}
+      <path d={`M${x - w * 0.5},${baseY}
+        C${x - w * 0.5},${y - h * 0.3} ${x - w * 0.3},${y - h * 0.65} ${x - w * 0.1},${y - h * 0.7}
+        L${x - w * 0.15},${y - h * 0.4} L${x - w * 0.35},${baseY - h * 0.1} Z`}
+        fill="#555" opacity="0.06" filter="url(#wash)" />
+
+      {/* Dense horizontal contour lines — 10 lines for richer sketch feel */}
+      {[0.08, 0.16, 0.24, 0.32, 0.40, 0.48, 0.56, 0.64, 0.72, 0.80].map((t, i) => {
         const ly = baseY - h * t * 0.95;
         const spread = Math.sqrt(1 - t * t) * w * 0.5;
         return (
           <path key={i}
-            d={`M${x - spread * 0.92},${ly} Q${x},${ly - 2 - i * 0.5} ${x + spread * 0.92},${ly}`}
-            fill="none" stroke="#888" strokeWidth={0.4 + (1 - t) * 0.3}
-            strokeDasharray={i % 2 === 0 ? "6,4" : "4,5"} opacity={0.3 + t * 0.2} />
+            d={`M${x - spread * 0.92},${ly} Q${x},${ly - 2 - i * 0.4} ${x + spread * 0.92},${ly}`}
+            fill="none" stroke="#777" strokeWidth={0.5 + (1 - t) * 0.4}
+            strokeDasharray={i % 3 === 0 ? "8,4" : i % 3 === 1 ? "5,5" : "3,6"} opacity={0.2 + t * 0.25} />
         );
       })}
 
-      {/* Cross-section dashed ellipse — the key reference sketch detail */}
+      {/* Cross-section dashed ellipse — heavier */}
       <ellipse cx={x} cy={baseY - h * 0.35} rx={w * 0.44} ry={h * 0.13}
-        fill="none" stroke="#444" strokeWidth="1.1" strokeDasharray="7,5" opacity="0.6" />
-      {/* Arrows on dashed line */}
-      <path d={`M${x + w * 0.35},${baseY - h * 0.38} l5,-4 l-2,6`} fill="#444" opacity="0.5" />
-      <path d={`M${x - w * 0.35},${baseY - h * 0.32} l-5,4 l2,-6`} fill="#444" opacity="0.5" />
+        fill="none" stroke="#333" strokeWidth="1.4" strokeDasharray="8,5" opacity="0.65" />
+      <path d={`M${x + w * 0.35},${baseY - h * 0.38} l6,-5 l-2,7`} fill="#333" opacity="0.55" />
+      <path d={`M${x - w * 0.35},${baseY - h * 0.32} l-6,5 l2,-7`} fill="#333" opacity="0.55" />
 
-      {/* Left shadow — pencil shading with cross-hatch */}
-      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
-        const t = i * 0.11;
-        const sx = x - w * 0.48 + t * w * 0.15;
-        const sy1 = baseY - h * t * 0.7;
-        const sy2 = baseY - h * 0.05;
+      {/* Dense left shadow — 14 cross-hatch lines */}
+      {Array.from({length: 14}, (_, i) => {
+        const t = i * 0.065;
+        const sx = x - w * 0.5 + t * w * 0.2;
+        const sy1 = baseY - h * t * 0.8;
+        const sy2 = baseY - h * 0.02;
         return (
-          <line key={`sh-${i}`} x1={sx} y1={sy1} x2={sx + 3} y2={sy2}
-            stroke="#777" strokeWidth="0.4" opacity={0.15 + (1 - t) * 0.15} />
+          <line key={`sh-${i}`} x1={sx} y1={sy1} x2={sx + 2 + Math.random() * 2} y2={sy2}
+            stroke="#666" strokeWidth={0.3 + (1 - t) * 0.25} opacity={0.1 + (1 - t) * 0.18} />
+        );
+      })}
+      {/* Cross-hatch in opposite direction */}
+      {Array.from({length: 8}, (_, i) => {
+        const t = i * 0.1;
+        const sx = x - w * 0.42 + t * w * 0.18;
+        return (
+          <line key={`cx-${i}`} x1={sx + 8} y1={baseY - h * t * 0.6}
+            x2={sx - 2} y2={baseY - h * 0.02}
+            stroke="#777" strokeWidth="0.25" opacity={0.08 + (1 - t) * 0.1} />
         );
       })}
 
-      {/* Right-side lighter hatching */}
-      {[0, 1, 2, 3].map((i) => {
-        const t = i * 0.15;
-        const sx = x + w * 0.25 + t * w * 0.15;
+      {/* Right-side lighter hatching — more lines */}
+      {Array.from({length: 6}, (_, i) => {
+        const t = i * 0.12;
+        const sx = x + w * 0.2 + t * w * 0.18;
         return (
-          <line key={`rh-${i}`} x1={sx} y1={baseY - h * 0.5 + i * 8} x2={sx + 4} y2={baseY}
-            stroke="#999" strokeWidth="0.3" opacity="0.1" />
+          <line key={`rh-${i}`} x1={sx} y1={baseY - h * 0.55 + i * 6} x2={sx + 3} y2={baseY - h * 0.05}
+            stroke="#aaa" strokeWidth="0.3" opacity={0.06 + i * 0.015} />
         );
       })}
 
-      {/* Big highlight — curved white stroke */}
-      <path d={`M${x - w * 0.12},${y - h * 0.7}
-        Q${x - w * 0.02},${y - h * 0.82} ${x + w * 0.12},${y - h * 0.65}`}
-        fill="none" stroke="#fff" strokeWidth="3" opacity="0.45" strokeLinecap="round" />
-      <path d={`M${x - w * 0.08},${y - h * 0.55}
-        Q${x + w * 0.02},${y - h * 0.62} ${x + w * 0.08},${y - h * 0.5}`}
-        fill="none" stroke="#fff" strokeWidth="1.5" opacity="0.3" strokeLinecap="round" />
+      {/* Big highlight — multiple thick white strokes for realism */}
+      <path d={`M${x - w * 0.15},${y - h * 0.68}
+        Q${x - w * 0.03},${y - h * 0.84} ${x + w * 0.14},${y - h * 0.63}`}
+        fill="none" stroke="#fff" strokeWidth="4.5" opacity="0.5" strokeLinecap="round" />
+      <path d={`M${x - w * 0.1},${y - h * 0.55}
+        Q${x + w * 0.02},${y - h * 0.65} ${x + w * 0.1},${y - h * 0.48}`}
+        fill="none" stroke="#fff" strokeWidth="2.5" opacity="0.35" strokeLinecap="round" />
+      <path d={`M${x - w * 0.06},${y - h * 0.42}
+        Q${x + w * 0.01},${y - h * 0.48} ${x + w * 0.06},${y - h * 0.38}`}
+        fill="none" stroke="#fff" strokeWidth="1.5" opacity="0.2" strokeLinecap="round" />
 
       <defs>
         <radialGradient id={`dome-body-${id}`} cx="38%" cy="28%" r="62%">
-          <stop offset="0%" stopColor="#fff" stopOpacity="0.7" />
-          <stop offset="35%" stopColor={color} stopOpacity="0.2" />
-          <stop offset="70%" stopColor={color} stopOpacity="0.12" />
-          <stop offset="100%" stopColor="#888" stopOpacity="0.15" />
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.65" />
+          <stop offset="25%" stopColor={color} stopOpacity="0.15" />
+          <stop offset="55%" stopColor={color} stopOpacity="0.1" />
+          <stop offset="80%" stopColor="#777" stopOpacity="0.12" />
+          <stop offset="100%" stopColor="#555" stopOpacity="0.18" />
         </radialGradient>
         <radialGradient id={`dome-base-${id}`} cx="50%" cy="40%" r="55%">
           <stop offset="0%" stopColor="#fff" stopOpacity="0.4" />
-          <stop offset="100%" stopColor={color} stopOpacity="0.12" />
+          <stop offset="100%" stopColor={color} stopOpacity="0.15" />
         </radialGradient>
       </defs>
     </g>
@@ -113,36 +142,58 @@ function Berries({ x, y, size, color, id }) {
         const bx = x + b.dx, by = y + b.dy, br = r * b.s;
         return (
           <g key={i}>
-            {/* Shadow */}
-            <ellipse cx={bx + 1.5} cy={by + br * 0.85} rx={br * 0.9} ry={br * 0.35}
-              fill="#000" opacity="0.07" />
-            {/* Sphere body — rich gradient */}
+            {/* Multi-layer shadow */}
+            <ellipse cx={bx + 2} cy={by + br * 0.95} rx={br * 1.0} ry={br * 0.4}
+              fill="#000" opacity="0.09" />
+            <ellipse cx={bx + 1} cy={by + br * 0.8} rx={br * 0.85} ry={br * 0.3}
+              fill="#000" opacity="0.05" />
+
+            {/* Sphere body — heavier outline */}
             <circle cx={bx} cy={by} r={br}
-              fill={`url(#berry-g-${id}-${i})`} stroke="#555" strokeWidth="0.9" />
-            {/* Bottom shadow crescent */}
-            <path d={`M${bx - br * 0.7},${by + br * 0.3}
-              A${br * 0.9},${br * 0.9} 0 0,0 ${bx + br * 0.7},${by + br * 0.3}`}
-              fill="#000" opacity="0.06" />
-            {/* Cross-hatch shadow on left */}
-            {[0, 1, 2].map(j => (
-              <line key={j} x1={bx - br * 0.6 + j * 2} y1={by - br * 0.2 + j * 3}
-                x2={bx - br * 0.3 + j * 2} y2={by + br * 0.5 + j * 2}
-                stroke="#777" strokeWidth="0.3" opacity="0.15" />
+              fill={`url(#berry-g-${id}-${i})`} stroke="#444" strokeWidth="1.3" />
+
+            {/* Watercolor wash fill layer */}
+            <circle cx={bx} cy={by} r={br * 0.85}
+              fill={color} opacity="0.08" filter="url(#wash)" />
+
+            {/* Bottom shadow crescent — darker */}
+            <path d={`M${bx - br * 0.75},${by + br * 0.25}
+              A${br * 0.95},${br * 0.95} 0 0,0 ${bx + br * 0.75},${by + br * 0.25}
+              Q${bx},${by + br * 0.85} ${bx - br * 0.75},${by + br * 0.25} Z`}
+              fill="#000" opacity="0.08" />
+
+            {/* Dense cross-hatch shadow on left quadrant */}
+            {[0, 1, 2, 3, 4].map(j => (
+              <line key={`h-${j}`} x1={bx - br * 0.7 + j * 1.5} y1={by - br * 0.3 + j * 2.5}
+                x2={bx - br * 0.35 + j * 1.5} y2={by + br * 0.6 + j * 1.5}
+                stroke="#666" strokeWidth="0.35" opacity={0.12 + (4 - j) * 0.03} />
             ))}
-            {/* Big specular highlight */}
-            <ellipse cx={bx - br * 0.2} cy={by - br * 0.25} rx={br * 0.3} ry={br * 0.22}
-              fill="#fff" opacity="0.55" />
-            <circle cx={bx - br * 0.15} cy={by - br * 0.2} r={br * 0.12}
+            {/* Cross direction */}
+            {[0, 1, 2].map(j => (
+              <line key={`cx-${j}`} x1={bx - br * 0.55 + j * 2} y1={by + br * 0.4 - j * 2}
+                x2={bx - br * 0.2 + j * 2} y2={by - br * 0.2 - j * 1.5}
+                stroke="#777" strokeWidth="0.25" opacity="0.08" />
+            ))}
+
+            {/* Big specular highlight — multiple layers */}
+            <ellipse cx={bx - br * 0.22} cy={by - br * 0.28} rx={br * 0.35} ry={br * 0.25}
+              fill="#fff" opacity="0.6" />
+            <ellipse cx={bx - br * 0.18} cy={by - br * 0.25} rx={br * 0.2} ry={br * 0.15}
               fill="#fff" opacity="0.8" />
-            {/* Calyx star */}
-            <text x={bx + br * 0.05} y={by + br * 0.15} textAnchor="middle"
-              fontSize={br * 0.7} fill="#555" opacity="0.35">✻</text>
+            <circle cx={bx - br * 0.12} cy={by - br * 0.18} r={br * 0.08}
+              fill="#fff" opacity="0.95" />
+
+            {/* Calyx star — larger, more detailed */}
+            <text x={bx + br * 0.05} y={by + br * 0.18} textAnchor="middle"
+              fontSize={br * 0.8} fill="#444" opacity="0.4">✻</text>
+
             <defs>
-              <radialGradient id={`berry-g-${id}-${i}`} cx="35%" cy="30%" r="60%">
-                <stop offset="0%" stopColor="#fff" stopOpacity="0.5" />
-                <stop offset="40%" stopColor={color} stopOpacity="0.35" />
-                <stop offset="80%" stopColor={color} stopOpacity="0.2" />
-                <stop offset="100%" stopColor="#555" stopOpacity="0.15" />
+              <radialGradient id={`berry-g-${id}-${i}`} cx="32%" cy="28%" r="62%">
+                <stop offset="0%" stopColor="#fff" stopOpacity="0.55" />
+                <stop offset="30%" stopColor={color} stopOpacity="0.35" />
+                <stop offset="65%" stopColor={color} stopOpacity="0.22" />
+                <stop offset="90%" stopColor="#444" stopOpacity="0.15" />
+                <stop offset="100%" stopColor="#333" stopOpacity="0.2" />
               </radialGradient>
             </defs>
           </g>
@@ -156,50 +207,69 @@ function Sauce({ x, y, size, color, id }) {
   const s = size * 2;
   return (
     <g>
-      {/* Large organic pool — multiple layers for wash effect */}
+      {/* Outer wash bleed — watercolor edge */}
+      <path d={`M${x - s * 0.75},${y + s * 0.12}
+        C${x - s * 0.55},${y - s * 0.4} ${x - s * 0.08},${y - s * 0.42} ${x + s * 0.38},${y - s * 0.25}
+        C${x + s * 0.75},${y - s * 0.08} ${x + s * 0.85},${y + s * 0.22} ${x + s * 0.7},${y + s * 0.42}
+        C${x + s * 0.5},${y + s * 0.6} ${x + s * 0.08},${y + s * 0.55} ${x - s * 0.22},${y + s * 0.46}
+        C${x - s * 0.6},${y + s * 0.38} ${x - s * 0.8},${y + s * 0.33} ${x - s * 0.75},${y + s * 0.12} Z`}
+        fill={color} opacity="0.04" filter="url(#washHeavy)" />
+
+      {/* Main body — watercolor wash */}
       <path d={`M${x - s * 0.7},${y + s * 0.1}
         C${x - s * 0.5},${y - s * 0.35} ${x - s * 0.05},${y - s * 0.38} ${x + s * 0.35},${y - s * 0.22}
         C${x + s * 0.7},${y - s * 0.05} ${x + s * 0.8},${y + s * 0.2} ${x + s * 0.65},${y + s * 0.38}
         C${x + s * 0.45},${y + s * 0.55} ${x + s * 0.05},${y + s * 0.5} ${x - s * 0.2},${y + s * 0.42}
         C${x - s * 0.55},${y + s * 0.35} ${x - s * 0.75},${y + s * 0.3} ${x - s * 0.7},${y + s * 0.1} Z`}
-        fill={`url(#sauce-g-${id})`} stroke="#777" strokeWidth="0.7" opacity="0.85" />
+        fill={`url(#sauce-g-${id})`} stroke="#666" strokeWidth="1" opacity="0.9" filter="url(#wash)" />
 
-      {/* Inner darker wash area */}
-      <path d={`M${x - s * 0.3},${y + s * 0.05}
-        C${x - s * 0.1},${y - s * 0.15} ${x + s * 0.2},${y - s * 0.1} ${x + s * 0.4},${y + s * 0.05}
-        C${x + s * 0.5},${y + s * 0.2} ${x + s * 0.2},${y + s * 0.3} ${x - s * 0.05},${y + s * 0.25}
-        C${x - s * 0.25},${y + s * 0.2} ${x - s * 0.35},${y + s * 0.15} ${x - s * 0.3},${y + s * 0.05} Z`}
-        fill={color} opacity="0.1" />
+      {/* Inner darker wash — concentration area */}
+      <path d={`M${x - s * 0.35},${y + s * 0.05}
+        C${x - s * 0.12},${y - s * 0.18} ${x + s * 0.22},${y - s * 0.12} ${x + s * 0.42},${y + s * 0.05}
+        C${x + s * 0.52},${y + s * 0.22} ${x + s * 0.22},${y + s * 0.32} ${x - s * 0.05},${y + s * 0.28}
+        C${x - s * 0.28},${y + s * 0.22} ${x - s * 0.38},${y + s * 0.15} ${x - s * 0.35},${y + s * 0.05} Z`}
+        fill={color} opacity="0.15" filter="url(#wash)" />
+      {/* Deepest concentration */}
+      <path d={`M${x - s * 0.1},${y + s * 0.1}
+        C${x + s * 0.05},${y - s * 0.02} ${x + s * 0.25},${y + s * 0.05} ${x + s * 0.3},${y + s * 0.15}
+        C${x + s * 0.25},${y + s * 0.25} ${x + s * 0.05},${y + s * 0.22} ${x - s * 0.1},${y + s * 0.1} Z`}
+        fill={color} opacity="0.1" filter="url(#wash)" />
 
-      {/* Watercolor-like internal flow strokes */}
-      {[0, 1, 2, 3, 4].map(i => {
-        const ox = (i - 2) * s * 0.15;
+      {/* Watercolor flow strokes — organic internal texture */}
+      {[0, 1, 2, 3, 4, 5, 6].map(i => {
+        const ox = (i - 3) * s * 0.12;
         return (
           <path key={i}
-            d={`M${x - s * 0.4 + ox},${y + s * 0.15 + i * 3}
-              Q${x + ox * 0.5},${y - s * 0.05 + i * 4} ${x + s * 0.45 + ox * 0.3},${y + s * 0.1 + i * 2}`}
-            fill="none" stroke={color} strokeWidth={0.5 + Math.random() * 0.3} opacity={0.08 + i * 0.02} />
+            d={`M${x - s * 0.4 + ox},${y + s * 0.15 + i * 2.5}
+              Q${x + ox * 0.4},${y - s * 0.05 + i * 3.5} ${x + s * 0.45 + ox * 0.25},${y + s * 0.1 + i * 1.5}`}
+            fill="none" stroke={color} strokeWidth={0.4 + Math.random() * 0.4} opacity={0.06 + i * 0.015} />
         );
       })}
 
       {/* Edge thickening strokes — pencil feel */}
       <path d={`M${x - s * 0.65},${y + s * 0.15}
         C${x - s * 0.45},${y - s * 0.28} ${x},${y - s * 0.32} ${x + s * 0.3},${y - s * 0.18}`}
-        fill="none" stroke="#666" strokeWidth="0.4" opacity="0.3" />
+        fill="none" stroke="#555" strokeWidth="0.6" opacity="0.35" />
+      <path d={`M${x + s * 0.55},${y + s * 0.32}
+        C${x + s * 0.35},${y + s * 0.48} ${x},${y + s * 0.45} ${x - s * 0.3},${y + s * 0.38}`}
+        fill="none" stroke="#666" strokeWidth="0.4" opacity="0.25" />
 
-      {/* Highlight reflection */}
-      <path d={`M${x - s * 0.15},${y - s * 0.12}
-        C${x + s * 0.1},${y - s * 0.22} ${x + s * 0.3},${y - s * 0.12} ${x + s * 0.4},${y - s * 0.02}`}
-        fill="none" stroke="#fff" strokeWidth="2.5" opacity="0.3" strokeLinecap="round" />
-      <path d={`M${x + s * 0.1},${y + s * 0.08}
-        C${x + s * 0.25},${y} ${x + s * 0.4},${y + s * 0.05} ${x + s * 0.5},${y + s * 0.12}`}
-        fill="none" stroke="#fff" strokeWidth="1" opacity="0.15" strokeLinecap="round" />
+      {/* Multiple highlight reflections */}
+      <path d={`M${x - s * 0.18},${y - s * 0.14}
+        C${x + s * 0.12},${y - s * 0.25} ${x + s * 0.32},${y - s * 0.14} ${x + s * 0.42},${y - s * 0.02}`}
+        fill="none" stroke="#fff" strokeWidth="3.5" opacity="0.35" strokeLinecap="round" />
+      <path d={`M${x + s * 0.08},${y + s * 0.06}
+        C${x + s * 0.22},${y - s * 0.02} ${x + s * 0.38},${y + s * 0.04} ${x + s * 0.48},${y + s * 0.1}`}
+        fill="none" stroke="#fff" strokeWidth="1.5" opacity="0.2" strokeLinecap="round" />
+      <path d={`M${x - s * 0.4},${y + s * 0.22}
+        C${x - s * 0.25},${y + s * 0.15} ${x - s * 0.1},${y + s * 0.18} ${x + s * 0.05},${y + s * 0.22}`}
+        fill="none" stroke="#fff" strokeWidth="1" opacity="0.12" strokeLinecap="round" />
 
       <defs>
         <radialGradient id={`sauce-g-${id}`} cx="40%" cy="35%" r="60%">
-          <stop offset="0%" stopColor="#fff" stopOpacity="0.25" />
-          <stop offset="40%" stopColor={color} stopOpacity="0.2" />
-          <stop offset="80%" stopColor={color} stopOpacity="0.12" />
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.2" />
+          <stop offset="30%" stopColor={color} stopOpacity="0.18" />
+          <stop offset="65%" stopColor={color} stopOpacity="0.14" />
           <stop offset="100%" stopColor={color} stopOpacity="0.06" />
         </radialGradient>
       </defs>
@@ -248,23 +318,29 @@ function PulledSugar({ x, y, size, color, id }) {
   const s = size * 1.8;
   return (
     <g>
-      {/* Main tall graceful curve */}
+      {/* Main tall graceful curve — heavier stroke */}
       <path d={`M${x},${y}
         C${x + s * 0.25},${y - s * 0.6} ${x - s * 0.25},${y - s * 1.4} ${x + s * 0.1},${y - s * 2.2}
         C${x + s * 0.3},${y - s * 2.7} ${x + s * 0.55},${y - s * 2.5} ${x + s * 0.35},${y - s * 1.8}`}
-        fill="none" stroke="#555" strokeWidth="1.8" opacity="0.65" strokeLinecap="round" />
-      {/* Dimension line */}
+        fill="none" stroke="#444" strokeWidth="2.5" opacity="0.7" strokeLinecap="round" filter="url(#pencil)" />
+      {/* Dimension / parallel line for thickness feel */}
       <path d={`M${x + 3},${y - 2}
         C${x + s * 0.28},${y - s * 0.58} ${x - s * 0.22},${y - s * 1.38} ${x + s * 0.13},${y - s * 2.18}`}
-        fill="none" stroke="#999" strokeWidth="0.6" opacity="0.3" />
-      {/* Highlight */}
+        fill="none" stroke="#888" strokeWidth="0.8" opacity="0.35" />
+      {/* Second parallel for more body */}
+      <path d={`M${x - 2},${y + 1}
+        C${x + s * 0.22},${y - s * 0.62} ${x - s * 0.28},${y - s * 1.42} ${x + s * 0.07},${y - s * 2.22}`}
+        fill="none" stroke="#999" strokeWidth="0.5" opacity="0.2" />
+      {/* Highlight along the curve */}
       <path d={`M${x + s * 0.02},${y - s * 0.8}
         C${x - s * 0.08},${y - s * 1.1} ${x - s * 0.02},${y - s * 1.5} ${x + s * 0.08},${y - s * 1.9}`}
-        fill="none" stroke="#fff" strokeWidth="1.2" opacity="0.4" strokeLinecap="round" />
-      {/* Small decorative curl at top */}
+        fill="none" stroke="#fff" strokeWidth="1.8" opacity="0.45" strokeLinecap="round" />
+      {/* Decorative curl at top */}
       <path d={`M${x + s * 0.35},${y - s * 1.8}
-        C${x + s * 0.4},${y - s * 1.6} ${x + s * 0.25},${y - s * 1.55} ${x + s * 0.2},${y - s * 1.65}`}
-        fill="none" stroke="#666" strokeWidth="0.8" opacity="0.4" />
+        C${x + s * 0.42},${y - s * 1.58} ${x + s * 0.28},${y - s * 1.52} ${x + s * 0.2},${y - s * 1.62}`}
+        fill="none" stroke="#555" strokeWidth="1.2" opacity="0.45" strokeLinecap="round" />
+      {/* Base attachment shadow */}
+      <ellipse cx={x} cy={y + 2} rx={s * 0.08} ry={s * 0.03} fill="#000" opacity="0.1" />
     </g>
   );
 }
@@ -330,18 +406,32 @@ function Glaze({ x, y, size, color, id }) {
   const s = size * 1.6;
   return (
     <g>
+      {/* Outer wash bleed */}
+      <path d={`M${x - s * 0.6},${y + s * 0.02}
+        C${x - s * 0.5},${y - s * 0.38} ${x - s * 0.08},${y - s * 0.43} ${x + s * 0.33},${y - s * 0.23}
+        C${x + s * 0.58},${y - s * 0.08} ${x + s * 0.63},${y + s * 0.25} ${x + s * 0.38},${y + s * 0.38}
+        C${x + s * 0.08},${y + s * 0.48} ${x - s * 0.38},${y + s * 0.42} ${x - s * 0.6},${y + s * 0.02} Z`}
+        fill={color} opacity="0.05" filter="url(#washHeavy)" />
       <path d={`M${x - s * 0.55},${y}
         C${x - s * 0.45},${y - s * 0.35} ${x - s * 0.05},${y - s * 0.4} ${x + s * 0.3},${y - s * 0.2}
         C${x + s * 0.55},${y - s * 0.05} ${x + s * 0.6},${y + s * 0.22} ${x + s * 0.35},${y + s * 0.35}
         C${x + s * 0.05},${y + s * 0.45} ${x - s * 0.35},${y + s * 0.38} ${x - s * 0.55},${y} Z`}
-        fill={`url(#glaze-g-${id})`} stroke="#888" strokeWidth="0.6" opacity="0.85" />
+        fill={`url(#glaze-g-${id})`} stroke="#777" strokeWidth="0.8" opacity="0.9" filter="url(#wash)" />
+      {/* Inner concentration */}
+      <path d={`M${x - s * 0.25},${y + s * 0.05}
+        C${x - s * 0.1},${y - s * 0.12} ${x + s * 0.15},${y - s * 0.08} ${x + s * 0.22},${y + s * 0.08}
+        C${x + s * 0.15},${y + s * 0.2} ${x - s * 0.1},${y + s * 0.18} ${x - s * 0.25},${y + s * 0.05} Z`}
+        fill={color} opacity="0.12" filter="url(#wash)" />
       <path d={`M${x - s * 0.15},${y - s * 0.15}
         C${x + s * 0.05},${y - s * 0.25} ${x + s * 0.25},${y - s * 0.12} ${x + s * 0.35},${y}`}
-        fill="none" stroke="#fff" strokeWidth="1.8" opacity="0.28" strokeLinecap="round" />
+        fill="none" stroke="#fff" strokeWidth="2.5" opacity="0.3" strokeLinecap="round" />
+      <path d={`M${x - s * 0.05},${y + s * 0.05}
+        C${x + s * 0.1},${y - s * 0.02} ${x + s * 0.2},${y + s * 0.02} ${x + s * 0.28},${y + s * 0.08}`}
+        fill="none" stroke="#fff" strokeWidth="1" opacity="0.15" strokeLinecap="round" />
       <defs>
         <radialGradient id={`glaze-g-${id}`} cx="38%" cy="32%" r="55%">
           <stop offset="0%" stopColor="#fff" stopOpacity="0.3" />
-          <stop offset="60%" stopColor={color} stopOpacity="0.22" />
+          <stop offset="50%" stopColor={color} stopOpacity="0.22" />
           <stop offset="100%" stopColor={color} stopOpacity="0.08" />
         </radialGradient>
       </defs>
@@ -517,17 +607,53 @@ export default function PlatingStudioPage() {
                 <stop offset="0%" stopColor="#fff" stopOpacity="0.45" />
                 <stop offset="100%" stopColor="#fff" stopOpacity="0" />
               </radialGradient>
+              {/* Watercolor wash filter — soft feathered edges */}
+              <filter id="wash" x="-15%" y="-15%" width="130%" height="130%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+              {/* Heavier wash for sauce pools */}
+              <filter id="washHeavy" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+              {/* Soft shadow filter */}
+              <filter id="softShadow" x="-20%" y="-10%" width="140%" height="140%">
+                <feGaussianBlur in="SourceAlpha" stdDeviation="6" result="shadow" />
+                <feOffset dx="3" dy="5" result="offsetShadow" />
+                <feFlood floodColor="#000" floodOpacity="0.08" result="color" />
+                <feComposite in="color" in2="offsetShadow" operator="in" result="shadow" />
+                <feComposite in="SourceGraphic" in2="shadow" operator="over" />
+              </filter>
+              {/* Paper texture overlay */}
+              <filter id="paperTex" x="0%" y="0%" width="100%" height="100%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="4" seed="8" result="noise" />
+                <feColorMatrix type="saturate" values="0" in="noise" result="grayNoise" />
+                <feBlend in="SourceGraphic" in2="grayNoise" mode="multiply" result="textured" />
+                <feComposite in="textured" in2="SourceGraphic" operator="in" />
+              </filter>
+              {/* Pencil wobble — subtle displacement */}
+              <filter id="pencil" x="-2%" y="-2%" width="104%" height="104%">
+                <feTurbulence type="turbulence" baseFrequency="0.04" numOctaves="3" seed="12" result="warp" />
+                <feDisplacementMap in="SourceGraphic" in2="warp" scale="1.2" xChannelSelector="R" yChannelSelector="G" />
+              </filter>
             </defs>
 
-            {/* Plate */}
-            <ellipse cx={PX + 6} cy={PY + 10} rx={PR + 18} ry={PR + 18} fill="#c0b8a8" opacity="0.1" />
-            <ellipse cx={PX} cy={PY} rx={PR + 12} ry={PR + 12} fill="none" stroke="#b0a898" strokeWidth="0.5" />
-            <ellipse cx={PX} cy={PY} rx={PR} ry={PR} fill="#fefefe" stroke="#807868" strokeWidth="1.5" />
+            {/* Plate — enhanced with pencil filter and richer detail */}
+            <ellipse cx={PX + 7} cy={PY + 12} rx={PR + 20} ry={PR + 20} fill="#b8b0a0" opacity="0.08" />
+            <ellipse cx={PX + 4} cy={PY + 8} rx={PR + 16} ry={PR + 16} fill="#c0b8a8" opacity="0.06" />
+            <ellipse cx={PX} cy={PY} rx={PR + 12} ry={PR + 12} fill="none" stroke="#a8a090" strokeWidth="0.6" filter="url(#pencil)" />
+            <ellipse cx={PX} cy={PY} rx={PR + 5} ry={PR + 5} fill="none" stroke="#c5bfb0" strokeWidth="0.3" />
+            <ellipse cx={PX} cy={PY} rx={PR} ry={PR} fill="#fefefe" stroke="#706858" strokeWidth="2" filter="url(#pencil)" />
             <ellipse cx={PX} cy={PY} rx={PR} ry={PR} fill="url(#pShine)" />
-            <ellipse cx={PX} cy={PY} rx={PR - 38} ry={PR - 38} fill="none" stroke="#ccc5b5" strokeWidth="0.3" strokeDasharray="1.5,6" opacity="0.35" />
-            {/* Rim highlight */}
+            {/* Inner rim lines */}
+            <ellipse cx={PX} cy={PY} rx={PR - 28} ry={PR - 28} fill="none" stroke="#d5cfc0" strokeWidth="0.4" strokeDasharray="1.5,5" opacity="0.3" />
+            <ellipse cx={PX} cy={PY} rx={PR - 38} ry={PR - 38} fill="none" stroke="#ccc5b5" strokeWidth="0.3" strokeDasharray="1.5,6" opacity="0.2" />
+            {/* Rim highlights — multiple arcs */}
             <path d={`M${PX - PR * 0.65},${PY - PR * 0.72} A${PR},${PR} 0 0,1 ${PX + PR * 0.72},${PY - PR * 0.6}`}
-              fill="none" stroke="#fff" strokeWidth="2.5" opacity="0.22" strokeLinecap="round" />
+              fill="none" stroke="#fff" strokeWidth="3.5" opacity="0.25" strokeLinecap="round" />
+            <path d={`M${PX - PR * 0.5},${PY - PR * 0.78} A${PR * 0.95},${PR * 0.95} 0 0,1 ${PX + PR * 0.55},${PY - PR * 0.72}`}
+              fill="none" stroke="#fff" strokeWidth="1.5" opacity="0.12" strokeLinecap="round" />
 
             {/* Components */}
             {comps.map(c => {
@@ -546,7 +672,7 @@ export default function PlatingStudioPage() {
               return (
                 <g key={`l-${c.id}`}>
                   <Arrow fx={ax} fy={lp.y + 4} tx={c.x} ty={c.y} />
-                  <text x={lp.x} y={lp.y} textAnchor={lp.a} style={{
+                  <text x={lp.x} y={lp.y} textAnchor={lp.a} filter="url(#pencil)" style={{
                     fontFamily: "'Crimson Pro', Georgia, serif", fontSize: "13.5px",
                     fontStyle: "italic", fill: "#3a3020", fontWeight: 400 }}>{c.name}</text>
                 </g>
