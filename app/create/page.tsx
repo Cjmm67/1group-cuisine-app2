@@ -48,6 +48,8 @@ const ALL_VENUES = [
   { id: '1-arden', name: '1-Arden', concept: 'Events · 50–200 pax', accent: '#2C3E50' },
   { id: '1-atico', name: '1-Atico', concept: 'Private Dining · Rooftop', accent: '#8B6914' },
   { id: 'botanico', name: 'Botanico', concept: 'Garden Bistro · Botanical', accent: '#4A6741' },
+  { id: 'la-luna', name: 'La Luna', concept: 'Latin · Rooftop · Cocktail-Forward', accent: '#5C3D6E' },
+  { id: 'la-torre', name: 'La Torre', concept: 'Spanish · Latin-Influenced · Shared Plates', accent: '#A0522D' },
   { id: 'custom', name: 'Other / External Venue', concept: 'Upload any restaurant menu', accent: '#8B8578' },
 ];
 
