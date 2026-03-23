@@ -127,96 +127,370 @@ function MenuAnalysisPanel({ analysis }: { analysis: MenuAnalysis }) {
 }
 
 // ─── ADAPTATION RESULT PANEL ──────────────────────────────────────────────────
-// ─── PLATING SKETCH COMPONENT ────────────────────────────────────────────────
+// ─── INTERACTIVE PLATING STUDIO (embedded in adaptation results) ─────────────
+
+// Shape auto-mapping from recipe component names
+const SHAPE_KEYWORDS: Record<string, string[]> = {
+  sauce: ['sauce', 'jus', 'reduction', 'emulsion', 'broth', 'coulis', 'velouté', 'dressing', 'vinaigrette', 'gravy'],
+  quenelle: ['purée', 'puree', 'mousse', 'cream', 'ice cream', 'sorbet', 'quenelle', 'foam', 'espuma', 'parfait', 'custard', 'panna cotta'],
+  berries: ['berry', 'berries', 'caviar', 'pearl', 'dot', 'gel', 'currant', 'olive', 'caper', 'pickled'],
+  'chocolate shard': ['crisp', 'tuile', 'shard', 'chip', 'cracker', 'chocolate', 'bark', 'snap', 'brittle', 'wafer'],
+  cookie: ['cookie', 'biscuit', 'crumble', 'crumb', 'streusel', 'shortbread', 'sablé', 'gablé', 'biscotti'],
+  glaze: ['glaze', 'mirror', 'gel', 'aspic', 'consommé'],
+  'leaf garnish': ['leaf', 'herb', 'garnish', 'micro', 'flower', 'cress', 'shoot', 'edible', 'petal', 'frond', 'sprig'],
+  'pulled sugar': ['sugar', 'pulled', 'spun', 'caramel', 'isomalt', 'nougatine'],
+};
+
+function guessShape(name: string): string {
+  const lower = name.toLowerCase();
+  for (const [shape, keywords] of Object.entries(SHAPE_KEYWORDS)) {
+    if (keywords.some(k => lower.includes(k))) return shape;
+  }
+  return 'dome';
+}
+
+function guessColor(name: string): string {
+  const l = name.toLowerCase();
+  if (/chocolate|cacao|cocoa/.test(l)) return '#5C3A1E';
+  if (/berry|currant|red|strawberry|raspberry/.test(l)) return '#C0392B';
+  if (/green|herb|leaf|pesto|spinach|matcha/.test(l)) return '#4A7C59';
+  if (/citrus|lemon|yuzu|saffron|turmeric/.test(l)) return '#D4A030';
+  if (/cream|vanilla|white|almond|coconut/.test(l)) return '#E8DCC8';
+  if (/orange|carrot|pumpkin|sweet potato/.test(l)) return '#D4702A';
+  if (/purple|beetroot|blueberry|lavender/.test(l)) return '#7B4D8A';
+  if (/caramel|toffee|sugar|honey|maple/.test(l)) return '#C9A84C';
+  if (/sauce|jus|reduction|wine/.test(l)) return '#7B2D3B';
+  if (/seafood|fish|scallop|lobster|prawn/.test(l)) return '#F0E0C0';
+  return '#B8A88A';
+}
+
+// Auto-position components in a pleasing arrangement on the plate
+const POSITION_RINGS = [
+  { x: 400, y: 345, label: 'center' },     // center (main protein / dome)
+  { x: 340, y: 410, label: 'sw' },
+  { x: 460, y: 410, label: 'se' },
+  { x: 320, y: 310, label: 'w' },
+  { x: 480, y: 310, label: 'e' },
+  { x: 400, y: 270, label: 'n' },
+  { x: 270, y: 365, label: 'far-w' },
+  { x: 530, y: 365, label: 'far-e' },
+  { x: 350, y: 450, label: 'ssw' },
+  { x: 450, y: 450, label: 'sse' },
+  { x: 400, y: 430, label: 's' },
+  { x: 330, y: 270, label: 'nw' },
+];
+
+const STUDIO_PX = 400, STUDIO_PY = 360, STUDIO_PR = 280;
+
+const STUDIO_LABELS = [
+  { x: 45, y: 55, a: 'start' }, { x: 755, y: 55, a: 'end' },
+  { x: 770, y: 195, a: 'end' }, { x: 775, y: 340, a: 'end' },
+  { x: 755, y: 490, a: 'end' }, { x: 45, y: 490, a: 'start' },
+  { x: 25, y: 340, a: 'start' }, { x: 25, y: 195, a: 'start' },
+  { x: 400, y: 640, a: 'middle' }, { x: 400, y: 35, a: 'middle' },
+  { x: 150, y: 610, a: 'start' }, { x: 650, y: 610, a: 'end' },
+];
+
+// ─── SVG SHAPE RENDERERS (3D sketch style) ──────────────────────────────────
+
+function SkDome({ x, y, size, color, id }: any) {
+  const w = size * 2.8, h = size * 2.2, baseY = y + h * 0.22;
+  return (
+    <g>
+      <ellipse cx={x + 4} cy={baseY + h * 0.15} rx={w * 0.6} ry={h * 0.22} fill="#000" opacity="0.08" />
+      <ellipse cx={x + 2} cy={baseY + h * 0.1} rx={w * 0.55} ry={h * 0.18} fill="#000" opacity="0.04" />
+      <ellipse cx={x} cy={baseY} rx={w * 0.56} ry={h * 0.16} fill={`url(#dome-base-${id})`} stroke="#555" strokeWidth="1.3" />
+      <path d={`M${x - w * 0.48},${baseY - h * 0.02} A${w * 0.5},${h * 0.14} 0 0,1 ${x + w * 0.48},${baseY - h * 0.02}`} fill="none" stroke="#fff" strokeWidth="1.5" opacity="0.3" />
+      <path d={`M${x - w * 0.52},${baseY} C${x - w * 0.53},${y - h * 0.4} ${x - w * 0.2},${y - h * 0.82} ${x},${y - h * 0.85} C${x + w * 0.2},${y - h * 0.82} ${x + w * 0.53},${y - h * 0.4} ${x + w * 0.52},${baseY}`} fill={`url(#dome-body-${id})`} stroke="#444" strokeWidth="1.4" />
+      {[0.12, 0.24, 0.36, 0.48, 0.62, 0.76].map((t, i) => {
+        const ly = baseY - h * t * 0.95, spread = Math.sqrt(1 - t * t) * w * 0.5;
+        return <path key={i} d={`M${x - spread * 0.92},${ly} Q${x},${ly - 2 - i * 0.5} ${x + spread * 0.92},${ly}`} fill="none" stroke="#888" strokeWidth={0.4 + (1 - t) * 0.3} strokeDasharray={i % 2 === 0 ? "6,4" : "4,5"} opacity={0.3 + t * 0.2} />;
+      })}
+      <ellipse cx={x} cy={baseY - h * 0.35} rx={w * 0.44} ry={h * 0.13} fill="none" stroke="#444" strokeWidth="1.1" strokeDasharray="7,5" opacity="0.6" />
+      <path d={`M${x + w * 0.35},${baseY - h * 0.38} l5,-4 l-2,6`} fill="#444" opacity="0.5" />
+      <path d={`M${x - w * 0.35},${baseY - h * 0.32} l-5,4 l2,-6`} fill="#444" opacity="0.5" />
+      {[0,1,2,3,4,5,6,7].map(i => { const t=i*0.11, sx=x-w*0.48+t*w*0.15; return <line key={`sh-${i}`} x1={sx} y1={baseY-h*t*0.7} x2={sx+3} y2={baseY-h*0.05} stroke="#777" strokeWidth="0.4" opacity={0.15+(1-t)*0.15} />; })}
+      {[0,1,2,3].map(i => { const t=i*0.15, sx=x+w*0.25+t*w*0.15; return <line key={`rh-${i}`} x1={sx} y1={baseY-h*0.5+i*8} x2={sx+4} y2={baseY} stroke="#999" strokeWidth="0.3" opacity="0.1" />; })}
+      <path d={`M${x-w*0.12},${y-h*0.7} Q${x-w*0.02},${y-h*0.82} ${x+w*0.12},${y-h*0.65}`} fill="none" stroke="#fff" strokeWidth="3" opacity="0.45" strokeLinecap="round" />
+      <path d={`M${x-w*0.08},${y-h*0.55} Q${x+w*0.02},${y-h*0.62} ${x+w*0.08},${y-h*0.5}`} fill="none" stroke="#fff" strokeWidth="1.5" opacity="0.3" strokeLinecap="round" />
+      <defs>
+        <radialGradient id={`dome-body-${id}`} cx="38%" cy="28%" r="62%"><stop offset="0%" stopColor="#fff" stopOpacity="0.7" /><stop offset="35%" stopColor={color} stopOpacity="0.2" /><stop offset="70%" stopColor={color} stopOpacity="0.12" /><stop offset="100%" stopColor="#888" stopOpacity="0.15" /></radialGradient>
+        <radialGradient id={`dome-base-${id}`} cx="50%" cy="40%" r="55%"><stop offset="0%" stopColor="#fff" stopOpacity="0.4" /><stop offset="100%" stopColor={color} stopOpacity="0.12" /></radialGradient>
+      </defs>
+    </g>
+  );
+}
+
+function SkBerries({ x, y, size, color, id }: any) {
+  const r = size * 0.35;
+  const positions = [{dx:-size*1.1,dy:size*0.1,s:1.05},{dx:-size*0.6,dy:-size*0.15,s:1.0},{dx:-size*0.1,dy:size*0.08,s:1.1},{dx:size*0.4,dy:-size*0.1,s:0.95},{dx:size*0.9,dy:size*0.05,s:1.0},{dx:size*1.35,dy:-size*0.05,s:0.88},{dx:-size*0.85,dy:size*0.35,s:0.7}];
+  return (<g>{positions.map((b,i)=>{const bx=x+b.dx,by=y+b.dy,br=r*b.s; return(<g key={i}>
+    <ellipse cx={bx+1.5} cy={by+br*0.85} rx={br*0.9} ry={br*0.35} fill="#000" opacity="0.07" />
+    <circle cx={bx} cy={by} r={br} fill={`url(#berry-g-${id}-${i})`} stroke="#555" strokeWidth="0.9" />
+    <path d={`M${bx-br*0.7},${by+br*0.3} A${br*0.9},${br*0.9} 0 0,0 ${bx+br*0.7},${by+br*0.3}`} fill="#000" opacity="0.06" />
+    {[0,1,2].map(j=>(<line key={j} x1={bx-br*0.6+j*2} y1={by-br*0.2+j*3} x2={bx-br*0.3+j*2} y2={by+br*0.5+j*2} stroke="#777" strokeWidth="0.3" opacity="0.15" />))}
+    <ellipse cx={bx-br*0.2} cy={by-br*0.25} rx={br*0.3} ry={br*0.22} fill="#fff" opacity="0.55" />
+    <circle cx={bx-br*0.15} cy={by-br*0.2} r={br*0.12} fill="#fff" opacity="0.8" />
+    <text x={bx+br*0.05} y={by+br*0.15} textAnchor="middle" fontSize={br*0.7} fill="#555" opacity="0.35">✻</text>
+    <defs><radialGradient id={`berry-g-${id}-${i}`} cx="35%" cy="30%" r="60%"><stop offset="0%" stopColor="#fff" stopOpacity="0.5" /><stop offset="40%" stopColor={color} stopOpacity="0.35" /><stop offset="80%" stopColor={color} stopOpacity="0.2" /><stop offset="100%" stopColor="#555" stopOpacity="0.15" /></radialGradient></defs>
+  </g>);})}</g>);
+}
+
+function SkSauce({ x, y, size, color, id }: any) {
+  const s = size * 2;
+  return (<g>
+    <path d={`M${x-s*0.7},${y+s*0.1} C${x-s*0.5},${y-s*0.35} ${x-s*0.05},${y-s*0.38} ${x+s*0.35},${y-s*0.22} C${x+s*0.7},${y-s*0.05} ${x+s*0.8},${y+s*0.2} ${x+s*0.65},${y+s*0.38} C${x+s*0.45},${y+s*0.55} ${x+s*0.05},${y+s*0.5} ${x-s*0.2},${y+s*0.42} C${x-s*0.55},${y+s*0.35} ${x-s*0.75},${y+s*0.3} ${x-s*0.7},${y+s*0.1} Z`} fill={`url(#sauce-g-${id})`} stroke="#777" strokeWidth="0.7" opacity="0.85" />
+    <path d={`M${x-s*0.3},${y+s*0.05} C${x-s*0.1},${y-s*0.15} ${x+s*0.2},${y-s*0.1} ${x+s*0.4},${y+s*0.05} C${x+s*0.5},${y+s*0.2} ${x+s*0.2},${y+s*0.3} ${x-s*0.05},${y+s*0.25} C${x-s*0.25},${y+s*0.2} ${x-s*0.35},${y+s*0.15} ${x-s*0.3},${y+s*0.05} Z`} fill={color} opacity="0.1" />
+    {[0,1,2,3,4].map(i=>{const ox=(i-2)*s*0.15; return <path key={i} d={`M${x-s*0.4+ox},${y+s*0.15+i*3} Q${x+ox*0.5},${y-s*0.05+i*4} ${x+s*0.45+ox*0.3},${y+s*0.1+i*2}`} fill="none" stroke={color} strokeWidth={0.5+Math.random()*0.3} opacity={0.08+i*0.02} />;})}
+    <path d={`M${x-s*0.65},${y+s*0.15} C${x-s*0.45},${y-s*0.28} ${x},${y-s*0.32} ${x+s*0.3},${y-s*0.18}`} fill="none" stroke="#666" strokeWidth="0.4" opacity="0.3" />
+    <path d={`M${x-s*0.15},${y-s*0.12} C${x+s*0.1},${y-s*0.22} ${x+s*0.3},${y-s*0.12} ${x+s*0.4},${y-s*0.02}`} fill="none" stroke="#fff" strokeWidth="2.5" opacity="0.3" strokeLinecap="round" />
+    <path d={`M${x+s*0.1},${y+s*0.08} C${x+s*0.25},${y} ${x+s*0.4},${y+s*0.05} ${x+s*0.5},${y+s*0.12}`} fill="none" stroke="#fff" strokeWidth="1" opacity="0.15" strokeLinecap="round" />
+    <defs><radialGradient id={`sauce-g-${id}`} cx="40%" cy="35%" r="60%"><stop offset="0%" stopColor="#fff" stopOpacity="0.25" /><stop offset="40%" stopColor={color} stopOpacity="0.2" /><stop offset="80%" stopColor={color} stopOpacity="0.12" /><stop offset="100%" stopColor={color} stopOpacity="0.06" /></radialGradient></defs>
+  </g>);
+}
+
+function SkQuenelle({ x, y, size, color, id }: any) {
+  const w = size * 2.2, h = size * 1.4;
+  return (<g>
+    <ellipse cx={x+2} cy={y+h*0.45} rx={w*0.42} ry={h*0.12} fill="#000" opacity="0.06" />
+    <path d={`M${x-w*0.5},${y+h*0.15} Q${x-w*0.45},${y-h*0.65} ${x+w*0.1},${y-h*0.55} Q${x+w*0.5},${y-h*0.45} ${x+w*0.5},${y+h*0.1} Q${x+w*0.35},${y+h*0.45} ${x+w*0.05},${y+h*0.35} Q${x-w*0.3},${y+h*0.45} ${x-w*0.5},${y+h*0.15} Z`} fill={`url(#quen-g-${id})`} stroke="#555" strokeWidth="1.1" />
+    {[0.15,0.3,0.45,0.6,0.75].map((t,i)=>(<path key={i} d={`M${x-w*0.35+t*w*0.35},${y-h*0.4+t*h*0.25} Q${x+t*w*0.15},${y+t*h*0.2} ${x+w*0.25+t*w*0.08},${y+t*h*0.15}`} fill="none" stroke="#999" strokeWidth="0.4" opacity={0.2+t*0.1} />))}
+    <path d={`M${x-w*0.15},${y-h*0.4} Q${x},${y-h*0.55} ${x+w*0.12},${y-h*0.35}`} fill="none" stroke="#fff" strokeWidth="2" opacity="0.4" strokeLinecap="round" />
+    {[0,1,2,3].map(i=>(<line key={i} x1={x-w*0.4+i*3} y1={y-h*0.1+i*4} x2={x-w*0.3+i*3} y2={y+h*0.3+i*2} stroke="#888" strokeWidth="0.3" opacity="0.12" />))}
+    <defs><radialGradient id={`quen-g-${id}`} cx="35%" cy="28%" r="65%"><stop offset="0%" stopColor="#fff" stopOpacity="0.6" /><stop offset="45%" stopColor={color} stopOpacity="0.25" /><stop offset="100%" stopColor="#777" stopOpacity="0.12" /></radialGradient></defs>
+  </g>);
+}
+
+function SkPulledSugar({ x, y, size }: any) {
+  const s = size * 1.8;
+  return (<g>
+    <path d={`M${x},${y} C${x+s*0.25},${y-s*0.6} ${x-s*0.25},${y-s*1.4} ${x+s*0.1},${y-s*2.2} C${x+s*0.3},${y-s*2.7} ${x+s*0.55},${y-s*2.5} ${x+s*0.35},${y-s*1.8}`} fill="none" stroke="#555" strokeWidth="1.8" opacity="0.65" strokeLinecap="round" />
+    <path d={`M${x+3},${y-2} C${x+s*0.28},${y-s*0.58} ${x-s*0.22},${y-s*1.38} ${x+s*0.13},${y-s*2.18}`} fill="none" stroke="#999" strokeWidth="0.6" opacity="0.3" />
+    <path d={`M${x+s*0.02},${y-s*0.8} C${x-s*0.08},${y-s*1.1} ${x-s*0.02},${y-s*1.5} ${x+s*0.08},${y-s*1.9}`} fill="none" stroke="#fff" strokeWidth="1.2" opacity="0.4" strokeLinecap="round" />
+    <path d={`M${x+s*0.35},${y-s*1.8} C${x+s*0.4},${y-s*1.6} ${x+s*0.25},${y-s*1.55} ${x+s*0.2},${y-s*1.65}`} fill="none" stroke="#666" strokeWidth="0.8" opacity="0.4" />
+  </g>);
+}
+
+function SkChocolateShard({ x, y, size, color, id }: any) {
+  const s = size * 1.4;
+  return (<g>
+    <ellipse cx={x+1} cy={y+s*0.35} rx={s*0.4} ry={s*0.08} fill="#000" opacity="0.05" />
+    <path d={`M${x-s*0.4},${y+s*0.3} L${x-s*0.35},${y-s*0.55} C${x-s*0.15},${y-s*0.75} ${x+s*0.2},${y-s*0.65} ${x+s*0.35},${y-s*0.4} L${x+s*0.5},${y+s*0.05} Q${x+s*0.35},${y+s*0.35} ${x+s*0.05},${y+s*0.32} Q${x-s*0.25},${y+s*0.38} ${x-s*0.4},${y+s*0.3} Z`} fill={`url(#choc-g-${id})`} stroke="#555" strokeWidth="0.9" />
+    {[0,1,2,3].map(i=>(<line key={i} x1={x-s*0.2+i*s*0.12} y1={y-s*0.2+i*3} x2={x-s*0.1+i*s*0.12} y2={y+s*0.15+i*2} stroke="#999" strokeWidth="0.3" opacity="0.2" />))}
+    <path d={`M${x-s*0.2},${y-s*0.3} L${x+s*0.15},${y-s*0.35}`} fill="none" stroke="#fff" strokeWidth="1.2" opacity="0.35" strokeLinecap="round" />
+    <defs><linearGradient id={`choc-g-${id}`} x1="20%" y1="0%" x2="80%" y2="100%"><stop offset="0%" stopColor="#fff" stopOpacity="0.4" /><stop offset="100%" stopColor={color} stopOpacity="0.18" /></linearGradient></defs>
+  </g>);
+}
+
+function SkCookie({ x, y, size, color, id }: any) {
+  const w = size * 1.8, h = size * 0.7, d = size * 0.35;
+  return (<g>
+    <ellipse cx={x+2} cy={y+h*0.5+d+3} rx={w*0.5} ry={h*0.18} fill="#000" opacity="0.06" />
+    <path d={`M${x-w*0.5},${y+h*0.5} L${x-w*0.5},${y+h*0.5+d} L${x+w*0.5},${y+h*0.5+d} L${x+w*0.5},${y+h*0.5} Z`} fill={color} opacity="0.1" stroke="#666" strokeWidth="0.6" />
+    <rect x={x-w*0.5} y={y-h*0.5} width={w} height={h} rx={3} fill={`url(#cook-g-${id})`} stroke="#555" strokeWidth="1" />
+    {[-0.35,-0.15,0.05,0.25].map((t,i)=>(<g key={i}><line x1={x+w*t} y1={y-h*0.35} x2={x+w*t+5} y2={y+h*0.35} stroke="#999" strokeWidth="0.4" opacity="0.25" /><line x1={x+w*t+w*0.08} y1={y-h*0.35} x2={x+w*t-3} y2={y+h*0.35} stroke="#999" strokeWidth="0.3" opacity="0.15" /></g>))}
+    <defs><linearGradient id={`cook-g-${id}`} x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#fff" stopOpacity="0.45" /><stop offset="100%" stopColor={color} stopOpacity="0.18" /></linearGradient></defs>
+  </g>);
+}
+
+function SkGlaze({ x, y, size, color, id }: any) {
+  const s = size * 1.6;
+  return (<g>
+    <path d={`M${x-s*0.55},${y} C${x-s*0.45},${y-s*0.35} ${x-s*0.05},${y-s*0.4} ${x+s*0.3},${y-s*0.2} C${x+s*0.55},${y-s*0.05} ${x+s*0.6},${y+s*0.22} ${x+s*0.35},${y+s*0.35} C${x+s*0.05},${y+s*0.45} ${x-s*0.35},${y+s*0.38} ${x-s*0.55},${y} Z`} fill={`url(#glaze-g-${id})`} stroke="#888" strokeWidth="0.6" opacity="0.85" />
+    <path d={`M${x-s*0.15},${y-s*0.15} C${x+s*0.05},${y-s*0.25} ${x+s*0.25},${y-s*0.12} ${x+s*0.35},${y}`} fill="none" stroke="#fff" strokeWidth="1.8" opacity="0.28" strokeLinecap="round" />
+    <defs><radialGradient id={`glaze-g-${id}`} cx="38%" cy="32%" r="55%"><stop offset="0%" stopColor="#fff" stopOpacity="0.3" /><stop offset="60%" stopColor={color} stopOpacity="0.22" /><stop offset="100%" stopColor={color} stopOpacity="0.08" /></radialGradient></defs>
+  </g>);
+}
+
+function SkLeaf({ x, y, size, color, id }: any) {
+  const s = size * 1.3;
+  return (<g>
+    <path d={`M${x},${y-s*0.95} C${x+s*0.5},${y-s*0.55} ${x+s*0.45},${y+s*0.4} ${x},${y+s*0.95} C${x-s*0.45},${y+s*0.4} ${x-s*0.5},${y-s*0.55} ${x},${y-s*0.95} Z`} fill={`url(#leaf-g-${id})`} stroke="#555" strokeWidth="0.8" />
+    <path d={`M${x},${y-s*0.75} L${x},${y+s*0.75}`} fill="none" stroke="#777" strokeWidth="0.5" opacity="0.5" />
+    {[-0.4,-0.15,0.1,0.35].map((t,i)=>(<path key={i} d={`M${x},${y+s*t} L${x+(i%2?-1:1)*s*0.28},${y+s*t-s*0.12}`} fill="none" stroke="#888" strokeWidth="0.35" opacity="0.35" />))}
+    <defs><radialGradient id={`leaf-g-${id}`} cx="38%" cy="28%" r="60%"><stop offset="0%" stopColor="#fff" stopOpacity="0.35" /><stop offset="100%" stopColor={color} stopOpacity="0.22" /></radialGradient></defs>
+  </g>);
+}
+
+const SK_RENDERERS: Record<string, React.ComponentType<any>> = {
+  dome: SkDome, berries: SkBerries, sauce: SkSauce, quenelle: SkQuenelle,
+  'pulled sugar': SkPulledSugar, 'chocolate shard': SkChocolateShard, cookie: SkCookie,
+  glaze: SkGlaze, 'leaf garnish': SkLeaf,
+};
+const SK_SHAPES = Object.keys(SK_RENDERERS);
+
+function SkArrow({ fx, fy, tx, ty }: any) {
+  const mx = fx + (tx - fx) * 0.35 + (ty - fy) * 0.08, my = fy + (ty - fy) * 0.5 - (tx - fx) * 0.05;
+  const angle = Math.atan2(ty - my, tx - mx), al = 8;
+  return (<g>
+    <path d={`M${fx},${fy} Q${mx},${my} ${tx},${ty}`} fill="none" stroke="#444" strokeWidth="0.65" opacity="0.55" />
+    <path d={`M${tx-al*Math.cos(angle-0.35)},${ty-al*Math.sin(angle-0.35)} L${tx},${ty} L${tx-al*Math.cos(angle+0.35)},${ty-al*Math.sin(angle+0.35)}`} fill="none" stroke="#444" strokeWidth="0.65" opacity="0.55" />
+  </g>);
+}
+
+function SkDrag({ comp, children, sel, onSel, onDrag }: any) {
+  const [d, setD] = useState(false);
+  const off = useRef({ x: 0, y: 0 });
+  const down = (e: any) => { e.stopPropagation(); onSel(comp.id); setD(true); const svg = e.currentTarget.closest('svg'); const pt = svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const sp = pt.matrixTransform(svg.getScreenCTM().inverse()); off.current = { x: sp.x - comp.x, y: sp.y - comp.y }; e.currentTarget.setPointerCapture(e.pointerId); };
+  const move = (e: any) => { if (!d) return; const svg = e.currentTarget.closest('svg'); const pt = svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const sp = pt.matrixTransform(svg.getScreenCTM().inverse()); onDrag(comp.id, sp.x - off.current.x, sp.y - off.current.y); };
+  return (<g onPointerDown={down} onPointerMove={move} onPointerUp={()=>setD(false)} style={{ cursor: 'grab' }}>{children}{sel && <circle cx={comp.x} cy={comp.y} r={comp.size * 2 + 15} fill="none" stroke="#C9A84C" strokeWidth="1" strokeDasharray="6,4" opacity="0.4" />}</g>);
+}
+
+// ─── THE MAIN PLATING SKETCH COMPONENT ──────────────────────────────────────
+
 function PlatingSketch({ adaptation, venueName, venueAccent, onSvgGenerated }: {
   adaptation: VenueAdaptation; venueName: string; venueAccent: string; onSvgGenerated?: (svg: string) => void;
 }) {
-  const [svg, setSvg] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // Auto-map adaptation components to plate elements
+  const buildInitialComps = useCallback(() => {
+    return (adaptation.components || []).map((c, i) => {
+      const shape = guessShape(c.name);
+      const pos = POSITION_RINGS[i % POSITION_RINGS.length];
+      const baseSize = shape === 'dome' ? 50 : shape === 'sauce' ? 40 : shape === 'berries' ? 22 : shape === 'leaf garnish' ? 16 : shape === 'pulled sugar' ? 32 : 28;
+      // First component (main) gets center, larger size
+      const isMain = i === 0 && shape === 'dome';
+      return {
+        id: i + 1,
+        name: c.name,
+        shape,
+        x: pos.x + (Math.random() - 0.5) * 20,
+        y: pos.y + (Math.random() - 0.5) * 20,
+        size: isMain ? 60 : baseSize,
+        color: guessColor(c.name),
+      };
+    });
+  }, [adaptation.components]);
+
+  const [comps, setComps] = useState(buildInitialComps);
+  const [sel, setSel] = useState<number | null>(null);
+  const [edit, setEdit] = useState<number | null>(null);
   const [zoomed, setZoomed] = useState(false);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const nextId = useRef(100);
 
-  const generate = async () => {
-    setLoading(true); setError(null);
-    try {
-      const res = await fetch('/api/chat/sketch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: adaptation.title, venueName,
-          imagePrompt: adaptation.imagePrompt,
-          components: adaptation.components,
-          assembly: adaptation.assembly,
-          venueAccent,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Sketch generation failed');
-      setSvg(data.svg);
-      if (onSvgGenerated) onSvgGenerated(data.svg);
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong. Please try again.');
-    } finally { setLoading(false); }
-  };
+  const drag = useCallback((id: number, x: number, y: number) => setComps(p => p.map(c => c.id === id ? { ...c, x, y } : c)), []);
+  const upd = (id: number, u: any) => setComps(p => p.map(c => c.id === id ? { ...c, ...u } : c));
+  const rm = (id: number) => { setComps(p => p.filter(c => c.id !== id)); if (sel === id) { setSel(null); setEdit(null); } };
+  const add = () => { const id = nextId.current++; setComps(p => [...p, { id, name: 'New Component', shape: 'dome', x: STUDIO_PX + (Math.random() - 0.5) * 100, y: STUDIO_PY + (Math.random() - 0.5) * 100, size: 30, color: '#B8A88A' }]); setSel(id); setEdit(id); };
 
-  const downloadSvg = () => {
-    if (!svg) return;
-    const blob = new Blob([svg], { type: 'image/svg+xml' });
+  const exportSvg = () => {
+    if (!svgRef.current) return;
+    const svgData = new XMLSerializer().serializeToString(svgRef.current);
+    if (onSvgGenerated) onSvgGenerated(svgData);
+    const blob = new Blob([svgData], { type: 'image/svg+xml' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url;
-    a.download = `${adaptation.title.toLowerCase().replace(/\s+/g, '-')}-plating-sketch.svg`;
+    a.href = url; a.download = `${adaptation.title.toLowerCase().replace(/\s+/g, '-')}-plating.svg`;
     a.click(); URL.revokeObjectURL(url);
   };
 
-  if (!svg && !loading) return (
-    <div className="border border-dashed border-stone-200 rounded-xl p-6 text-center">
-      <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center" style={{ background: `${venueAccent}15` }}>
-        <Paintbrush size={22} style={{ color: venueAccent }} />
-      </div>
-      <div className="font-semibold text-stone-700 mb-1 text-sm">Plating Sketch</div>
-      <p className="text-xs text-stone-400 mb-4 max-w-xs mx-auto leading-relaxed">Generate an SVG plating diagram showing vessel, component placement, sauce work, and garnish positions.</p>
-      <button onClick={generate} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wide transition-all active:scale-97 text-white" style={{ background: venueAccent }}>
-        <Paintbrush size={14} /> Generate Sketch
-      </button>
-    </div>
-  );
+  const captureForPdf = useCallback(() => {
+    if (svgRef.current && onSvgGenerated) {
+      onSvgGenerated(new XMLSerializer().serializeToString(svgRef.current));
+    }
+  }, [onSvgGenerated]);
 
-  if (loading) return (
-    <div className="border border-stone-200 rounded-xl p-10 text-center">
-      <div className="flex justify-center gap-2 mb-4">
-        {[0,1,2].map(i => <div key={i} className="w-2 h-2 rounded-full animate-bounce" style={{ background: venueAccent, animationDelay: `${i*0.15}s` }} />)}
-      </div>
-      <div className="text-sm font-semibold text-stone-600 mb-1">Drawing the plating diagram...</div>
-      <p className="text-xs text-stone-400">Composing vessel, elements, and labels</p>
-    </div>
-  );
-
-  if (error) return (
-    <div className="border border-red-100 rounded-xl p-6 text-center">
-      <p className="text-sm text-red-500 mb-3">{error}</p>
-      <button onClick={generate} className="text-xs font-bold uppercase tracking-wide px-4 py-2 rounded-lg border border-stone-200 hover:border-stone-400 transition-colors">Try again</button>
-    </div>
-  );
+  // Auto-capture SVG for PDF on first render and when components change
+  React.useEffect(() => { const t = setTimeout(captureForPdf, 500); return () => clearTimeout(t); }, [comps, captureForPdf]);
 
   return (
     <div>
       <div className={`relative rounded-xl overflow-hidden border border-stone-200 bg-stone-50 ${zoomed ? 'fixed inset-4 z-50 shadow-2xl overflow-auto' : ''}`}>
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-stone-100 bg-white">
-          <div className="text-xs font-bold tracking-widest uppercase" style={{ color: venueAccent }}>Plating Sketch</div>
-          <div className="flex items-center gap-2">
+        {/* Toolbar */}
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-stone-100 bg-white flex-wrap gap-2">
+          <div className="flex items-center gap-3">
+            <div className="text-xs font-bold tracking-widest uppercase" style={{ color: venueAccent }}>Interactive Plating Studio</div>
+            <span className="text-[10px] text-stone-400 italic hidden sm:inline">Drag components to position</span>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <button onClick={add} className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-semibold border border-stone-200 text-stone-500 hover:border-stone-400 hover:text-stone-700 transition-all">
+              + Add
+            </button>
             <button onClick={() => setZoomed(z => !z)} className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-semibold border border-stone-200 text-stone-400 hover:border-stone-400 hover:text-stone-600 transition-all">
               {zoomed ? 'Close' : 'Expand'}
             </button>
-            <button onClick={downloadSvg} className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wide transition-all" style={{ background: `${venueAccent}18`, color: venueAccent, border: `1px solid ${venueAccent}40` }}>
+            <button onClick={exportSvg} className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wide transition-all" style={{ background: `${venueAccent}18`, color: venueAccent, border: `1px solid ${venueAccent}40` }}>
               <Download size={11} /> SVG
-            </button>
-            <button onClick={() => { setSvg(null); generate(); }} className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-semibold border border-stone-200 text-stone-400 hover:border-stone-400 hover:text-stone-600 transition-all">
-              <Paintbrush size={11} /> Redo
             </button>
           </div>
         </div>
-        <div className="p-4" dangerouslySetInnerHTML={{ __html: svg || '' }} style={{ maxWidth: '100%' }} />
+
+        <div className={`flex ${zoomed ? 'h-[calc(100%-44px)]' : ''}`}>
+          {/* SVG Canvas */}
+          <div className="flex-1 p-3" style={{ background: '#fdfcf8' }}>
+            <svg ref={svgRef} viewBox="0 0 800 680" className="w-full" onClick={() => { setSel(null); setEdit(null); }}>
+              <defs>
+                <radialGradient id="skPShine" cx="36%" cy="30%" r="58%"><stop offset="0%" stopColor="#fff" stopOpacity="0.45" /><stop offset="100%" stopColor="#fff" stopOpacity="0" /></radialGradient>
+              </defs>
+              {/* Plate */}
+              <ellipse cx={STUDIO_PX + 5} cy={STUDIO_PY + 8} rx={STUDIO_PR + 16} ry={STUDIO_PR + 16} fill="#c0b8a8" opacity="0.1" />
+              <ellipse cx={STUDIO_PX} cy={STUDIO_PY} rx={STUDIO_PR + 10} ry={STUDIO_PR + 10} fill="none" stroke="#b0a898" strokeWidth="0.5" />
+              <ellipse cx={STUDIO_PX} cy={STUDIO_PY} rx={STUDIO_PR} ry={STUDIO_PR} fill="#fefefe" stroke="#807868" strokeWidth="1.5" />
+              <ellipse cx={STUDIO_PX} cy={STUDIO_PY} rx={STUDIO_PR} ry={STUDIO_PR} fill="url(#skPShine)" />
+              <ellipse cx={STUDIO_PX} cy={STUDIO_PY} rx={STUDIO_PR - 35} ry={STUDIO_PR - 35} fill="none" stroke="#ccc5b5" strokeWidth="0.3" strokeDasharray="1.5,6" opacity="0.35" />
+              <path d={`M${STUDIO_PX - STUDIO_PR * 0.65},${STUDIO_PY - STUDIO_PR * 0.72} A${STUDIO_PR},${STUDIO_PR} 0 0,1 ${STUDIO_PX + STUDIO_PR * 0.72},${STUDIO_PY - STUDIO_PR * 0.6}`} fill="none" stroke="#fff" strokeWidth="2.5" opacity="0.22" strokeLinecap="round" />
+
+              {/* Components */}
+              {comps.map(c => { const R = SK_RENDERERS[c.shape] || SkDome; return (
+                <SkDrag key={c.id} comp={c} sel={sel === c.id} onSel={(id: number) => { setSel(id); setEdit(id); }} onDrag={drag}>
+                  <R x={c.x} y={c.y} size={c.size} color={c.color} id={c.id} />
+                </SkDrag>
+              ); })}
+
+              {/* Labels */}
+              {comps.map((c, i) => {
+                const lp = STUDIO_LABELS[i % STUDIO_LABELS.length];
+                const ax = lp.a === 'start' ? lp.x + c.name.length * 3 : lp.a === 'end' ? lp.x - c.name.length * 3 : lp.x;
+                return (<g key={`l-${c.id}`}>
+                  <SkArrow fx={ax} fy={lp.y + 4} tx={c.x} ty={c.y} />
+                  <text x={lp.x} y={lp.y} textAnchor={lp.a} style={{ fontFamily: "'Crimson Pro', Georgia, serif", fontSize: '13px', fontStyle: 'italic', fill: '#3a3020' }}>{c.name}</text>
+                </g>);
+              })}
+
+              {/* Title */}
+              <text x={STUDIO_PX} y={660} textAnchor="middle" style={{ fontFamily: 'Georgia, serif', fontSize: '13px', fontWeight: 700, fill: '#2c2418', letterSpacing: '0.08em' }}>{adaptation.title.toUpperCase()}</text>
+              <text x={STUDIO_PX} y={675} textAnchor="middle" style={{ fontFamily: 'Georgia, serif', fontSize: '10px', fill: '#8a7e6b', fontStyle: 'italic' }}>{venueName}</text>
+            </svg>
+          </div>
+
+          {/* Side editor panel (visible when expanded or on desktop) */}
+          {(zoomed || sel !== null) && (
+            <div className={`border-l border-stone-100 bg-stone-50 overflow-y-auto p-3 ${zoomed ? 'w-[260px]' : 'w-[240px] hidden lg:block'}`} style={{ fontSize: '12px' }}>
+              <div className="text-[10px] font-bold tracking-widest uppercase text-stone-400 mb-2">Components ({comps.length})</div>
+              {comps.map(c => (
+                <div key={c.id} onClick={() => { setSel(c.id); setEdit(c.id); }}
+                  className={`p-2 mb-1 rounded cursor-pointer transition-all border ${sel === c.id ? 'border-[#C9A84C] bg-[#C9A84C]/5' : 'border-stone-200 bg-white'}`}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold text-stone-700 truncate">{c.name}</span>
+                    <button onClick={e => { e.stopPropagation(); rm(c.id); }} className="text-stone-300 hover:text-red-400 text-sm">×</button>
+                  </div>
+                  {edit === c.id && (
+                    <div className="mt-2 space-y-2">
+                      <input value={c.name} onChange={e => upd(c.id, { name: e.target.value })}
+                        className="w-full px-2 py-1 text-[11px] border border-stone-200 rounded bg-white outline-none focus:border-[#C9A84C]" />
+                      <div className="flex flex-wrap gap-1">
+                        {SK_SHAPES.map(s => (
+                          <button key={s} onClick={e => { e.stopPropagation(); upd(c.id, { shape: s }); }}
+                            className={`px-1.5 py-0.5 text-[9px] rounded border capitalize ${c.shape === s ? 'bg-stone-900 text-white border-stone-900' : 'bg-white text-stone-500 border-stone-200'}`}>{s}</button>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] text-stone-400 font-semibold w-7">SIZE</span>
+                        <input type="range" min={10} max={80} value={c.size} onChange={e => upd(c.id, { size: parseInt(e.target.value) })} className="flex-1 accent-[#C9A84C]" />
+                        <span className="text-[10px] text-stone-500 w-5">{c.size}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] text-stone-400 font-semibold w-7">TINT</span>
+                        <input type="color" value={c.color} onChange={e => upd(c.id, { color: e.target.value })} className="w-6 h-4 border border-stone-200 rounded cursor-pointer" />
+                        <span className="text-[9px] text-stone-400 font-mono">{c.color}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
       {zoomed && <div className="fixed inset-0 bg-black/40 z-40" onClick={() => setZoomed(false)} />}
     </div>
