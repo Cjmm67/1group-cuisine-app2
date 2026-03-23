@@ -10,6 +10,7 @@ import { SchemaMarkup, websiteSchema, venueSchemas, buildFAQSchema } from '@/com
 import { MOCK_RECIPES, MOCK_CHEFS, MOCK_MASTERCLASSES } from '@/lib/mockData';
 import { slugify } from '@/lib/utils';
 import { ArrowRight, Sparkles, ChefHat, GraduationCap } from 'lucide-react';
+import { MotionReveal, MotionStagger } from '@/components/motion/MotionReveal';
 
 const homeFAQs = buildFAQSchema([
   {
@@ -63,47 +64,60 @@ export default function Home() {
         <SchemaMarkup key={i} data={schema} />
       ))}
 
-      {/* ── Hero ── */}
-      <section className="bg-gray-950 text-white">
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-16 sm:py-20 lg:py-24 text-center">
-          <p className="text-gold-400 text-xs font-semibold tracking-[0.2em] uppercase mb-4">1-Group Singapore&apos;s Culinary Platform</p>
+      {/* ── Hero — Staggered Text Cascade + Grain ── */}
+      <section className="bg-gray-950 text-white relative overflow-hidden grain-overlay">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gold-500/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-16 sm:py-20 lg:py-24 text-center relative z-10">
+          <div className="hero-text-line" style={{ animationDelay: '100ms' }}>
+            <p className="text-gold-400 text-xs font-semibold tracking-[0.2em] uppercase mb-4">1-Group Singapore&apos;s Culinary Platform</p>
+          </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight mb-4">
-            Recipes &amp; Chefs from<br className="hidden sm:block" /> Singapore&apos;s Leading Hospitality Group
+            <span className="hero-text-line inline-block" style={{ animationDelay: '250ms' }}>Recipes &amp; Chefs from</span>
+            <br className="hidden sm:block" />
+            <span className="hero-text-line inline-block" style={{ animationDelay: '400ms' }}>Singapore&apos;s Leading Hospitality Group</span>
           </h1>
-          <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto mb-8">
-            Connect with world-class chefs, explore innovative recipes, and master culinary techniques.
-          </p>
-          <div className="flex gap-3 justify-center">
-            <Link href="/recipes" className="bg-gold-600 hover:bg-gold-700 text-white text-sm font-semibold px-6 py-3 rounded-full transition-colors">
-              Explore Recipes
-            </Link>
-            <Link href="/chefs" className="border border-gray-600 text-gray-300 hover:bg-gray-800 text-sm font-semibold px-6 py-3 rounded-full transition-colors">
-              Browse Chefs
-            </Link>
+          <div className="hero-text-line" style={{ animationDelay: '550ms' }}>
+            <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto mb-8">
+              Connect with world-class chefs, explore innovative recipes, and master culinary techniques.
+            </p>
+          </div>
+          <div className="hero-text-line" style={{ animationDelay: '700ms' }}>
+            <div className="flex gap-3 justify-center">
+              <Link href="/recipes" className="bg-gold-600 hover:bg-gold-700 text-white text-sm font-semibold px-6 py-3 rounded-full transition-colors btn-magnetic">
+                Explore Recipes
+              </Link>
+              <Link href="/chefs" className="border border-gray-600 text-gray-300 hover:bg-gray-800 text-sm font-semibold px-6 py-3 rounded-full transition-colors">
+                Browse Chefs
+              </Link>
+            </div>
           </div>
         </div>
+        <div className="absolute bottom-0 left-0 right-0 h-px overflow-hidden"><div className="shimmer h-full" /></div>
       </section>
 
-      {/* ── Featured Recipe Hero ── */}
+      {/* ── Featured Recipe Hero — Scale In ── */}
       {heroRecipe && heroRecipe.image && (
-        <section className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 -mt-8 relative z-10">
-          <Link href={`/recipes/${slugify(heroRecipe.title)}`} className="block">
-            <div className="relative rounded-xl overflow-hidden aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] bg-gray-200 image-zoom-hover">
-              <img src={heroRecipe.image} alt={heroRecipe.title} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
-                <Badge variant="primary" size="sm" className="bg-gold-600 text-white border-0 mb-2">Featured Recipe</Badge>
-                <h2 className="text-white text-xl sm:text-2xl lg:text-3xl font-bold mb-1">{heroRecipe.title}</h2>
-                <p className="text-gray-300 text-sm">by {heroRecipe.chef.name}</p>
+        <MotionReveal animation="scale-in" duration={900} delay={200}>
+          <section className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 -mt-8 relative z-10">
+            <Link href={`/recipes/${slugify(heroRecipe.title)}`} className="block">
+              <div className="relative rounded-xl overflow-hidden aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] bg-gray-200 image-zoom-hover group">
+                <img src={heroRecipe.image} alt={heroRecipe.title} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+                  <Badge variant="primary" size="sm" className="bg-gold-600 text-white border-0 mb-2">Featured Recipe</Badge>
+                  <h2 className="text-white text-xl sm:text-2xl lg:text-3xl font-bold mb-1">{heroRecipe.title}</h2>
+                  <p className="text-gray-300 text-sm">by {heroRecipe.chef.name}</p>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-out pointer-events-none" />
               </div>
-            </div>
-          </Link>
-        </section>
+            </Link>
+          </section>
+        </MotionReveal>
       )}
 
-      {/* ── How It Works ── */}
+      {/* ── How It Works — Staggered ── */}
       <section className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-14">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <MotionStagger animation="fade-up" staggerDelay={120} className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             { icon: Sparkles, title: 'Discover', desc: 'Browse world-class recipes from renowned chefs and explore diverse cuisines.', href: '/recipes' },
             { icon: GraduationCap, title: 'Learn', desc: 'Master culinary techniques through detailed instructions and expert video content.', href: '/masterclasses' },
@@ -111,8 +125,8 @@ export default function Home() {
           ].map((item) => {
             const Icon = item.icon;
             return (
-              <Link key={item.title} href={item.href} className="flex gap-4 items-start p-5 bg-gray-50 rounded-xl hover:bg-gold-50 hover:shadow-sm transition-all active:scale-[0.98] group">
-                <div className="w-10 h-10 rounded-lg bg-gold-100 flex items-center justify-center flex-shrink-0 group-hover:bg-gold-200 transition-colors">
+              <Link key={item.title} href={item.href} className="flex gap-4 items-start p-5 bg-gray-50 rounded-xl hover:bg-gold-50 hover:shadow-md transition-all duration-300 active:scale-[0.98] group card-hover-glow">
+                <div className="w-10 h-10 rounded-lg bg-gold-100 flex items-center justify-center flex-shrink-0 group-hover:bg-gold-200 group-hover:scale-110 transition-all duration-300">
                   <Icon className="w-5 h-5 text-gold-700" />
                 </div>
                 <div>
@@ -122,85 +136,99 @@ export default function Home() {
               </Link>
             );
           })}
-        </div>
+        </MotionStagger>
       </section>
 
-      {/* ── Our Venues ── */}
-      <section className="border-y border-gray-200 bg-gray-50">
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-10">
-          <h2 className="text-lg font-bold text-gray-900 mb-5 text-center">Our Venues</h2>
-          <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide touch-pan-x sm:flex-wrap sm:justify-center sm:overflow-visible sm:pb-0">
-            {venues.map((v) => (
-              <a
-                key={v.name}
-                href={v.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white border border-gray-200 rounded-lg px-5 py-3 text-center hover:border-gold-400 hover:shadow-md transition-all flex-shrink-0 min-w-[160px] sm:min-w-0 sm:flex-shrink active:scale-[0.98] group"
-              >
-                <p className="font-semibold text-sm text-gray-900 group-hover:text-gold-700 transition-colors">{v.name}</p>
-                <p className="text-xs text-gray-500">{v.desc}</p>
+      {/* ── Venue Marquee — Infinite Scroll ── */}
+      <section className="border-y border-gray-200 bg-gray-50 overflow-hidden">
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 pt-8 pb-2">
+          <MotionReveal animation="fade-up" duration={600}>
+            <h2 className="text-lg font-bold text-gray-900 mb-5 text-center">Our Venues</h2>
+          </MotionReveal>
+        </div>
+        <div className="relative py-4">
+          <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none" />
+          <div className="marquee-track">
+            {[...venues, ...venues].map((v, i) => (
+              <a key={`v-${i}`} href={v.url} target="_blank" rel="noopener noreferrer"
+                className="bg-white border border-gray-200 rounded-lg px-5 py-3 text-center hover:border-gold-400 hover:shadow-md transition-all flex-shrink-0 mx-2 min-w-[170px] group">
+                <p className="font-semibold text-sm text-gray-900 group-hover:text-gold-700 transition-colors whitespace-nowrap">{v.name}</p>
+                <p className="text-xs text-gray-500 whitespace-nowrap">{v.desc}</p>
               </a>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Latest Recipes ── */}
+      {/* ── Latest Recipes — Staggered Grid ── */}
       <section className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-14">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">Latest Recipes</h2>
-          <Link href="/recipes" className="text-gold-600 hover:text-gold-700 text-sm font-medium flex items-center gap-1">
-            View all <ArrowRight size={14} />
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <MotionReveal animation="fade-up" duration={600}>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Latest Recipes</h2>
+            <Link href="/recipes" className="text-gold-600 hover:text-gold-700 text-sm font-medium flex items-center gap-1 group">
+              View all <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+        </MotionReveal>
+        <MotionStagger animation="fade-up" staggerDelay={100} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {featuredRecipes.map((recipe) => (
             <RecipeCard key={recipe.id} recipe={recipe} />
           ))}
-        </div>
+        </MotionStagger>
       </section>
 
-      {/* ── Chefs ── */}
+      {/* ── Chefs — Scale In ── */}
       <section className="bg-gray-50 border-y border-gray-200">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-14">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Renowned Chefs</h2>
-            <Link href="/chefs" className="text-gold-600 hover:text-gold-700 text-sm font-medium flex items-center gap-1">
-              View all <ArrowRight size={14} />
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <MotionReveal animation="fade-up" duration={600}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gray-900">Renowned Chefs</h2>
+              <Link href="/chefs" className="text-gold-600 hover:text-gold-700 text-sm font-medium flex items-center gap-1 group">
+                View all <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+          </MotionReveal>
+          <MotionStagger animation="scale-in" staggerDelay={120} className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {featuredChefs.map((chef) => (
               <ChefCard key={chef.id} chef={chef} />
             ))}
-          </div>
+          </MotionStagger>
         </div>
       </section>
 
-      {/* ── Masterclasses ── */}
+      {/* ── Masterclasses — Blur In ── */}
       <section className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-14">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">1-Cheflix</h2>
-          <Link href="/masterclasses" className="text-gold-600 hover:text-gold-700 text-sm font-medium flex items-center gap-1">
-            View all <ArrowRight size={14} />
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <MotionReveal animation="blur-in" duration={700}>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gray-900">1-Cheflix</h2>
+            <Link href="/masterclasses" className="text-gold-600 hover:text-gold-700 text-sm font-medium flex items-center gap-1 group">
+              View all <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+        </MotionReveal>
+        <MotionStagger animation="fade-up" staggerDelay={150} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {featuredMasterclasses.map((mc) => (
             <MasterclassCard key={mc.id} masterclass={mc} />
           ))}
-        </div>
+        </MotionStagger>
       </section>
 
-      {/* ── CTA ── */}
-      <section className="bg-gray-950 text-white">
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-14 text-center">
-          <h2 className="text-2xl font-bold mb-3">Ready to elevate your culinary skills?</h2>
-          <p className="text-gray-400 mb-6 max-w-lg mx-auto">Join thousands of professional chefs and culinary students on 1-CUISINESG.</p>
-          <Link href="/register" className="inline-block bg-gold-600 hover:bg-gold-700 text-white text-sm font-semibold px-8 py-3 rounded-full transition-colors">
-            Get Started Free
-          </Link>
+      {/* ── CTA — Reveal + Pulse Glow ── */}
+      <section className="bg-gray-950 text-white relative overflow-hidden">
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-gold-500/10 rounded-full blur-[100px] pointer-events-none" />
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-14 text-center relative z-10">
+          <MotionReveal animation="fade-up" duration={800}>
+            <h2 className="text-2xl font-bold mb-3">Ready to elevate your culinary skills?</h2>
+          </MotionReveal>
+          <MotionReveal animation="fade-up" duration={800} delay={150}>
+            <p className="text-gray-400 mb-6 max-w-lg mx-auto">Join thousands of professional chefs and culinary students on 1-CUISINESG.</p>
+          </MotionReveal>
+          <MotionReveal animation="scale-in" duration={600} delay={300}>
+            <Link href="/register" className="inline-block bg-gold-600 hover:bg-gold-700 text-white text-sm font-semibold px-8 py-3 rounded-full transition-colors btn-magnetic pulse-glow">
+              Get Started Free
+            </Link>
+          </MotionReveal>
         </div>
       </section>
     </div>
