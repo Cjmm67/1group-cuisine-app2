@@ -2,59 +2,83 @@ import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
 export const runtime = 'nodejs';
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'default-1cuisinesg-secret-change-in-production'
 );
 
-const SKETCH_SYSTEM_PROMPT = `You are a professional culinary illustrator and plating diagram specialist. You produce clean, beautiful SVG plating diagrams that chefs use as references when building a dish on the pass.
+const SKETCH_SYSTEM_PROMPT = `You are a world-class culinary illustrator who produces hand-drawn plating diagrams in the style of a Michelin-starred chef's R&D notebook. Your output is ONLY raw SVG — no preamble, no explanation, no markdown, no code fences. Start with <svg and end with </svg>.
 
-Your output is ONLY a raw SVG element — no preamble, no explanation, no markdown, no code fences. Start directly with <svg and end with </svg>.
+CRITICAL AESTHETIC: Your drawings look like PROFESSIONAL CHARCOAL AND GRAPHITE SKETCHES on heavy-grain parchment paper — NOT flat vector graphics. Every element must have visible hand-drawn quality, depth, and materiality.
 
-DIAGRAM REQUIREMENTS:
+═══ SVG SETUP ═══
 
-1. VIEWBOX: Always use viewBox="0 0 600 520". Width 600, height 520.
+ViewBox: "0 0 680 600". Background: rect fill="#FAF8F4" covering full area.
 
-2. BACKGROUND: Cream/ivory paper texture — use a subtle rectangle fill #FAF8F4 for the full background, with a very light noise-like pattern using feTurbulence filter (opacity 0.03) to suggest paper texture.
+Required SVG filters in <defs>:
+<filter id="paper"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="4" seed="3" result="noise"/><feColorMatrix type="saturate" values="0" in="noise" result="grayNoise"/><feBlend in="SourceGraphic" in2="grayNoise" mode="multiply"/></filter>
+<filter id="pencil"><feTurbulence type="turbulence" baseFrequency="0.035" numOctaves="3" seed="8" result="warp"/><feDisplacementMap in="SourceGraphic" in2="warp" scale="1.8" xChannelSelector="R" yChannelSelector="G"/></filter>
+<filter id="wash"><feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
+<filter id="washHeavy"><feGaussianBlur in="SourceGraphic" stdDeviation="5"/></filter>
+<filter id="shadow" x="-20%" y="-10%" width="140%" height="130%"><feGaussianBlur in="SourceAlpha" stdDeviation="8" result="s"/><feOffset dx="4" dy="6" result="os"/><feFlood flood-color="#000" flood-opacity="0.1" result="c"/><feComposite in="c" in2="os" operator="in" result="sh"/><feComposite in="SourceGraphic" in2="sh" operator="over"/></filter>
 
-3. VESSEL: Draw the vessel (plate, bowl, platter) as the centrepiece. Common vessels:
-   - Round plate: circle at roughly cx=300, cy=240, with a rim ring slightly larger, rim colour lighter than plate colour
-   - Deep bowl: ellipse suggesting depth with inner shadow ring
-   - Rectangular platter: rounded rect
-   - Vessel fill should be the colour described (e.g. matte black #1A1A1A, ivory #F5F0E8, dark slate #2A2A2A, white #FFFFFF)
-   - Add a subtle drop shadow under the vessel using filter/feDropShadow
+═══ PLATE / VESSEL ═══
 
-4. FOOD ELEMENTS: Place each major component as described. Use organic, irregular shapes (not perfect geometric circles) to suggest actual food:
-   - Main protein/centrepiece: use a path with slightly organic curves, positioned centre or offset as described
-   - Sauce pool: organic blob shapes, semi-transparent fill
-   - Garnishes: small leaf shapes (path), dots (circles), lines for microherbs
-   - Each element should be filled with an appropriate, food-realistic colour
-   - Add subtle internal detail lines (lighter/darker strokes) to suggest texture
+- Triple-layer ground shadow (3 ellipses, opacity: 0.1, 0.06, 0.03)
+- Outer rim ring (thin, 0.5px stroke)
+- Main plate body: 2px stroke with filter="url(#pencil)"
+- Inner decorative rim line (dashed)
+- Radial gradient shine from upper-left
+- TWO rim highlight arcs (3px white at 0.25 opacity + 1.5px at 0.12)
 
-5. LABELS: For each major component, add a clean label:
-   - Thin dashed line from component to label text (stroke-dasharray="3,3", stroke="#AAAAAA")
-   - Label text in font-family="Georgia, serif" font-size="11" fill="#2C2C2C"
-   - Labels positioned around the periphery, never overlapping food elements
-   - Keep labels concise — component name only (1–3 words)
+═══ FOOD COMPONENTS — ORGANIC SHAPES ONLY ═══
 
-6. PERSPECTIVE: The described camera angle determines the view:
-   - "overhead" or "top-down": pure flat plan view, vessel is a perfect circle
-   - "45-degree": slight 3D perspective — vessel is a circle with a subtle elliptical rim to suggest angle, elements have minimal shadow
-   - "eye-level": rare, show a very shallow ellipse for the plate, more height in elements
+NEVER use perfect geometric shapes. Every food element uses <path> with organic curves.
 
-7. TYPOGRAPHY:
-   - Title: font-family="Georgia, serif" font-size="16" font-weight="bold" fill="#1B3A2D" at top of diagram
-   - Subtitle (venue name): font-family="Arial, sans-serif" font-size="11" fill="#8B8578" tracking
-   - Chef note at bottom: font-family="Arial, sans-serif" font-size="10" fill="#8B8578" italic
+For EACH component, render ALL of these layers:
+1. GROUND SHADOW — soft ellipse beneath (opacity 0.06-0.1)
+2. BASE FORM — organic path, radialGradient fill (5+ stops: white highlight → color → dark edge)
+3. WATERCOLOR WASH — 2-3 overlapping semi-transparent shapes (opacity 0.06-0.15, filter="url(#wash)") bleeding past the outline
+4. HEAVY OUTLINE — 1.8-2.5px stroke with filter="url(#pencil)"
+5. CROSS-HATCHING — 10-15 thin lines (0.3-0.5px, opacity 0.08-0.2) on shadow side + 5-8 cross-direction lines
+6. CONTOUR LINES — curved dashed lines following the surface form
+7. HIGHLIGHTS — three layers: primary 3-4px white at 0.4 opacity, secondary 2px at 0.3, tertiary 1px at 0.2
+8. TEXTURE DETAIL — Maillard marks for protein, flow lines for sauce, calyx for berries, ridge lines for quenelles, vein lines for herbs
 
-8. COLOUR PALETTE: Draw from the actual dish colours described. Create a small colour legend in the bottom-right corner — 4–6 small colour swatches (10×10 rect) with labels showing what each colour represents.
+═══ SAUCE RENDERING ═══
 
-9. STYLE: The overall aesthetic should feel like a professional chef's prep guide — precise but with a slightly hand-drawn warmth. Lines should be clean but not mechanical. Use stroke-linecap="round" and stroke-linejoin="round" throughout.
+Sauces must look LIQUID:
+- Outer wash bleed (color at 0.04 opacity, filter="url(#washHeavy)")
+- Main organic path, radialGradient fill
+- Inner darker concentration (0.12-0.18 opacity, filter="url(#wash)")
+- 5-7 internal flow lines (thin, low opacity)
+- 2-3 surface reflection highlights (curved white strokes)
+- Edge thickening strokes for meniscus
 
-10. COMPOSITION: The vessel should occupy roughly 55% of the diagram height, centred horizontally at x=300. Title at top (y=30–50). Legend bottom-right. Optional plating note at very bottom centre in small italic text.
+═══ ANNOTATION LABELS ═══
 
-IMPORTANT: The SVG must be self-contained — no external fonts, no external images, no JavaScript. Use only SVG elements and CSS within the SVG.`;
+- Georgia serif, italic, 12-13px
+- Connected by curved bezier lines (0.6px, "#555", opacity 0.5) with arrowheads
+- Labels around the periphery, never overlapping food
+- Apply filter="url(#pencil)" to label text
+
+═══ TITLE ═══
+
+- Dish title: Georgia serif, 15px, bold, centered below plate
+- Venue name: 10px, italic, muted, below title
+
+═══ WHAT MAKES THIS HAND-DRAWN ═══
+
+1. Pencil filter on ALL major outlines (non-negotiable)
+2. Varying stroke widths (thicker shadow side, thinner highlight side)
+3. Wash layers that bleed PAST outlines
+4. Cross-hatching that varies in density
+5. Broad soft white highlight strokes (like eraser lifts on graphite)
+6. Multiple overlapping transparent fills (NOT solid flat fills)
+7. Organic irregular paths (NOT geometric shapes)
+
+Output ONLY raw SVG. Start with <svg, end with </svg>.`;
 
 async function verifyAuth(request: NextRequest): Promise<boolean> {
   const token = request.cookies.get('auth-token')?.value;
@@ -76,26 +100,33 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { title, venueName, imagePrompt, components, assembly, venueAccent } = body;
+    const { title, venueName, imagePrompt, components, assembly, venueAccent, style } = body;
 
-    if (!imagePrompt) return NextResponse.json({ error: 'imagePrompt is required' }, { status: 400 });
+    if (!title && !imagePrompt) return NextResponse.json({ error: 'Title or description is required' }, { status: 400 });
 
-    const userMessage = `Create a professional plating diagram SVG for the following dish.
+    const styleGuide = style === 'dramatic' ? 'Dramatic chiaroscuro — single side-lit source, deep shadows, heavy charcoal with deep blacks.'
+      : style === 'minimal' ? 'Clean, minimal — fine-point pen with light grey wash. Maximum negative space. Kaiseki restraint.'
+      : style === 'warm' ? 'Warm golden lighting — watercolour wash with conte crayon undertones. Mediterranean generosity.'
+      : style === 'editorial' ? 'Overhead flat-lit editorial — even diffused light, maximum surface detail. Architectural precision.'
+      : 'Elegant side-lighting from upper-left. Professional charcoal and graphite with controlled watercolour wash.';
 
-DISH TITLE: ${title}
-VENUE: ${venueName}
-VENUE ACCENT COLOUR: ${venueAccent}
+    const userMessage = `Draw a professional plating diagram for this dish:
 
-PLATING DESCRIPTION (from the chef's image brief):
-${imagePrompt}
+DISH: ${title || 'Untitled'}
+${venueName ? `VENUE: ${venueName}` : ''}
+${venueAccent ? `ACCENT COLOUR: ${venueAccent} (for title and decorative elements)` : ''}
 
-DISH COMPONENTS:
-${(components || []).map((c: any, i: number) => `${i + 1}. ${c.name}`).join('\n')}
+DESCRIPTION:
+${imagePrompt || `A composed dish featuring: ${(components || []).map((c: any) => c.name).join(', ')}`}
 
-ASSEMBLY SEQUENCE:
-${(assembly || []).join('\n')}
+COMPONENTS TO LABEL:
+${(components || []).map((c: any, i: number) => `${i + 1}. ${c.name}`).join('\n') || 'Label all visible components'}
 
-Based on the above, generate a complete SVG plating diagram. The diagram should visually represent the dish as described — vessel type, food placement, sauce work, garnish positions, colour palette, and camera angle. Use the venue accent colour ${venueAccent} for the title and any venue-branded decorative elements. Output ONLY the raw SVG — nothing else.`;
+${assembly?.length ? `ASSEMBLY NOTES:\n${assembly.join('\n')}` : ''}
+
+STYLE: ${styleGuide}
+
+Draw this now. Every component needs: ground shadow, wash layers, pencil-filtered outline, cross-hatching, and multi-layer highlights. The plate needs triple shadow, pencil rim, and highlight arcs. Output ONLY raw SVG.`;
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -106,7 +137,7 @@ Based on the above, generate a complete SVG plating diagram. The diagram should 
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 4096,
+        max_tokens: 16000,
         system: SKETCH_SYSTEM_PROMPT,
         messages: [{ role: 'user', content: userMessage }],
       }),
@@ -124,7 +155,6 @@ Based on the above, generate a complete SVG plating diagram. The diagram should 
       .map((b: { text: string }) => b.text)
       .join('') || '';
 
-    // Clean up any accidental code fences
     const svg = rawText
       .replace(/^```svg\s*/i, '')
       .replace(/^```xml\s*/i, '')

@@ -5,9 +5,10 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import {
   ChefHat, Flame, UtensilsCrossed, BookOpen, RefreshCw, Palette, FlaskConical,
   Send, Loader2, ArrowLeft, Sparkles, X, Upload, FileText, Image as ImageIcon,
-  ChevronRight, Check, Copy, CheckCheck, ArrowRight, Building2, AlertCircle, Download,
+  ChevronRight, Check, Copy, CheckCheck, ArrowRight, Building2, AlertCircle, Download, PenTool,
 } from 'lucide-react';
 import { MOCK_CHEFS, MOCK_RECIPES } from '@/lib/mockData';
+import Link from 'next/link';
 import { MotionReveal, MotionStagger } from '@/components/motion/MotionReveal';
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
@@ -1014,6 +1015,19 @@ export default function CreatePage() {
               </button>
             );
           })}
+
+          {/* Plating Studio — AI-powered bespoke sketch generator */}
+          <Link href="/create/plating"
+            className="bg-white rounded-xl border border-gray-200 hover:border-gold-300 p-5 sm:p-6 text-left hover:shadow-lg transition-all duration-200 active:scale-[0.98] group relative">
+            <div className="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-stone-900 text-gold-400">AI Sketch</div>
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-stone-700 to-stone-900 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform relative icon-motion-ring">
+              <span className="icon-inner inline-flex"><PenTool size={22} className="text-white" /></span>
+              <span className="icon-orbit-particle" /><span className="icon-orbit-particle" /><span className="icon-orbit-particle" />
+            </div>
+            <h3 className="text-base font-bold text-gray-900 mb-0.5 group-hover:text-gold-700 transition-colors">Plating Studio</h3>
+            <p className="text-xs font-medium text-gold-600 mb-2">Describe → AI Draws Bespoke Sketch</p>
+            <p className="text-sm text-gray-500 leading-relaxed">Describe any dish and Claude draws a unique hand-rendered plating diagram from scratch — organic shapes, watercolour wash, cross-hatching, and annotation labels. Every sketch is bespoke.</p>
+          </Link>
         </MotionStagger>
         <MotionReveal animation="fade-up" duration={600} delay={600}>
           <div className="mt-8 bg-white border border-gray-200 rounded-xl p-5 sm:p-6 text-center">
