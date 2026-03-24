@@ -783,9 +783,8 @@ function AdaptationResultPanel({ result, chefName, originalTitle, venueAccent }:
             </button>
           </div>
           {editing && <p className="text-[10px] text-amber-600 mt-2">Editing mode — all changes will be included in the PDF download.</p>}
-          </div>
           {/* Action bar */}
-          <div className="px-5 sm:px-7 py-3 bg-stone-50 border-t border-stone-100 flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap mt-4 pt-3 border-t border-stone-100">
             <button
               onClick={() => downloadAsPDF(editedResult, chefName, originalTitle, venueAccent, svgSketch)}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wide transition-all active:scale-97 text-white shadow-sm"
@@ -896,7 +895,7 @@ function AdaptationResultPanel({ result, chefName, originalTitle, venueAccent }:
 
           {/* Chef's Notes */}
           <div>
-            <div className="text-[10px] font-bold tracking-widest uppercase text-stone-500 mb-3">Chef's Notes</div>
+            <div className="text-[10px] font-bold tracking-widest uppercase text-stone-500 mb-3">Chef&apos;s Notes</div>
             <div className="divide-y divide-stone-100">
               {(a.chefNotes||[]).map((note, ni) => (
                 <div key={ni} className="flex gap-3 items-start py-2.5">
