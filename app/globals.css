@@ -407,18 +407,6 @@
   animation: icon-bubble 2.2s ease-in-out infinite;
 }
 
-/* Plating Studio — Paintbrush stroke */
-@keyframes icon-paint {
-  0%, 100% { transform: rotate(0deg) translateX(0); }
-  20% { transform: rotate(-12deg) translateX(-2px); }
-  50% { transform: rotate(8deg) translateX(2px); }
-  80% { transform: rotate(-4deg) translateX(-1px); }
-}
-.icon-motion-paint .icon-inner {
-  animation: icon-paint 2.5s ease-in-out infinite;
-  transform-origin: bottom right;
-}
-
 /* Shared: all icon containers get particle ring on hover */
 @keyframes icon-ring-pulse {
   0% { transform: scale(0.8); opacity: 0; }

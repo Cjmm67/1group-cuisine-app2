@@ -5,10 +5,9 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import {
   ChefHat, Flame, UtensilsCrossed, BookOpen, RefreshCw, Palette, FlaskConical,
   Send, Loader2, ArrowLeft, Sparkles, X, Upload, FileText, Image as ImageIcon,
-  ChevronRight, Check, Copy, CheckCheck, ArrowRight, Building2, AlertCircle, Download, Paintbrush,
+  ChevronRight, Check, Copy, CheckCheck, ArrowRight, Building2, AlertCircle, Download,
 } from 'lucide-react';
 import { MOCK_CHEFS, MOCK_RECIPES } from '@/lib/mockData';
-import Link from 'next/link';
 import { MotionReveal, MotionStagger } from '@/components/motion/MotionReveal';
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
@@ -129,420 +128,7 @@ function MenuAnalysisPanel({ analysis }: { analysis: MenuAnalysis }) {
   );
 }
 
-// ─── ADAPTATION RESULT PANEL ──────────────────────────────────────────────────
-// ─── INTERACTIVE PLATING STUDIO (embedded in adaptation results) ─────────────
-
-// Shape auto-mapping from recipe component names
-const SHAPE_KEYWORDS: Record<string, string[]> = {
-  sauce: ['sauce', 'jus', 'reduction', 'emulsion', 'broth', 'coulis', 'velouté', 'dressing', 'vinaigrette', 'gravy'],
-  quenelle: ['purée', 'puree', 'mousse', 'cream', 'ice cream', 'sorbet', 'quenelle', 'foam', 'espuma', 'parfait', 'custard', 'panna cotta'],
-  berries: ['berry', 'berries', 'caviar', 'pearl', 'dot', 'gel', 'currant', 'olive', 'caper', 'pickled'],
-  'chocolate shard': ['crisp', 'tuile', 'shard', 'chip', 'cracker', 'chocolate', 'bark', 'snap', 'brittle', 'wafer'],
-  cookie: ['cookie', 'biscuit', 'crumble', 'crumb', 'streusel', 'shortbread', 'sablé', 'gablé', 'biscotti'],
-  glaze: ['glaze', 'mirror', 'gel', 'aspic', 'consommé'],
-  'leaf garnish': ['leaf', 'herb', 'garnish', 'micro', 'flower', 'cress', 'shoot', 'edible', 'petal', 'frond', 'sprig'],
-  'pulled sugar': ['sugar', 'pulled', 'spun', 'caramel', 'isomalt', 'nougatine'],
-};
-
-function guessShape(name: string): string {
-  const lower = name.toLowerCase();
-  for (const [shape, keywords] of Object.entries(SHAPE_KEYWORDS)) {
-    if (keywords.some(k => lower.includes(k))) return shape;
-  }
-  return 'dome';
-}
-
-function guessColor(name: string): string {
-  const l = name.toLowerCase();
-  if (/chocolate|cacao|cocoa/.test(l)) return '#5C3A1E';
-  if (/berry|currant|red|strawberry|raspberry/.test(l)) return '#C0392B';
-  if (/green|herb|leaf|pesto|spinach|matcha/.test(l)) return '#4A7C59';
-  if (/citrus|lemon|yuzu|saffron|turmeric/.test(l)) return '#D4A030';
-  if (/cream|vanilla|white|almond|coconut/.test(l)) return '#E8DCC8';
-  if (/orange|carrot|pumpkin|sweet potato/.test(l)) return '#D4702A';
-  if (/purple|beetroot|blueberry|lavender/.test(l)) return '#7B4D8A';
-  if (/caramel|toffee|sugar|honey|maple/.test(l)) return '#C9A84C';
-  if (/sauce|jus|reduction|wine/.test(l)) return '#7B2D3B';
-  if (/seafood|fish|scallop|lobster|prawn/.test(l)) return '#F0E0C0';
-  return '#B8A88A';
-}
-
-// Auto-position components in a pleasing arrangement on the plate
-const POSITION_RINGS = [
-  { x: 400, y: 345, label: 'center' },     // center (main protein / dome)
-  { x: 340, y: 410, label: 'sw' },
-  { x: 460, y: 410, label: 'se' },
-  { x: 320, y: 310, label: 'w' },
-  { x: 480, y: 310, label: 'e' },
-  { x: 400, y: 270, label: 'n' },
-  { x: 270, y: 365, label: 'far-w' },
-  { x: 530, y: 365, label: 'far-e' },
-  { x: 350, y: 450, label: 'ssw' },
-  { x: 450, y: 450, label: 'sse' },
-  { x: 400, y: 430, label: 's' },
-  { x: 330, y: 270, label: 'nw' },
-];
-
-const STUDIO_PX = 400, STUDIO_PY = 360, STUDIO_PR = 280;
-
-const STUDIO_LABELS = [
-  { x: 45, y: 55, a: 'start' }, { x: 755, y: 55, a: 'end' },
-  { x: 770, y: 195, a: 'end' }, { x: 775, y: 340, a: 'end' },
-  { x: 755, y: 490, a: 'end' }, { x: 45, y: 490, a: 'start' },
-  { x: 25, y: 340, a: 'start' }, { x: 25, y: 195, a: 'start' },
-  { x: 400, y: 640, a: 'middle' }, { x: 400, y: 35, a: 'middle' },
-  { x: 150, y: 610, a: 'start' }, { x: 650, y: 610, a: 'end' },
-];
-
-// ─── SVG SHAPE RENDERERS (watercolor wash sketch style) ─────────────────────
-
-function SkDome({ x, y, size, color, id }: any) {
-  const w = size * 2.8, h = size * 2.2, baseY = y + h * 0.22;
-  return (
-    <g filter="url(#skSoftShadow)">
-      <ellipse cx={x+5} cy={baseY+h*0.18} rx={w*0.65} ry={h*0.25} fill="#000" opacity="0.1" />
-      <ellipse cx={x+3} cy={baseY+h*0.12} rx={w*0.58} ry={h*0.2} fill="#000" opacity="0.06" />
-      <ellipse cx={x+1} cy={baseY+h*0.08} rx={w*0.52} ry={h*0.16} fill="#000" opacity="0.03" />
-      <ellipse cx={x} cy={baseY} rx={w*0.56} ry={h*0.16} fill={`url(#dome-base-${id})`} stroke="#444" strokeWidth="1.8" filter="url(#skPencil)" />
-      <path d={`M${x-w*0.48},${baseY-h*0.02} A${w*0.5},${h*0.14} 0 0,1 ${x+w*0.48},${baseY-h*0.02}`} fill="none" stroke="#fff" strokeWidth="2.5" opacity="0.4" />
-      <path d={`M${x-w*0.52},${baseY} C${x-w*0.53},${y-h*0.4} ${x-w*0.2},${y-h*0.82} ${x},${y-h*0.85} C${x+w*0.2},${y-h*0.82} ${x+w*0.53},${y-h*0.4} ${x+w*0.52},${baseY}`} fill={`url(#dome-body-${id})`} stroke="#333" strokeWidth="2" filter="url(#skPencil)" />
-      {/* Watercolor wash layers */}
-      <path d={`M${x-w*0.45},${baseY-h*0.05} C${x-w*0.46},${y-h*0.3} ${x-w*0.15},${y-h*0.7} ${x},${y-h*0.72} C${x+w*0.15},${y-h*0.7} ${x+w*0.46},${y-h*0.3} ${x+w*0.45},${baseY-h*0.05} Z`} fill={color} opacity="0.08" filter="url(#skWash)" />
-      <path d={`M${x-w*0.38},${baseY-h*0.1} C${x-w*0.4},${y-h*0.2} ${x-w*0.12},${y-h*0.6} ${x-w*0.05},${y-h*0.62} C${x+w*0.05},${y-h*0.55} ${x+w*0.15},${y-h*0.35} ${x+w*0.2},${baseY-h*0.15} Z`} fill={color} opacity="0.12" filter="url(#skWash)" />
-      <path d={`M${x-w*0.5},${baseY} C${x-w*0.5},${y-h*0.3} ${x-w*0.3},${y-h*0.65} ${x-w*0.1},${y-h*0.7} L${x-w*0.15},${y-h*0.4} L${x-w*0.35},${baseY-h*0.1} Z`} fill="#555" opacity="0.06" filter="url(#skWash)" />
-      {/* 10 contour lines */}
-      {[0.08,0.16,0.24,0.32,0.40,0.48,0.56,0.64,0.72,0.80].map((t,i) => {
-        const ly=baseY-h*t*0.95, spread=Math.sqrt(1-t*t)*w*0.5;
-        return <path key={i} d={`M${x-spread*0.92},${ly} Q${x},${ly-2-i*0.4} ${x+spread*0.92},${ly}`} fill="none" stroke="#777" strokeWidth={0.5+(1-t)*0.4} strokeDasharray={i%3===0?"8,4":i%3===1?"5,5":"3,6"} opacity={0.2+t*0.25} />;
-      })}
-      <ellipse cx={x} cy={baseY-h*0.35} rx={w*0.44} ry={h*0.13} fill="none" stroke="#333" strokeWidth="1.4" strokeDasharray="8,5" opacity="0.65" />
-      <path d={`M${x+w*0.35},${baseY-h*0.38} l6,-5 l-2,7`} fill="#333" opacity="0.55" />
-      <path d={`M${x-w*0.35},${baseY-h*0.32} l-6,5 l2,-7`} fill="#333" opacity="0.55" />
-      {/* 14 cross-hatch + 8 cross-direction */}
-      {Array.from({length:14},(_,i)=>{const t=i*0.065,sx=x-w*0.5+t*w*0.2; return <line key={`sh-${i}`} x1={sx} y1={baseY-h*t*0.8} x2={sx+2+Math.random()*2} y2={baseY-h*0.02} stroke="#666" strokeWidth={0.3+(1-t)*0.25} opacity={0.1+(1-t)*0.18} />;
-      })}
-      {Array.from({length:8},(_,i)=>{const t=i*0.1,sx=x-w*0.42+t*w*0.18; return <line key={`cx-${i}`} x1={sx+8} y1={baseY-h*t*0.6} x2={sx-2} y2={baseY-h*0.02} stroke="#777" strokeWidth="0.25" opacity={0.08+(1-t)*0.1} />;
-      })}
-      {Array.from({length:6},(_,i)=>{const t=i*0.12,sx=x+w*0.2+t*w*0.18; return <line key={`rh-${i}`} x1={sx} y1={baseY-h*0.55+i*6} x2={sx+3} y2={baseY-h*0.05} stroke="#aaa" strokeWidth="0.3" opacity={0.06+i*0.015} />;
-      })}
-      <path d={`M${x-w*0.15},${y-h*0.68} Q${x-w*0.03},${y-h*0.84} ${x+w*0.14},${y-h*0.63}`} fill="none" stroke="#fff" strokeWidth="4.5" opacity="0.5" strokeLinecap="round" />
-      <path d={`M${x-w*0.1},${y-h*0.55} Q${x+w*0.02},${y-h*0.65} ${x+w*0.1},${y-h*0.48}`} fill="none" stroke="#fff" strokeWidth="2.5" opacity="0.35" strokeLinecap="round" />
-      <path d={`M${x-w*0.06},${y-h*0.42} Q${x+w*0.01},${y-h*0.48} ${x+w*0.06},${y-h*0.38}`} fill="none" stroke="#fff" strokeWidth="1.5" opacity="0.2" strokeLinecap="round" />
-      <defs>
-        <radialGradient id={`dome-body-${id}`} cx="38%" cy="28%" r="62%"><stop offset="0%" stopColor="#fff" stopOpacity="0.65" /><stop offset="25%" stopColor={color} stopOpacity="0.15" /><stop offset="55%" stopColor={color} stopOpacity="0.1" /><stop offset="80%" stopColor="#777" stopOpacity="0.12" /><stop offset="100%" stopColor="#555" stopOpacity="0.18" /></radialGradient>
-        <radialGradient id={`dome-base-${id}`} cx="50%" cy="40%" r="55%"><stop offset="0%" stopColor="#fff" stopOpacity="0.4" /><stop offset="100%" stopColor={color} stopOpacity="0.15" /></radialGradient>
-      </defs>
-    </g>
-  );
-}
-
-function SkBerries({ x, y, size, color, id }: any) {
-  const r = size * 0.35;
-  const positions = [{dx:-size*1.1,dy:size*0.1,s:1.05},{dx:-size*0.6,dy:-size*0.15,s:1.0},{dx:-size*0.1,dy:size*0.08,s:1.1},{dx:size*0.4,dy:-size*0.1,s:0.95},{dx:size*0.9,dy:size*0.05,s:1.0},{dx:size*1.35,dy:-size*0.05,s:0.88},{dx:-size*0.85,dy:size*0.35,s:0.7}];
-  return (<g>{positions.map((b,i)=>{const bx=x+b.dx,by=y+b.dy,br=r*b.s; return(<g key={i}>
-    <ellipse cx={bx+2} cy={by+br*0.95} rx={br*1.0} ry={br*0.4} fill="#000" opacity="0.09" />
-    <ellipse cx={bx+1} cy={by+br*0.8} rx={br*0.85} ry={br*0.3} fill="#000" opacity="0.05" />
-    <circle cx={bx} cy={by} r={br} fill={`url(#berry-g-${id}-${i})`} stroke="#444" strokeWidth="1.3" />
-    <circle cx={bx} cy={by} r={br*0.85} fill={color} opacity="0.08" filter="url(#skWash)" />
-    <path d={`M${bx-br*0.75},${by+br*0.25} A${br*0.95},${br*0.95} 0 0,0 ${bx+br*0.75},${by+br*0.25} Q${bx},${by+br*0.85} ${bx-br*0.75},${by+br*0.25} Z`} fill="#000" opacity="0.08" />
-    {[0,1,2,3,4].map(j=>(<line key={`h-${j}`} x1={bx-br*0.7+j*1.5} y1={by-br*0.3+j*2.5} x2={bx-br*0.35+j*1.5} y2={by+br*0.6+j*1.5} stroke="#666" strokeWidth="0.35" opacity={0.12+(4-j)*0.03} />))}
-    {[0,1,2].map(j=>(<line key={`cx-${j}`} x1={bx-br*0.55+j*2} y1={by+br*0.4-j*2} x2={bx-br*0.2+j*2} y2={by-br*0.2-j*1.5} stroke="#777" strokeWidth="0.25" opacity="0.08" />))}
-    <ellipse cx={bx-br*0.22} cy={by-br*0.28} rx={br*0.35} ry={br*0.25} fill="#fff" opacity="0.6" />
-    <ellipse cx={bx-br*0.18} cy={by-br*0.25} rx={br*0.2} ry={br*0.15} fill="#fff" opacity="0.8" />
-    <circle cx={bx-br*0.12} cy={by-br*0.18} r={br*0.08} fill="#fff" opacity="0.95" />
-    <text x={bx+br*0.05} y={by+br*0.18} textAnchor="middle" fontSize={br*0.8} fill="#444" opacity="0.4">✻</text>
-    <defs><radialGradient id={`berry-g-${id}-${i}`} cx="32%" cy="28%" r="62%"><stop offset="0%" stopColor="#fff" stopOpacity="0.55" /><stop offset="30%" stopColor={color} stopOpacity="0.35" /><stop offset="65%" stopColor={color} stopOpacity="0.22" /><stop offset="90%" stopColor="#444" stopOpacity="0.15" /><stop offset="100%" stopColor="#333" stopOpacity="0.2" /></radialGradient></defs>
-  </g>);})}</g>);
-}
-
-function SkSauce({ x, y, size, color, id }: any) {
-  const s = size * 2;
-  return (<g>
-    <path d={`M${x-s*0.75},${y+s*0.12} C${x-s*0.55},${y-s*0.4} ${x-s*0.08},${y-s*0.42} ${x+s*0.38},${y-s*0.25} C${x+s*0.75},${y-s*0.08} ${x+s*0.85},${y+s*0.22} ${x+s*0.7},${y+s*0.42} C${x+s*0.5},${y+s*0.6} ${x+s*0.08},${y+s*0.55} ${x-s*0.22},${y+s*0.46} C${x-s*0.6},${y+s*0.38} ${x-s*0.8},${y+s*0.33} ${x-s*0.75},${y+s*0.12} Z`} fill={color} opacity="0.04" filter="url(#skWashHeavy)" />
-    <path d={`M${x-s*0.7},${y+s*0.1} C${x-s*0.5},${y-s*0.35} ${x-s*0.05},${y-s*0.38} ${x+s*0.35},${y-s*0.22} C${x+s*0.7},${y-s*0.05} ${x+s*0.8},${y+s*0.2} ${x+s*0.65},${y+s*0.38} C${x+s*0.45},${y+s*0.55} ${x+s*0.05},${y+s*0.5} ${x-s*0.2},${y+s*0.42} C${x-s*0.55},${y+s*0.35} ${x-s*0.75},${y+s*0.3} ${x-s*0.7},${y+s*0.1} Z`} fill={`url(#sauce-g-${id})`} stroke="#666" strokeWidth="1" opacity="0.9" filter="url(#skWash)" />
-    <path d={`M${x-s*0.35},${y+s*0.05} C${x-s*0.12},${y-s*0.18} ${x+s*0.22},${y-s*0.12} ${x+s*0.42},${y+s*0.05} C${x+s*0.52},${y+s*0.22} ${x+s*0.22},${y+s*0.32} ${x-s*0.05},${y+s*0.28} C${x-s*0.28},${y+s*0.22} ${x-s*0.38},${y+s*0.15} ${x-s*0.35},${y+s*0.05} Z`} fill={color} opacity="0.15" filter="url(#skWash)" />
-    <path d={`M${x-s*0.1},${y+s*0.1} C${x+s*0.05},${y-s*0.02} ${x+s*0.25},${y+s*0.05} ${x+s*0.3},${y+s*0.15} C${x+s*0.25},${y+s*0.25} ${x+s*0.05},${y+s*0.22} ${x-s*0.1},${y+s*0.1} Z`} fill={color} opacity="0.1" filter="url(#skWash)" />
-    {[0,1,2,3,4,5,6].map(i=>{const ox=(i-3)*s*0.12; return <path key={i} d={`M${x-s*0.4+ox},${y+s*0.15+i*2.5} Q${x+ox*0.4},${y-s*0.05+i*3.5} ${x+s*0.45+ox*0.25},${y+s*0.1+i*1.5}`} fill="none" stroke={color} strokeWidth={0.4+Math.random()*0.4} opacity={0.06+i*0.015} />;})}
-    <path d={`M${x-s*0.65},${y+s*0.15} C${x-s*0.45},${y-s*0.28} ${x},${y-s*0.32} ${x+s*0.3},${y-s*0.18}`} fill="none" stroke="#555" strokeWidth="0.6" opacity="0.35" />
-    <path d={`M${x-s*0.18},${y-s*0.14} C${x+s*0.12},${y-s*0.25} ${x+s*0.32},${y-s*0.14} ${x+s*0.42},${y-s*0.02}`} fill="none" stroke="#fff" strokeWidth="3.5" opacity="0.35" strokeLinecap="round" />
-    <path d={`M${x+s*0.08},${y+s*0.06} C${x+s*0.22},${y-s*0.02} ${x+s*0.38},${y+s*0.04} ${x+s*0.48},${y+s*0.1}`} fill="none" stroke="#fff" strokeWidth="1.5" opacity="0.2" strokeLinecap="round" />
-    <path d={`M${x-s*0.4},${y+s*0.22} C${x-s*0.25},${y+s*0.15} ${x-s*0.1},${y+s*0.18} ${x+s*0.05},${y+s*0.22}`} fill="none" stroke="#fff" strokeWidth="1" opacity="0.12" strokeLinecap="round" />
-    <defs><radialGradient id={`sauce-g-${id}`} cx="40%" cy="35%" r="60%"><stop offset="0%" stopColor="#fff" stopOpacity="0.2" /><stop offset="30%" stopColor={color} stopOpacity="0.18" /><stop offset="65%" stopColor={color} stopOpacity="0.14" /><stop offset="100%" stopColor={color} stopOpacity="0.06" /></radialGradient></defs>
-  </g>);
-}
-
-function SkQuenelle({ x, y, size, color, id }: any) {
-  const w = size * 2.2, h = size * 1.4;
-  return (<g filter="url(#skSoftShadow)">
-    <ellipse cx={x+2} cy={y+h*0.48} rx={w*0.45} ry={h*0.14} fill="#000" opacity="0.08" />
-    <ellipse cx={x+1} cy={y+h*0.42} rx={w*0.4} ry={h*0.1} fill="#000" opacity="0.04" />
-    <path d={`M${x-w*0.5},${y+h*0.15} Q${x-w*0.45},${y-h*0.65} ${x+w*0.1},${y-h*0.55} Q${x+w*0.5},${y-h*0.45} ${x+w*0.5},${y+h*0.1} Q${x+w*0.35},${y+h*0.45} ${x+w*0.05},${y+h*0.35} Q${x-w*0.3},${y+h*0.45} ${x-w*0.5},${y+h*0.15} Z`} fill={`url(#quen-g-${id})`} stroke="#444" strokeWidth="1.6" filter="url(#skPencil)" />
-    <path d={`M${x-w*0.42},${y+h*0.1} Q${x-w*0.38},${y-h*0.45} ${x+w*0.05},${y-h*0.42} Q${x+w*0.35},${y-h*0.3} ${x+w*0.38},${y+h*0.05} Z`} fill={color} opacity="0.08" filter="url(#skWash)" />
-    {[0.12,0.24,0.36,0.48,0.6,0.72,0.84].map((t,i)=>(<path key={i} d={`M${x-w*0.35+t*w*0.35},${y-h*0.4+t*h*0.25} Q${x+t*w*0.15},${y+t*h*0.2} ${x+w*0.25+t*w*0.08},${y+t*h*0.15}`} fill="none" stroke="#999" strokeWidth="0.4" opacity={0.15+t*0.12} />))}
-    {Array.from({length:6},(_,i)=>{const t=i*0.12; return <line key={i} x1={x-w*0.42+i*2.5} y1={y-h*0.15+i*3} x2={x-w*0.32+i*2.5} y2={y+h*0.35+i*1.5} stroke="#777" strokeWidth="0.3" opacity={0.1+(5-i)*0.02} />;
-    })}
-    <path d={`M${x-w*0.18},${y-h*0.42} Q${x-w*0.02},${y-h*0.58} ${x+w*0.14},${y-h*0.36}`} fill="none" stroke="#fff" strokeWidth="3" opacity="0.45" strokeLinecap="round" />
-    <path d={`M${x-w*0.1},${y-h*0.28} Q${x+w*0.02},${y-h*0.38} ${x+w*0.08},${y-h*0.22}`} fill="none" stroke="#fff" strokeWidth="1.5" opacity="0.25" strokeLinecap="round" />
-    <defs><radialGradient id={`quen-g-${id}`} cx="35%" cy="28%" r="65%"><stop offset="0%" stopColor="#fff" stopOpacity="0.6" /><stop offset="35%" stopColor={color} stopOpacity="0.2" /><stop offset="70%" stopColor="#777" stopOpacity="0.1" /><stop offset="100%" stopColor="#555" stopOpacity="0.15" /></radialGradient></defs>
-  </g>);
-}
-
-function SkPulledSugar({ x, y, size }: any) {
-  const s = size * 1.8;
-  return (<g>
-    <path d={`M${x},${y} C${x+s*0.25},${y-s*0.6} ${x-s*0.25},${y-s*1.4} ${x+s*0.1},${y-s*2.2} C${x+s*0.3},${y-s*2.7} ${x+s*0.55},${y-s*2.5} ${x+s*0.35},${y-s*1.8}`} fill="none" stroke="#444" strokeWidth="2.5" opacity="0.7" strokeLinecap="round" filter="url(#skPencil)" />
-    <path d={`M${x+3},${y-2} C${x+s*0.28},${y-s*0.58} ${x-s*0.22},${y-s*1.38} ${x+s*0.13},${y-s*2.18}`} fill="none" stroke="#888" strokeWidth="0.8" opacity="0.35" />
-    <path d={`M${x-2},${y+1} C${x+s*0.22},${y-s*0.62} ${x-s*0.28},${y-s*1.42} ${x+s*0.07},${y-s*2.22}`} fill="none" stroke="#999" strokeWidth="0.5" opacity="0.2" />
-    <path d={`M${x+s*0.02},${y-s*0.8} C${x-s*0.08},${y-s*1.1} ${x-s*0.02},${y-s*1.5} ${x+s*0.08},${y-s*1.9}`} fill="none" stroke="#fff" strokeWidth="1.8" opacity="0.45" strokeLinecap="round" />
-    <path d={`M${x+s*0.35},${y-s*1.8} C${x+s*0.42},${y-s*1.58} ${x+s*0.28},${y-s*1.52} ${x+s*0.2},${y-s*1.62}`} fill="none" stroke="#555" strokeWidth="1.2" opacity="0.45" strokeLinecap="round" />
-    <ellipse cx={x} cy={y+2} rx={s*0.08} ry={s*0.03} fill="#000" opacity="0.1" />
-  </g>);
-}
-
-function SkChocolateShard({ x, y, size, color, id }: any) {
-  const s = size * 1.4;
-  return (<g>
-    <ellipse cx={x+1.5} cy={y+s*0.38} rx={s*0.45} ry={s*0.1} fill="#000" opacity="0.07" />
-    <path d={`M${x-s*0.4},${y+s*0.3} L${x-s*0.35},${y-s*0.55} C${x-s*0.15},${y-s*0.75} ${x+s*0.2},${y-s*0.65} ${x+s*0.35},${y-s*0.4} L${x+s*0.5},${y+s*0.05} Q${x+s*0.35},${y+s*0.35} ${x+s*0.05},${y+s*0.32} Q${x-s*0.25},${y+s*0.38} ${x-s*0.4},${y+s*0.3} Z`} fill={`url(#choc-g-${id})`} stroke="#444" strokeWidth="1.2" filter="url(#skPencil)" />
-    <path d={`M${x-s*0.35},${y+s*0.1} L${x-s*0.15},${y-s*0.35} L${x+s*0.05},${y-s*0.2} L${x-s*0.1},${y+s*0.2} Z`} fill={color} opacity="0.06" filter="url(#skWash)" />
-    {[0,1,2,3,4,5].map(i=>(<line key={i} x1={x-s*0.25+i*s*0.1} y1={y-s*0.25+i*2.5} x2={x-s*0.15+i*s*0.1} y2={y+s*0.2+i*1.5} stroke="#888" strokeWidth="0.35" opacity={0.15+(5-i)*0.02} />))}
-    <path d={`M${x-s*0.22},${y-s*0.32} L${x+s*0.18},${y-s*0.38}`} fill="none" stroke="#fff" strokeWidth="1.8" opacity="0.4" strokeLinecap="round" />
-    <path d={`M${x-s*0.1},${y-s*0.15} L${x+s*0.15},${y-s*0.18}`} fill="none" stroke="#fff" strokeWidth="0.8" opacity="0.2" strokeLinecap="round" />
-    <defs><linearGradient id={`choc-g-${id}`} x1="20%" y1="0%" x2="80%" y2="100%"><stop offset="0%" stopColor="#fff" stopOpacity="0.4" /><stop offset="100%" stopColor={color} stopOpacity="0.2" /></linearGradient></defs>
-  </g>);
-}
-
-function SkCookie({ x, y, size, color, id }: any) {
-  const w = size * 1.8, h = size * 0.7, d = size * 0.35;
-  return (<g>
-    <ellipse cx={x+2} cy={y+h*0.5+d+4} rx={w*0.55} ry={h*0.2} fill="#000" opacity="0.07" />
-    <path d={`M${x-w*0.5},${y+h*0.5} L${x-w*0.5},${y+h*0.5+d} L${x+w*0.5},${y+h*0.5+d} L${x+w*0.5},${y+h*0.5} Z`} fill={color} opacity="0.12" stroke="#555" strokeWidth="0.8" />
-    <rect x={x-w*0.5} y={y-h*0.5} width={w} height={h} rx={3} fill={`url(#cook-g-${id})`} stroke="#444" strokeWidth="1.3" filter="url(#skPencil)" />
-    <rect x={x-w*0.45} y={y-h*0.4} width={w*0.9} height={h*0.8} rx={2} fill={color} opacity="0.06" filter="url(#skWash)" />
-    {[-0.35,-0.2,-0.05,0.1,0.25].map((t,i)=>(<g key={i}><line x1={x+w*t} y1={y-h*0.35} x2={x+w*t+5} y2={y+h*0.35} stroke="#888" strokeWidth="0.45" opacity="0.22" /><line x1={x+w*t+w*0.08} y1={y-h*0.35} x2={x+w*t-3} y2={y+h*0.35} stroke="#999" strokeWidth="0.3" opacity="0.12" /></g>))}
-    <defs><linearGradient id={`cook-g-${id}`} x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#fff" stopOpacity="0.45" /><stop offset="100%" stopColor={color} stopOpacity="0.2" /></linearGradient></defs>
-  </g>);
-}
-
-function SkGlaze({ x, y, size, color, id }: any) {
-  const s = size * 1.6;
-  return (<g>
-    <path d={`M${x-s*0.6},${y+s*0.02} C${x-s*0.5},${y-s*0.38} ${x-s*0.08},${y-s*0.43} ${x+s*0.33},${y-s*0.23} C${x+s*0.58},${y-s*0.08} ${x+s*0.63},${y+s*0.25} ${x+s*0.38},${y+s*0.38} C${x+s*0.08},${y+s*0.48} ${x-s*0.38},${y+s*0.42} ${x-s*0.6},${y+s*0.02} Z`} fill={color} opacity="0.05" filter="url(#skWashHeavy)" />
-    <path d={`M${x-s*0.55},${y} C${x-s*0.45},${y-s*0.35} ${x-s*0.05},${y-s*0.4} ${x+s*0.3},${y-s*0.2} C${x+s*0.55},${y-s*0.05} ${x+s*0.6},${y+s*0.22} ${x+s*0.35},${y+s*0.35} C${x+s*0.05},${y+s*0.45} ${x-s*0.35},${y+s*0.38} ${x-s*0.55},${y} Z`} fill={`url(#glaze-g-${id})`} stroke="#777" strokeWidth="0.8" opacity="0.9" filter="url(#skWash)" />
-    <path d={`M${x-s*0.25},${y+s*0.05} C${x-s*0.1},${y-s*0.12} ${x+s*0.15},${y-s*0.08} ${x+s*0.22},${y+s*0.08} C${x+s*0.15},${y+s*0.2} ${x-s*0.1},${y+s*0.18} ${x-s*0.25},${y+s*0.05} Z`} fill={color} opacity="0.12" filter="url(#skWash)" />
-    <path d={`M${x-s*0.15},${y-s*0.15} C${x+s*0.05},${y-s*0.25} ${x+s*0.25},${y-s*0.12} ${x+s*0.35},${y}`} fill="none" stroke="#fff" strokeWidth="2.5" opacity="0.3" strokeLinecap="round" />
-    <path d={`M${x-s*0.05},${y+s*0.05} C${x+s*0.1},${y-s*0.02} ${x+s*0.2},${y+s*0.02} ${x+s*0.28},${y+s*0.08}`} fill="none" stroke="#fff" strokeWidth="1" opacity="0.15" strokeLinecap="round" />
-    <defs><radialGradient id={`glaze-g-${id}`} cx="38%" cy="32%" r="55%"><stop offset="0%" stopColor="#fff" stopOpacity="0.3" /><stop offset="50%" stopColor={color} stopOpacity="0.22" /><stop offset="100%" stopColor={color} stopOpacity="0.08" /></radialGradient></defs>
-  </g>);
-}
-
-function SkLeaf({ x, y, size, color, id }: any) {
-  const s = size * 1.3;
-  return (<g>
-    <ellipse cx={x+1} cy={y+s*0.85} rx={s*0.3} ry={s*0.08} fill="#000" opacity="0.06" />
-    <path d={`M${x},${y-s*0.95} C${x+s*0.5},${y-s*0.55} ${x+s*0.45},${y+s*0.4} ${x},${y+s*0.95} C${x-s*0.45},${y+s*0.4} ${x-s*0.5},${y-s*0.55} ${x},${y-s*0.95} Z`} fill={`url(#leaf-g-${id})`} stroke="#444" strokeWidth="1" filter="url(#skPencil)" />
-    <path d={`M${x},${y-s*0.8} C${x+s*0.3},${y-s*0.35} ${x+s*0.25},${y+s*0.25} ${x},${y+s*0.8} Z`} fill={color} opacity="0.06" filter="url(#skWash)" />
-    <path d={`M${x},${y-s*0.75} L${x},${y+s*0.75}`} fill="none" stroke="#666" strokeWidth="0.6" opacity="0.5" />
-    {[-0.45,-0.25,-0.05,0.15,0.35].map((t,i)=>(<path key={i} d={`M${x},${y+s*t} L${x+(i%2?-1:1)*s*0.32},${y+s*t-s*0.14}`} fill="none" stroke="#777" strokeWidth="0.4" opacity="0.3" />))}
-    <path d={`M${x-s*0.15},${y-s*0.5} Q${x-s*0.05},${y-s*0.65} ${x+s*0.1},${y-s*0.45}`} fill="none" stroke="#fff" strokeWidth="1" opacity="0.25" strokeLinecap="round" />
-    <defs><radialGradient id={`leaf-g-${id}`} cx="38%" cy="28%" r="60%"><stop offset="0%" stopColor="#fff" stopOpacity="0.35" /><stop offset="100%" stopColor={color} stopOpacity="0.25" /></radialGradient></defs>
-  </g>);
-}
-
-const SK_RENDERERS: Record<string, React.ComponentType<any>> = {
-  dome: SkDome, berries: SkBerries, sauce: SkSauce, quenelle: SkQuenelle,
-  'pulled sugar': SkPulledSugar, 'chocolate shard': SkChocolateShard, cookie: SkCookie,
-  glaze: SkGlaze, 'leaf garnish': SkLeaf,
-};
-const SK_SHAPES = Object.keys(SK_RENDERERS);
-
-function SkArrow({ fx, fy, tx, ty }: any) {
-  const mx = fx + (tx - fx) * 0.35 + (ty - fy) * 0.08, my = fy + (ty - fy) * 0.5 - (tx - fx) * 0.05;
-  const angle = Math.atan2(ty - my, tx - mx), al = 8;
-  return (<g>
-    <path d={`M${fx},${fy} Q${mx},${my} ${tx},${ty}`} fill="none" stroke="#444" strokeWidth="0.65" opacity="0.55" />
-    <path d={`M${tx-al*Math.cos(angle-0.35)},${ty-al*Math.sin(angle-0.35)} L${tx},${ty} L${tx-al*Math.cos(angle+0.35)},${ty-al*Math.sin(angle+0.35)}`} fill="none" stroke="#444" strokeWidth="0.65" opacity="0.55" />
-  </g>);
-}
-
-function SkDrag({ comp, children, sel, onSel, onDrag }: any) {
-  const [d, setD] = useState(false);
-  const off = useRef({ x: 0, y: 0 });
-  const down = (e: any) => { e.stopPropagation(); onSel(comp.id); setD(true); const svg = e.currentTarget.closest('svg'); const pt = svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const sp = pt.matrixTransform(svg.getScreenCTM().inverse()); off.current = { x: sp.x - comp.x, y: sp.y - comp.y }; e.currentTarget.setPointerCapture(e.pointerId); };
-  const move = (e: any) => { if (!d) return; const svg = e.currentTarget.closest('svg'); const pt = svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const sp = pt.matrixTransform(svg.getScreenCTM().inverse()); onDrag(comp.id, sp.x - off.current.x, sp.y - off.current.y); };
-  return (<g onPointerDown={down} onPointerMove={move} onPointerUp={()=>setD(false)} style={{ cursor: 'grab' }}>{children}{sel && <circle cx={comp.x} cy={comp.y} r={comp.size * 2 + 15} fill="none" stroke="#C9A84C" strokeWidth="1" strokeDasharray="6,4" opacity="0.4" />}</g>);
-}
-
-// ─── THE MAIN PLATING SKETCH COMPONENT ──────────────────────────────────────
-
-function PlatingSketch({ adaptation, venueName, venueAccent, onSvgGenerated }: {
-  adaptation: VenueAdaptation; venueName: string; venueAccent: string; onSvgGenerated?: (svg: string) => void;
-}) {
-  // Auto-map adaptation components to plate elements
-  const buildInitialComps = useCallback(() => {
-    return (adaptation.components || []).map((c, i) => {
-      const shape = guessShape(c.name);
-      const pos = POSITION_RINGS[i % POSITION_RINGS.length];
-      const baseSize = shape === 'dome' ? 50 : shape === 'sauce' ? 40 : shape === 'berries' ? 22 : shape === 'leaf garnish' ? 16 : shape === 'pulled sugar' ? 32 : 28;
-      // First component (main) gets center, larger size
-      const isMain = i === 0 && shape === 'dome';
-      return {
-        id: i + 1,
-        name: c.name,
-        shape,
-        x: pos.x + (Math.random() - 0.5) * 20,
-        y: pos.y + (Math.random() - 0.5) * 20,
-        size: isMain ? 60 : baseSize,
-        color: guessColor(c.name),
-      };
-    });
-  }, [adaptation.components]);
-
-  const [comps, setComps] = useState(buildInitialComps);
-  const [sel, setSel] = useState<number | null>(null);
-  const [edit, setEdit] = useState<number | null>(null);
-  const [zoomed, setZoomed] = useState(false);
-  const svgRef = useRef<SVGSVGElement>(null);
-  const nextId = useRef(100);
-
-  const drag = useCallback((id: number, x: number, y: number) => setComps(p => p.map(c => c.id === id ? { ...c, x, y } : c)), []);
-  const upd = (id: number, u: any) => setComps(p => p.map(c => c.id === id ? { ...c, ...u } : c));
-  const rm = (id: number) => { setComps(p => p.filter(c => c.id !== id)); if (sel === id) { setSel(null); setEdit(null); } };
-  const add = () => { const id = nextId.current++; setComps(p => [...p, { id, name: 'New Component', shape: 'dome', x: STUDIO_PX + (Math.random() - 0.5) * 100, y: STUDIO_PY + (Math.random() - 0.5) * 100, size: 30, color: '#B8A88A' }]); setSel(id); setEdit(id); };
-
-  const exportSvg = () => {
-    if (!svgRef.current) return;
-    const svgData = new XMLSerializer().serializeToString(svgRef.current);
-    if (onSvgGenerated) onSvgGenerated(svgData);
-    const blob = new Blob([svgData], { type: 'image/svg+xml' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `${adaptation.title.toLowerCase().replace(/\s+/g, '-')}-plating.svg`;
-    a.click(); URL.revokeObjectURL(url);
-  };
-
-  const captureForPdf = useCallback(() => {
-    if (svgRef.current && onSvgGenerated) {
-      onSvgGenerated(new XMLSerializer().serializeToString(svgRef.current));
-    }
-  }, [onSvgGenerated]);
-
-  // Auto-capture SVG for PDF on first render and when components change
-  React.useEffect(() => { const t = setTimeout(captureForPdf, 500); return () => clearTimeout(t); }, [comps, captureForPdf]);
-
-  return (
-    <div>
-      <div className={`relative rounded-xl overflow-hidden border border-stone-200 bg-stone-50 ${zoomed ? 'fixed inset-4 z-50 shadow-2xl overflow-auto' : ''}`}>
-        {/* Toolbar */}
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-stone-100 bg-white flex-wrap gap-2">
-          <div className="flex items-center gap-3">
-            <div className="text-xs font-bold tracking-widest uppercase" style={{ color: venueAccent }}>Interactive Plating Studio</div>
-            <span className="text-[10px] text-stone-400 italic hidden sm:inline">Drag components to position</span>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <button onClick={add} className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-semibold border border-stone-200 text-stone-500 hover:border-stone-400 hover:text-stone-700 transition-all">
-              + Add
-            </button>
-            <button onClick={() => setZoomed(z => !z)} className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-semibold border border-stone-200 text-stone-400 hover:border-stone-400 hover:text-stone-600 transition-all">
-              {zoomed ? 'Close' : 'Expand'}
-            </button>
-            <button onClick={exportSvg} className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wide transition-all" style={{ background: `${venueAccent}18`, color: venueAccent, border: `1px solid ${venueAccent}40` }}>
-              <Download size={11} /> SVG
-            </button>
-          </div>
-        </div>
-
-        <div className={`flex ${zoomed ? 'h-[calc(100%-44px)]' : ''}`}>
-          {/* SVG Canvas */}
-          <div className="flex-1 p-3" style={{ background: '#fdfcf8' }}>
-            <svg ref={svgRef} viewBox="0 0 800 680" className="w-full" onClick={() => { setSel(null); setEdit(null); }}>
-              <defs>
-                <radialGradient id="skPShine" cx="36%" cy="30%" r="58%"><stop offset="0%" stopColor="#fff" stopOpacity="0.45" /><stop offset="100%" stopColor="#fff" stopOpacity="0" /></radialGradient>
-                <filter id="skWash" x="-15%" y="-15%" width="130%" height="130%"><feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
-                <filter id="skWashHeavy" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
-                <filter id="skSoftShadow" x="-20%" y="-10%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="6" result="shadow" /><feOffset dx="3" dy="5" result="offsetShadow" /><feFlood floodColor="#000" floodOpacity="0.08" result="color" /><feComposite in="color" in2="offsetShadow" operator="in" result="shadow" /><feComposite in="SourceGraphic" in2="shadow" operator="over" /></filter>
-                <filter id="skPencil" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="turbulence" baseFrequency="0.04" numOctaves="3" seed="12" result="warp" /><feDisplacementMap in="SourceGraphic" in2="warp" scale="1.2" xChannelSelector="R" yChannelSelector="G" /></filter>
-              </defs>
-              {/* Plate — enhanced with pencil filter */}
-              <ellipse cx={STUDIO_PX + 7} cy={STUDIO_PY + 12} rx={STUDIO_PR + 20} ry={STUDIO_PR + 20} fill="#b8b0a0" opacity="0.08" />
-              <ellipse cx={STUDIO_PX + 4} cy={STUDIO_PY + 8} rx={STUDIO_PR + 16} ry={STUDIO_PR + 16} fill="#c0b8a8" opacity="0.06" />
-              <ellipse cx={STUDIO_PX + 2} cy={STUDIO_PY + 4} rx={STUDIO_PR + 12} ry={STUDIO_PR + 12} fill="#c8c0b0" opacity="0.03" />
-              <ellipse cx={STUDIO_PX} cy={STUDIO_PY} rx={STUDIO_PR + 10} ry={STUDIO_PR + 10} fill="none" stroke="#a8a090" strokeWidth="0.6" filter="url(#skPencil)" />
-              <ellipse cx={STUDIO_PX} cy={STUDIO_PY} rx={STUDIO_PR + 4} ry={STUDIO_PR + 4} fill="none" stroke="#c5bfb0" strokeWidth="0.3" />
-              <ellipse cx={STUDIO_PX} cy={STUDIO_PY} rx={STUDIO_PR} ry={STUDIO_PR} fill="#fefefe" stroke="#706858" strokeWidth="2" filter="url(#skPencil)" />
-              <ellipse cx={STUDIO_PX} cy={STUDIO_PY} rx={STUDIO_PR} ry={STUDIO_PR} fill="url(#skPShine)" />
-              <ellipse cx={STUDIO_PX} cy={STUDIO_PY} rx={STUDIO_PR - 28} ry={STUDIO_PR - 28} fill="none" stroke="#d5cfc0" strokeWidth="0.4" strokeDasharray="1.5,5" opacity="0.3" />
-              <ellipse cx={STUDIO_PX} cy={STUDIO_PY} rx={STUDIO_PR - 38} ry={STUDIO_PR - 38} fill="none" stroke="#ccc5b5" strokeWidth="0.3" strokeDasharray="1.5,6" opacity="0.2" />
-              <path d={`M${STUDIO_PX - STUDIO_PR * 0.65},${STUDIO_PY - STUDIO_PR * 0.72} A${STUDIO_PR},${STUDIO_PR} 0 0,1 ${STUDIO_PX + STUDIO_PR * 0.72},${STUDIO_PY - STUDIO_PR * 0.6}`} fill="none" stroke="#fff" strokeWidth="3.5" opacity="0.25" strokeLinecap="round" />
-              <path d={`M${STUDIO_PX - STUDIO_PR * 0.5},${STUDIO_PY - STUDIO_PR * 0.78} A${STUDIO_PR * 0.95},${STUDIO_PR * 0.95} 0 0,1 ${STUDIO_PX + STUDIO_PR * 0.55},${STUDIO_PY - STUDIO_PR * 0.72}`} fill="none" stroke="#fff" strokeWidth="1.5" opacity="0.12" strokeLinecap="round" />
-
-              {/* Components */}
-              {comps.map(c => { const R = SK_RENDERERS[c.shape] || SkDome; return (
-                <SkDrag key={c.id} comp={c} sel={sel === c.id} onSel={(id: number) => { setSel(id); setEdit(id); }} onDrag={drag}>
-                  <R x={c.x} y={c.y} size={c.size} color={c.color} id={c.id} />
-                </SkDrag>
-              ); })}
-
-              {/* Labels */}
-              {comps.map((c, i) => {
-                const lp = STUDIO_LABELS[i % STUDIO_LABELS.length];
-                const ax = lp.a === 'start' ? lp.x + c.name.length * 3 : lp.a === 'end' ? lp.x - c.name.length * 3 : lp.x;
-                return (<g key={`l-${c.id}`}>
-                  <SkArrow fx={ax} fy={lp.y + 4} tx={c.x} ty={c.y} />
-                  <text x={lp.x} y={lp.y} textAnchor={lp.a} filter="url(#skPencil)" style={{ fontFamily: "'Crimson Pro', Georgia, serif", fontSize: '13px', fontStyle: 'italic', fill: '#3a3020' }}>{c.name}</text>
-                </g>);
-              })}
-
-              {/* Title */}
-              <text x={STUDIO_PX} y={660} textAnchor="middle" style={{ fontFamily: 'Georgia, serif', fontSize: '13px', fontWeight: 700, fill: '#2c2418', letterSpacing: '0.08em' }}>{adaptation.title.toUpperCase()}</text>
-              <text x={STUDIO_PX} y={675} textAnchor="middle" style={{ fontFamily: 'Georgia, serif', fontSize: '10px', fill: '#8a7e6b', fontStyle: 'italic' }}>{venueName}</text>
-            </svg>
-          </div>
-
-          {/* Side editor panel (visible when expanded or on desktop) */}
-          {(zoomed || sel !== null) && (
-            <div className={`border-l border-stone-100 bg-stone-50 overflow-y-auto p-3 ${zoomed ? 'w-[260px]' : 'w-[240px] hidden lg:block'}`} style={{ fontSize: '12px' }}>
-              <div className="text-[10px] font-bold tracking-widest uppercase text-stone-400 mb-2">Components ({comps.length})</div>
-              {comps.map(c => (
-                <div key={c.id} onClick={() => { setSel(c.id); setEdit(c.id); }}
-                  className={`p-2 mb-1 rounded cursor-pointer transition-all border ${sel === c.id ? 'border-[#C9A84C] bg-[#C9A84C]/5' : 'border-stone-200 bg-white'}`}>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-semibold text-stone-700 truncate">{c.name}</span>
-                    <button onClick={e => { e.stopPropagation(); rm(c.id); }} className="text-stone-300 hover:text-red-400 text-sm">×</button>
-                  </div>
-                  {edit === c.id && (
-                    <div className="mt-2 space-y-2">
-                      <input value={c.name} onChange={e => upd(c.id, { name: e.target.value })}
-                        className="w-full px-2 py-1 text-[11px] border border-stone-200 rounded bg-white outline-none focus:border-[#C9A84C]" />
-                      <div className="flex flex-wrap gap-1">
-                        {SK_SHAPES.map(s => (
-                          <button key={s} onClick={e => { e.stopPropagation(); upd(c.id, { shape: s }); }}
-                            className={`px-1.5 py-0.5 text-[9px] rounded border capitalize ${c.shape === s ? 'bg-stone-900 text-white border-stone-900' : 'bg-white text-stone-500 border-stone-200'}`}>{s}</button>
-                        ))}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[9px] text-stone-400 font-semibold w-7">SIZE</span>
-                        <input type="range" min={10} max={80} value={c.size} onChange={e => upd(c.id, { size: parseInt(e.target.value) })} className="flex-1 accent-[#C9A84C]" />
-                        <span className="text-[10px] text-stone-500 w-5">{c.size}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[9px] text-stone-400 font-semibold w-7">TINT</span>
-                        <input type="color" value={c.color} onChange={e => upd(c.id, { color: e.target.value })} className="w-6 h-4 border border-stone-200 rounded cursor-pointer" />
-                        <span className="text-[9px] text-stone-400 font-mono">{c.color}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-      {zoomed && <div className="fixed inset-0 bg-black/40 z-40" onClick={() => setZoomed(false)} />}
-    </div>
-  );
-}
-
+// ─── PDF EXPORT ───────────────────────────────────────────────────────────────
 // ─── PDF EXPORT ───────────────────────────────────────────────────────────────
 function downloadAsPDF(result: AdaptationResult, chefName: string, originalTitle: string, venueAccent: string, svgSketch?: string | null) {
   const { menuAnalysis: m, adaptation: a } = result;
@@ -731,7 +317,6 @@ function AdaptationResultPanel({ result, chefName, originalTitle, venueAccent }:
 }) {
   const { menuAnalysis, adaptation: origA } = result;
   const [a, setA] = useState<VenueAdaptation>({ ...origA });
-  const [svgSketch, setSvgSketch] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const setField = (f: string, v: any) => setA(p => ({ ...p, [f]: v }));
   const editedResult = { menuAnalysis, adaptation: a };
@@ -786,14 +371,14 @@ function AdaptationResultPanel({ result, chefName, originalTitle, venueAccent }:
           {/* Action bar */}
           <div className="flex items-center gap-3 flex-wrap mt-4 pt-3 border-t border-stone-100">
             <button
-              onClick={() => downloadAsPDF(editedResult, chefName, originalTitle, venueAccent, svgSketch)}
+              onClick={() => downloadAsPDF(editedResult, chefName, originalTitle, venueAccent)}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wide transition-all active:scale-97 text-white shadow-sm"
               style={{ background: venueAccent }}>
               <Download size={14} /> Download PDF
             </button>
             <div className="text-xs text-stone-400 hidden sm:block">·</div>
             <div className="text-xs text-stone-400 hidden sm:block leading-tight">
-              {svgSketch ? 'Sketch will be embedded in the PDF.' : 'Generate a plating sketch below to embed it in the PDF.'}
+              {editing ? 'Editing mode — changes will be included in PDF.' : 'Your edited recipe will be exported.'}
             </div>
           </div>
         </div>
@@ -921,17 +506,6 @@ function AdaptationResultPanel({ result, chefName, originalTitle, venueAccent }:
               <p className="text-sm text-stone-300 italic leading-relaxed">{a.imagePrompt}</p>
             </div>
           )}
-
-          {/* Plating Sketch */}
-          <div>
-            <div className="text-[10px] font-bold tracking-widest uppercase text-stone-500 mb-3">Plating Diagram</div>
-            <PlatingSketch
-              adaptation={a}
-              venueName={menuAnalysis.venueName}
-              venueAccent={venueAccent}
-              onSvgGenerated={(svg) => setSvgSketch(svg)}
-            />
-          </div>
         </div>
       </div>
     </div>
@@ -1440,19 +1014,6 @@ export default function CreatePage() {
               </button>
             );
           })}
-
-          {/* Plating Studio — standalone interactive tool */}
-          <Link href="/create/plating"
-            className="bg-white rounded-xl border border-gray-200 hover:border-gold-300 p-5 sm:p-6 text-left hover:shadow-lg transition-all duration-200 active:scale-[0.98] group relative">
-            <div className="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-stone-100 text-stone-500">Interactive</div>
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-stone-700 to-stone-900 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform relative icon-motion-ring icon-motion-paint">
-              <span className="icon-inner inline-flex"><Paintbrush size={22} className="text-white" /></span>
-              <span className="icon-orbit-particle" /><span className="icon-orbit-particle" /><span className="icon-orbit-particle" />
-            </div>
-            <h3 className="text-base font-bold text-gray-900 mb-0.5 group-hover:text-gold-700 transition-colors">Plating Studio</h3>
-            <p className="text-xs font-medium text-gold-600 mb-2">Drag · Position · Annotate · Export SVG</p>
-            <p className="text-sm text-gray-500 leading-relaxed">Interactive 3D plating diagram tool. Build dish compositions with domes, quenelles, sauce swooshes, berries, garnishes — drag to position, annotate with labels, export production-ready SVG sketches.</p>
-          </Link>
         </MotionStagger>
         <MotionReveal animation="fade-up" duration={600} delay={600}>
           <div className="mt-8 bg-white border border-gray-200 rounded-xl p-5 sm:p-6 text-center">
