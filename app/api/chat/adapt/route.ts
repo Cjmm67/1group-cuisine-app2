@@ -135,7 +135,7 @@ Instructions: Analyse the menu PDF to extract the venue's culinary identity, the
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 4096,
+        max_tokens: 8192,
         system: ADAPTATION_SYSTEM_PROMPT,
         messages: [
           {
@@ -161,8 +161,9 @@ Instructions: Analyse the menu PDF to extract the venue's culinary identity, the
 
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
-      console.error('Anthropic API error:', response.status, err);
-      return NextResponse.json({ error: 'Failed to generate adaptation. Please try again.' }, { status: 502 });
+      console.error('Anthropic API error:', response.status, JSON.stringify(err));
+      const detail = (err as any)?.error?.message || `API returned ${response.status}`;
+      return NextResponse.json({ error: `Adaptation failed: ${detail}` }, { status: 502 });
     }
 
     const data = await response.json();
