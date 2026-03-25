@@ -11,6 +11,14 @@ import { MOCK_CHEFS, MOCK_RECIPES } from '@/lib/mockData';
 import Link from 'next/link';
 import { MotionReveal, MotionStagger } from '@/components/motion/MotionReveal';
 
+// ─── ERROR BOUNDARY ──────────────────────────────────────────────────────────
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: React.ReactNode }) { super(props); this.state = { hasError: false }; }
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(error: Error) { console.error('ErrorBoundary caught:', error); }
+  render() { if (this.state.hasError) return null; return this.props.children; }
+}
+
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 interface Message { role: 'user' | 'assistant'; content: string; fileName?: string; }
 interface AttachedFile { name: string; type: 'pdf' | 'image' | 'text'; textContent?: string; base64?: string; mediaType?: string; }
@@ -403,59 +411,62 @@ function EmbeddedPlatingStudio({ components, title, venueName, venueAccent }: {
 
   const PX = 300, PY = 260, PR = 180;
 
+  const safeComps = useMemo(() => (components || []).filter(c => c && c.name && typeof c.name === 'string'), [components]);
+
   const mapped = useMemo(() => {
-    return components.map((c, i) => {
+    if (safeComps.length === 0) return [];
+    return safeComps.map((c, i) => {
       const type = _guessType(c.name);
       const shape = _guessShape(type);
-      const angle = -Math.PI * 0.5 + (i / Math.max(components.length - 1, 1)) * Math.PI * 1.6;
+      const angle = -Math.PI * 0.5 + (i / Math.max(safeComps.length - 1, 1)) * Math.PI * 1.6;
       const dist = PR * (0.3 + (i % 3) * 0.15);
-      const cx = PX + Math.cos(angle) * dist * (i === 0 ? 0.15 : 0.8);
-      const cy = PY + Math.sin(angle) * dist * 0.6;
-      return { id: `ec-${i}`, name: c.name, type, shape, cx, cy };
+      return { id: `ec-${i}`, name: c.name, type, shape, cx: PX + Math.cos(angle) * dist * (i === 0 ? 0.15 : 0.8), cy: PY + Math.sin(angle) * dist * 0.6 };
     });
-  }, [components]);
+  }, [safeComps]);
 
   const shapes = useMemo(() => {
     return mapped.map(c => {
       const rng = _createRng(_hashStr(c.id + c.name) + 42);
       const paths: { d: string; type: string }[] = [];
       const extras: string[] = [];
-      if (c.shape === 'mound') {
-        const w = 65 + (c.id === 'ec-0' ? 20 : 0), h = 32 + (c.id === 'ec-0' ? 10 : 0);
-        paths.push({ d: _moundShape(c.cx, c.cy, w, h, rng), type: c.type });
-        for (let i = 1; i <= 3; i++) {
-          const yOff = c.cy - h + i * (h * 0.25), xs = w * (1 - i * 0.22) / 2;
-          extras.push(`M ${(c.cx - xs).toFixed(1)} ${yOff.toFixed(1)} Q ${c.cx.toFixed(1)} ${(yOff - 6).toFixed(1)} ${(c.cx + xs).toFixed(1)} ${yOff.toFixed(1)}`);
+      try {
+        if (c.shape === 'mound') {
+          const w = 65 + (c.id === 'ec-0' ? 20 : 0), h = 32 + (c.id === 'ec-0' ? 10 : 0);
+          paths.push({ d: _moundShape(c.cx, c.cy, w, h, rng), type: c.type });
+          for (let j = 1; j <= 3; j++) {
+            const yOff = c.cy - h + j * (h * 0.25), xs = w * (1 - j * 0.22) / 2;
+            extras.push(`M ${(c.cx - xs).toFixed(1)} ${yOff.toFixed(1)} Q ${c.cx.toFixed(1)} ${(yOff - 6).toFixed(1)} ${(c.cx + xs).toFixed(1)} ${yOff.toFixed(1)}`);
+          }
+        } else if (c.shape === 'quenelle') {
+          paths.push({ d: _quenelle(c.cx, c.cy, 45, 22, rng), type: c.type });
+        } else if (c.shape === 'swoosh') {
+          paths.push({ d: _swoosh(c.cx - 35, c.cy, c.cx + 35, c.cy + 8, 14, 11, rng), type: c.type });
+        } else if (c.shape === 'dots') {
+          for (let j = 0; j < 5; j++) {
+            const ang = (j / 5) * Math.PI * 0.8 + Math.PI * 0.6, dd = 35 * (0.3 + (j / 5) * 0.7);
+            paths.push({ d: _wobblyCircle(c.cx + Math.cos(ang) * dd, c.cy + Math.sin(ang) * dd * 0.5, 6 + (rng() - 0.5) * 2, rng), type: c.type });
+          }
+        } else if (c.shape === 'shard') {
+          const s = 18;
+          paths.push({ d: `M ${_jitter(c.cx - s * 0.3, 2, rng).toFixed(1)} ${(c.cy + s * 0.4).toFixed(1)} L ${_jitter(c.cx - s * 0.5, 2, rng).toFixed(1)} ${_jitter(c.cy - s * 0.6, 2, rng).toFixed(1)} L ${_jitter(c.cx + s * 0.1, 2, rng).toFixed(1)} ${_jitter(c.cy - s * 0.9, 2, rng).toFixed(1)} L ${_jitter(c.cx + s * 0.5, 2, rng).toFixed(1)} ${_jitter(c.cy - s * 0.1, 2, rng).toFixed(1)} L ${_jitter(c.cx + s * 0.3, 2, rng).toFixed(1)} ${(c.cy + s * 0.3).toFixed(1)} Z`, type: c.type });
+        } else if (c.shape === 'scatter') {
+          for (let j = 0; j < 5; j++) {
+            paths.push({ d: _wobblyCircle(c.cx + (rng() - 0.5) * 28, c.cy + (rng() - 0.5) * 18, 3 + rng() * 2, rng), type: c.type });
+          }
         }
-      } else if (c.shape === 'quenelle') {
-        paths.push({ d: _quenelle(c.cx, c.cy, 45, 22, rng), type: c.type });
-      } else if (c.shape === 'swoosh') {
-        paths.push({ d: _swoosh(c.cx - 35, c.cy, c.cx + 35, c.cy + 8, 14, 11, rng), type: c.type });
-      } else if (c.shape === 'dots') {
-        for (let i = 0; i < 5; i++) {
-          const a = (i / 5) * Math.PI * 0.8 + Math.PI * 0.6, dist = 35 * (0.3 + (i / 5) * 0.7);
-          paths.push({ d: _wobblyCircle(c.cx + Math.cos(a) * dist, c.cy + Math.sin(a) * dist * 0.5, 6 + (rng() - 0.5) * 2, rng), type: c.type });
-        }
-      } else if (c.shape === 'shard') {
-        const s = 18;
-        paths.push({ d: `M ${_jitter(c.cx - s * 0.3, 2, rng).toFixed(1)} ${(c.cy + s * 0.4).toFixed(1)} L ${_jitter(c.cx - s * 0.5, 2, rng).toFixed(1)} ${_jitter(c.cy - s * 0.6, 2, rng).toFixed(1)} L ${_jitter(c.cx + s * 0.1, 2, rng).toFixed(1)} ${_jitter(c.cy - s * 0.9, 2, rng).toFixed(1)} L ${_jitter(c.cx + s * 0.5, 2, rng).toFixed(1)} ${_jitter(c.cy - s * 0.1, 2, rng).toFixed(1)} L ${_jitter(c.cx + s * 0.3, 2, rng).toFixed(1)} ${(c.cy + s * 0.3).toFixed(1)} Z`, type: c.type });
-      } else if (c.shape === 'scatter') {
-        for (let i = 0; i < 5; i++) {
-          paths.push({ d: _wobblyCircle(c.cx + (rng() - 0.5) * 28, c.cy + (rng() - 0.5) * 18, 3 + rng() * 2, rng), type: c.type });
-        }
-      }
+      } catch (e) { /* skip broken component */ }
       return { id: c.id, paths, extras };
     });
   }, [mapped]);
 
-  // Label positions
-  const leftComps = mapped.filter(c => c.cx <= PX);
-  const rightComps = mapped.filter(c => c.cx > PX);
-  leftComps.sort((a, b) => a.cy - b.cy);
-  rightComps.sort((a, b) => a.cy - b.cy);
+  const leftComps = useMemo(() => mapped.filter(c => c.cx <= PX).sort((a, b) => a.cy - b.cy), [mapped]);
+  const rightComps = useMemo(() => mapped.filter(c => c.cx > PX).sort((a, b) => a.cy - b.cy), [mapped]);
 
   const getFill = (type: string) => colourMode ? (_TYPE_COLORS[type] || '#ccc') : '#f5f5f0';
   const getOp = (type: string) => colourMode ? 0.6 : (type === 'glaze' || type === 'sugar_work' ? 0.15 : 0.3);
+
+  // Early return after all hooks
+  if (mapped.length === 0) return null;
 
   const exportSvg = () => {
     const el = document.getElementById('embed-plating-svg');
@@ -754,14 +765,16 @@ function AdaptationResultPanel({ result, chefName, originalTitle, venueAccent }:
           </div>
 
           {/* Embedded Plating Studio */}
-          {(a.components?.length > 0) && (
-            <EmbeddedPlatingStudio
-              components={a.components.map(c => ({ name: c.name }))}
-              title={a.title}
-              venueName={menuAnalysis.venueName}
-              venueAccent={venueAccent}
-            />
-          )}
+          {(a.components && Array.isArray(a.components) && a.components.length > 0) ? (
+            <ErrorBoundary>
+              <EmbeddedPlatingStudio
+                components={a.components.map(c => ({ name: c.name || 'Component' }))}
+                title={a.title || 'Untitled'}
+                venueName={menuAnalysis.venueName || ''}
+                venueAccent={venueAccent}
+              />
+            </ErrorBoundary>
+          ) : null}
 
           {/* Image Prompt */}
           {a.imagePrompt && (
