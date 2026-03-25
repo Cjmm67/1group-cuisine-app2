@@ -313,224 +313,194 @@ window.addEventListener('load', async function() {
 }
 
 
-// ─── ROUGH.JS PLATING SKETCH (embedded in adaptation results) ────────────────
+// ─── AI PLATING SKETCH (Claude API bespoke SVG) ─────────────────────────────
 
-const SKETCH_CX = 300, SKETCH_CY = 240, SKETCH_R = 170;
-
-const SHAPE_KEYWORDS: Record<string, string> = {
-  sauce: 'sauce', jus: 'sauce', reduction: 'sauce', emulsion: 'sauce', coulis: 'sauce', gravy: 'sauce', broth: 'sauce',
-  puree: 'quenelle', purée: 'quenelle', mousse: 'quenelle', cream: 'quenelle', sorbet: 'quenelle', foam: 'quenelle', ice: 'quenelle',
-  berry: 'berries', caviar: 'berries', pearl: 'berries', gel: 'berries', currant: 'berries', olive: 'berries', dot: 'berries', lime: 'berries',
-  crisp: 'crisp', tuile: 'crisp', shard: 'crisp', chip: 'crisp', wafer: 'crisp', cracker: 'crisp',
-  leaf: 'leaf', herb: 'leaf', micro: 'leaf', flower: 'leaf', shiso: 'leaf', basil: 'leaf', cress: 'leaf',
-  crumble: 'crumble', crumb: 'crumble', streusel: 'crumble', soil: 'crumble', granola: 'crumble', dust: 'crumble',
-};
-
-function guessShape(name: string): string {
-  const lower = name.toLowerCase();
-  for (const [kw, shape] of Object.entries(SHAPE_KEYWORDS)) {
-    if (lower.includes(kw)) return shape;
-  }
-  return 'dome';
-}
-
-function guessColor(name: string): string {
-  const n = name.toLowerCase();
-  if (/choc|cocoa|truffle/.test(n)) return '#5a3a2a';
-  if (/berry|currant|raspberry|strawberry/.test(n)) return '#a03040';
-  if (/herb|leaf|basil|shiso|micro|pea/.test(n)) return '#4a7a5a';
-  if (/sauce|jus|wine|reduction/.test(n)) return '#6a2a3a';
-  if (/cream|cauliflower|puree|purée|parsnip|celeriac/.test(n)) return '#e0d8c0';
-  if (/citrus|lemon|yuzu|lime|finger/.test(n)) return '#b8c44a';
-  if (/carrot|pumpkin|sweet potato/.test(n)) return '#c47a30';
-  if (/scallop|fish|sea|prawn|lobster/.test(n)) return '#d4a574';
-  if (/beef|wagyu|lamb|duck|pork/.test(n)) return '#8a4a3a';
-  if (/gold|butter|oil|saffron/.test(n)) return '#c4a050';
-  if (/crumble|crumb|bread|soil/.test(n)) return '#b8a070';
-  return '#b0a090';
-}
-
-function RoughPlatingSketch({ components, title, venueName, venueAccent }: {
+function PlatingSketchPanel({ components, assembly, title, venueName, venueAccent, imagePrompt, onImagePromptChange }: {
   components: { name: string }[];
+  assembly: string[];
   title: string;
   venueName: string;
   venueAccent: string;
+  imagePrompt: string;
+  onImagePromptChange: (p: string) => void;
 }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [seed, setSeed] = useState(42);
-  const [roughMod, setRoughMod] = useState<any>(null);
+  const [svg, setSvg] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [finalImage, setFinalImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    import('roughjs').then(mod => setRoughMod(mod.default || mod));
-  }, []);
+  const generate = async () => {
+    setLoading(true); setError(null);
+    try {
+      const res = await fetch('/api/chat/sketch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title, venueName, venueAccent,
+          imagePrompt: `${title}. Components: ${components.map(c => c.name).join(', ')}. Assembly: ${assembly.join('. ')}`,
+          components, assembly,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Sketch generation failed');
+      setSvg(data.svg);
+    } catch (err: any) {
+      setError(err.message);
+    } finally { setLoading(false); }
+  };
 
-  const draw = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !roughMod) return;
+  const downloadSvg = () => {
+    if (!svg) return;
+    const blob = new Blob([svg], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `${title.toLowerCase().replace(/\s+/g, '-')}-plating.svg`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadPng = () => {
+    if (!svg) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = 1360; canvas.height = 1200;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    const img = new Image();
+    img.onload = () => {
+      ctx.fillStyle = '#FAF8F4';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const url = canvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = url; a.download = `${title.toLowerCase().replace(/\s+/g, '-')}-plating.png`; a.click();
+    };
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+  };
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#FAF8F4';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Paper grain
-    ctx.save();
-    ctx.globalAlpha = 0.025;
-    for (let i = 0; i < 2000; i++) {
-      ctx.fillStyle = Math.random() > 0.5 ? '#000' : '#8a7a6a';
-      ctx.fillRect(Math.random() * 600, Math.random() * 500, Math.random() * 1.2, Math.random() * 1.2);
-    }
-    ctx.restore();
-
-    const rc = roughMod.canvas(canvas);
-
-    // Plate shadows
-    rc.ellipse(SKETCH_CX + 3, SKETCH_CY + 6, SKETCH_R * 2 + 24, SKETCH_R * 2 + 24, {
-      fill: 'rgba(0,0,0,0.04)', fillStyle: 'solid', stroke: 'none', roughness: 0.3,
-    });
-    rc.ellipse(SKETCH_CX + 1, SKETCH_CY + 3, SKETCH_R * 2 + 14, SKETCH_R * 2 + 14, {
-      fill: 'rgba(0,0,0,0.03)', fillStyle: 'solid', stroke: 'none', roughness: 0.3,
-    });
-    // Outer rim
-    rc.ellipse(SKETCH_CX, SKETCH_CY, SKETCH_R * 2 + 10, SKETCH_R * 2 + 10, {
-      stroke: '#b0a898', strokeWidth: 0.5, roughness: 0.4,
-    });
-    // Main plate
-    rc.ellipse(SKETCH_CX, SKETCH_CY, SKETCH_R * 2, SKETCH_R * 2, {
-      stroke: '#706858', strokeWidth: 1.6, roughness: 0.6, fill: '#fefefe', fillStyle: 'solid',
-    });
-    // Inner rim
-    rc.ellipse(SKETCH_CX, SKETCH_CY, (SKETCH_R - 25) * 2, (SKETCH_R - 25) * 2, {
-      stroke: '#d5cfc0', strokeWidth: 0.4, roughness: 0.5, strokeLineDash: [3, 7],
-    });
-
-    // Map components to positions around plate
-    const mapped = components.map((c, i) => {
-      const angle = -Math.PI * 0.4 + (i / Math.max(components.length - 1, 1)) * Math.PI * 1.4;
-      const dist = SKETCH_R * (0.25 + (i % 3) * 0.18);
-      return {
-        ...c,
-        shape: guessShape(c.name),
-        color: guessColor(c.name),
-        x: SKETCH_CX + Math.cos(angle) * dist * (0.7 + Math.sin(seed + i) * 0.3),
-        y: SKETCH_CY + Math.sin(angle) * dist * 0.7,
-        size: 22 + (i === 0 ? 15 : 0),
-      };
-    });
-
-    // Draw components
-    mapped.sort((a, b) => a.y - b.y).forEach((c, idx) => {
-      const s = c.size;
-      const sd = seed + idx * 7;
-
-      if (c.shape === 'dome') {
-        rc.ellipse(c.x + 1, c.y + s * 0.4, s * 1.6, s * 0.35, { fill: 'rgba(0,0,0,0.05)', fillStyle: 'solid', stroke: 'none', roughness: 0.3, seed: sd });
-        rc.ellipse(c.x, c.y + s * 0.15, s * 1.5, s * 0.35, { fill: c.color, fillStyle: 'cross-hatch', fillWeight: 0.3, hachureGap: 3, stroke: '#555', strokeWidth: 1, roughness: 0.7, seed: sd });
-        rc.path(`M${c.x - s * 0.6} ${c.y + s * 0.1} C${c.x - s * 0.6} ${c.y - s * 0.65}, ${c.x + s * 0.6} ${c.y - s * 0.65}, ${c.x + s * 0.6} ${c.y + s * 0.1}`, {
-          fill: c.color, fillStyle: 'hachure', fillWeight: 0.4, hachureAngle: -40, hachureGap: 3, stroke: '#444', strokeWidth: 1.3, roughness: 0.6, seed: sd,
-        });
-      } else if (c.shape === 'sauce') {
-        rc.ellipse(c.x, c.y, s * 2.4, s * 1.4, { fill: c.color, fillStyle: 'solid', stroke: 'none', roughness: 1.4, seed: sd });
-        rc.ellipse(c.x, c.y, s * 1.8, s * 1.1, { fill: c.color, fillStyle: 'hachure', fillWeight: 0.3, hachureAngle: 30, hachureGap: 2.5, stroke: '#666', strokeWidth: 0.7, roughness: 1.1, seed: sd });
-      } else if (c.shape === 'quenelle') {
-        rc.ellipse(c.x + 1, c.y + s * 0.35, s * 2, s * 0.35, { fill: 'rgba(0,0,0,0.04)', fillStyle: 'solid', stroke: 'none', roughness: 0.3, seed: sd });
-        rc.path(`M${c.x - s * 0.9} ${c.y + s * 0.12} Q${c.x - s * 0.7} ${c.y - s * 0.55}, ${c.x + s * 0.15} ${c.y - s * 0.5} Q${c.x + s * 0.9} ${c.y - s * 0.4}, ${c.x + s * 0.9} ${c.y + s * 0.08} Q${c.x + s * 0.5} ${c.y + s * 0.35}, ${c.x - s * 0.2} ${c.y + s * 0.28} Q${c.x - s * 0.6} ${c.y + s * 0.35}, ${c.x - s * 0.9} ${c.y + s * 0.12} Z`, {
-          fill: c.color, fillStyle: 'hachure', fillWeight: 0.35, hachureAngle: 15, hachureGap: 2.5, stroke: '#555', strokeWidth: 1.1, roughness: 0.5, seed: sd,
-        });
-      } else if (c.shape === 'berries') {
-        const pos = [{ dx: -s * 0.4, dy: 0 }, { dx: s * 0.1, dy: -s * 0.3 }, { dx: s * 0.5, dy: s * 0.05 }, { dx: 0, dy: s * 0.3 }, { dx: -s * 0.2, dy: -s * 0.4 }];
-        pos.forEach((p, pi) => {
-          rc.circle(c.x + p.dx, c.y + p.dy, s * 0.5, { fill: c.color, fillStyle: 'hachure', fillWeight: 0.25, hachureGap: 1.8, hachureAngle: 45 + pi * 20, stroke: '#555', strokeWidth: 0.7, roughness: 0.5, seed: sd + pi });
-        });
-      } else if (c.shape === 'crisp') {
-        rc.path(`M${c.x - s * 0.35} ${c.y + s * 0.3} L${c.x - s * 0.5} ${c.y - s * 0.6} L${c.x - s * 0.05} ${c.y - s * 0.85} L${c.x + s * 0.4} ${c.y - s * 0.45} L${c.x + s * 0.3} ${c.y + s * 0.15} Z`, {
-          fill: c.color, fillStyle: 'cross-hatch', fillWeight: 0.25, hachureGap: 3, hachureAngle: 55, stroke: '#555', strokeWidth: 0.9, roughness: 0.7, seed: sd,
-        });
-      } else if (c.shape === 'leaf') {
-        rc.path(`M${c.x} ${c.y - s * 0.9} C${c.x + s * 0.6} ${c.y - s * 0.4}, ${c.x + s * 0.55} ${c.y + s * 0.35}, ${c.x} ${c.y + s * 0.9} C${c.x - s * 0.55} ${c.y + s * 0.35}, ${c.x - s * 0.6} ${c.y - s * 0.4}, ${c.x} ${c.y - s * 0.9} Z`, {
-          fill: c.color, fillStyle: 'hachure', fillWeight: 0.25, hachureAngle: 70, hachureGap: 2, stroke: '#4a6a4a', strokeWidth: 0.8, roughness: 0.6, seed: sd,
-        });
-        rc.line(c.x, c.y - s * 0.7, c.x, c.y + s * 0.7, { stroke: '#3a5a3a', strokeWidth: 0.5, roughness: 0.4, seed: sd });
-      } else if (c.shape === 'crumble') {
-        for (let ci = 0; ci < 7; ci++) {
-          const dx = (Math.sin(sd + ci * 5.3) * 0.5) * s * 1.2;
-          const dy = (Math.cos(sd + ci * 3.7) * 0.5) * s * 0.6;
-          const ps = s * (0.12 + Math.abs(Math.sin(sd + ci * 2.1)) * 0.15);
-          rc.rectangle(c.x + dx - ps, c.y + dy - ps * 0.5, ps * 2, ps, { fill: c.color, fillStyle: 'hachure', fillWeight: 0.25, hachureGap: 2, stroke: '#888', strokeWidth: 0.5, roughness: 1, seed: sd + ci });
-        }
-      }
-    });
-
-    // Labels
-    const labelSlots = [
-      { x: 570, y: 110, a: 'left' }, { x: 570, y: 170, a: 'left' }, { x: 570, y: 230, a: 'left' },
-      { x: 570, y: 290, a: 'left' }, { x: 570, y: 350, a: 'left' },
-      { x: 30, y: 130, a: 'right' }, { x: 30, y: 200, a: 'right' }, { x: 30, y: 270, a: 'right' },
-      { x: 30, y: 340, a: 'right' }, { x: 30, y: 410, a: 'right' },
-    ];
-    ctx.save();
-    ctx.font = 'italic 11px Georgia, serif';
-    mapped.forEach((c, i) => {
-      const sl = labelSlots[i % labelSlots.length];
-      rc.line(c.x, c.y, sl.x + (sl.a === 'left' ? -8 : 8), sl.y, { stroke: '#888', strokeWidth: 0.45, roughness: 0.3, seed: seed + 100 + i });
-      rc.circle(c.x, c.y, 3, { fill: '#666', fillStyle: 'solid', stroke: 'none', roughness: 0.2, seed: seed + 200 + i });
-      ctx.fillStyle = '#3a3020';
-      ctx.textAlign = sl.a === 'left' ? 'left' : 'right';
-      ctx.fillText(c.name, sl.x, sl.y + 3);
-    });
-    ctx.restore();
-
-    // Title
-    ctx.save();
-    ctx.textAlign = 'center';
-    ctx.font = 'bold 13px Georgia, serif';
-    ctx.fillStyle = '#2c2418';
-    ctx.fillText(title.toUpperCase(), SKETCH_CX, 460);
-    if (venueName) {
-      ctx.font = 'italic 10px Georgia, serif';
-      ctx.fillStyle = '#8a7e6b';
-      ctx.fillText(venueName, SKETCH_CX, 476);
-    }
-    ctx.strokeStyle = venueAccent;
-    ctx.lineWidth = 0.5;
-    ctx.globalAlpha = 0.4;
-    ctx.beginPath(); ctx.moveTo(SKETCH_CX - 50, 482); ctx.lineTo(SKETCH_CX + 50, 482); ctx.stroke();
-    ctx.restore();
-  }, [components, title, venueName, venueAccent, seed, roughMod]);
-
-  useEffect(() => { draw(); }, [draw]);
-
-  const exportPng = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const url = canvas.toDataURL('image/png');
-    const a = document.createElement('a');
-    a.href = url; a.download = `${title.toLowerCase().replace(/\s+/g, '-')}-plating.png`; a.click();
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { alert('Please upload an image file.'); return; }
+    if (file.size > 10 * 1024 * 1024) { alert('Image too large — max 10MB.'); return; }
+    const reader = new FileReader();
+    reader.onload = () => setFinalImage(reader.result as string);
+    reader.readAsDataURL(file);
   };
 
   return (
-    <div className="bg-[#FAF8F4] rounded-lg border border-stone-200 overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-stone-100 bg-white">
-        <div className="flex items-center gap-2">
-          <PenTool size={13} style={{ color: venueAccent }} />
-          <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: venueAccent }}>Plating Sketch</span>
-          <span className="text-[10px] text-stone-400 italic">rough.js</span>
+    <div className="space-y-4">
+      {/* Plating Sketch Section */}
+      <div className="rounded-lg border border-stone-200 overflow-hidden">
+        <div className="flex items-center justify-between px-4 py-2.5 bg-stone-50 border-b border-stone-100">
+          <div className="flex items-center gap-2">
+            <PenTool size={13} style={{ color: venueAccent }} />
+            <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: venueAccent }}>Plating Sketch</span>
+            <span className="text-[10px] text-stone-400 italic">AI-generated</span>
+          </div>
+          {svg && (
+            <div className="flex items-center gap-2">
+              <button onClick={generate} className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-semibold rounded border border-stone-200 text-stone-500 hover:border-stone-400 transition-all">
+                <RefreshCw size={10} /> Redraw
+              </button>
+              <button onClick={downloadSvg} className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-bold uppercase tracking-wide rounded border text-stone-600 border-stone-200 hover:border-stone-400 transition-all">
+                <Download size={10} /> SVG
+              </button>
+              <button onClick={downloadPng} className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-bold uppercase tracking-wide rounded transition-all"
+                style={{ background: `${venueAccent}15`, color: venueAccent, border: `1px solid ${venueAccent}40` }}>
+                <Download size={10} /> PNG
+              </button>
+            </div>
+          )}
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={() => setSeed(Math.floor(Math.random() * 10000))}
-            className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-semibold rounded border border-stone-200 text-stone-500 hover:border-stone-400 transition-all">
-            <RefreshCw size={10} /> Redraw
-          </button>
-          <button onClick={exportPng}
-            className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-bold uppercase tracking-wide rounded transition-all"
-            style={{ background: `${venueAccent}15`, color: venueAccent, border: `1px solid ${venueAccent}40` }}>
-            <Download size={10} /> PNG
-          </button>
-        </div>
+
+        {!svg && !loading && (
+          <div className="p-8 text-center bg-[#FAF8F4]">
+            <p className="text-sm text-stone-500 mb-3">Generate a bespoke plating diagram for this dish</p>
+            <button onClick={generate}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wide text-white transition-all"
+              style={{ background: venueAccent }}>
+              <Sparkles size={14} /> Generate Plating Sketch
+            </button>
+          </div>
+        )}
+
+        {loading && (
+          <div className="p-12 text-center bg-[#FAF8F4]">
+            <Loader2 size={24} className="animate-spin mx-auto mb-3 text-stone-400" />
+            <p className="text-sm font-semibold text-stone-600">Claude is drawing your dish...</p>
+            <p className="text-xs text-stone-400 mt-1">Composing organic shapes, wash layers, and annotations</p>
+          </div>
+        )}
+
+        {error && (
+          <div className="p-6 text-center bg-red-50">
+            <p className="text-sm text-red-600 mb-2">{error}</p>
+            <button onClick={generate} className="text-xs font-bold text-red-500 hover:text-red-700 uppercase tracking-wide">Try Again</button>
+          </div>
+        )}
+
+        {svg && !loading && (
+          <div className="bg-[#FAF8F4] p-4" dangerouslySetInnerHTML={{ __html: svg }} style={{ maxWidth: '100%' }} />
+        )}
       </div>
-      <canvas ref={canvasRef} width={600} height={500}
-        style={{ width: '100%', height: 'auto', display: 'block' }} />
+
+      {/* Reference Image Prompt — editable, synced with sketch */}
+      <div className="bg-stone-900 rounded-lg p-4">
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-[10px] font-bold tracking-widest uppercase text-[#C9A84C]">Reference Image Prompt</div>
+          <div className="flex items-center gap-2">
+            <CopyButton text={imagePrompt} label="Copy prompt" />
+            {svg && (
+              <span className="text-[9px] text-stone-500 italic">Download sketch + paste prompt into Midjourney</span>
+            )}
+          </div>
+        </div>
+        <textarea
+          value={imagePrompt}
+          onChange={e => onImagePromptChange(e.target.value)}
+          rows={4}
+          className="w-full text-sm text-stone-300 italic leading-relaxed bg-stone-800 border border-stone-700 rounded px-3 py-2 outline-none focus:border-[#C9A84C] resize-y"
+        />
+      </div>
+
+      {/* Upload Final Image (from Midjourney etc) */}
+      <div className="rounded-lg border border-dashed border-stone-300 overflow-hidden">
+        <div className="px-4 py-2.5 bg-stone-50 border-b border-stone-100">
+          <div className="flex items-center gap-2">
+            <ImageIcon size={13} style={{ color: venueAccent }} />
+            <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: venueAccent }}>Final Dish Image</span>
+            <span className="text-[10px] text-stone-400 italic">Upload from Midjourney / Ideogram / DALL-E</span>
+          </div>
+        </div>
+
+        {!finalImage ? (
+          <div className="p-6 text-center bg-white">
+            <p className="text-xs text-stone-400 mb-3 leading-relaxed">
+              Download the sketch above, upload it to Midjourney with the prompt, then upload the final image here to include it in your PDF.
+            </p>
+            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+            <button onClick={() => fileInputRef.current?.click()}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide border border-stone-300 text-stone-600 hover:border-stone-500 transition-all">
+              <Upload size={13} /> Upload Final Image
+            </button>
+          </div>
+        ) : (
+          <div className="bg-white p-4">
+            <div className="relative">
+              <img src={finalImage} alt="Final dish" className="w-full rounded-lg border border-stone-200" />
+              <button onClick={() => setFinalImage(null)}
+                className="absolute top-2 right-2 p-1.5 rounded-full bg-white/90 border border-stone-200 text-stone-500 hover:text-red-500 transition-colors">
+                <X size={14} />
+              </button>
+            </div>
+            <div className="flex items-center gap-2 mt-3">
+              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+              <button onClick={() => fileInputRef.current?.click()}
+                className="text-[10px] font-semibold text-stone-500 hover:text-stone-700 uppercase tracking-wide">Replace Image</button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -719,25 +689,17 @@ function AdaptationResultPanel({ result, chefName, originalTitle, venueAccent }:
             </div>
           </div>
 
-          {/* Plating Sketch — rough.js */}
+          {/* Plating Sketch + Image Prompt + Final Image Upload */}
           {(a.components?.length > 0) && (
-            <RoughPlatingSketch
+            <PlatingSketchPanel
               components={a.components.map(c => ({ name: c.name }))}
+              assembly={a.assembly || []}
               title={a.title}
               venueName={menuAnalysis.venueName}
               venueAccent={venueAccent}
+              imagePrompt={a.imagePrompt || ''}
+              onImagePromptChange={(p: string) => setField('imagePrompt', p)}
             />
-          )}
-
-          {/* Image Prompt */}
-          {a.imagePrompt && (
-            <div className="bg-stone-900 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-[10px] font-bold tracking-widest uppercase text-[#C9A84C]">Reference Image Prompt</div>
-                <CopyButton text={a.imagePrompt} label="Copy prompt" />
-              </div>
-              <p className="text-sm text-stone-300 italic leading-relaxed">{a.imagePrompt}</p>
-            </div>
           )}
         </div>
       </div>
