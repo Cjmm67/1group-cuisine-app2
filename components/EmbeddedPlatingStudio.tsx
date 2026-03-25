@@ -384,12 +384,447 @@ function DotsShape({ x, y, size, color, id }: RProps) {
   );
 }
 
+/* ═══════════════════════════════════════════
+   FOOD-SPECIFIC 3D RENDERERS
+   ═══════════════════════════════════════════ */
+
+function FishFillet({ x, y, size, color, id }: RProps) {
+  const w = size * 3.2, h = size * 1.6;
+  const baseY = y + h * 0.1;
+  return (
+    <g>
+      <ellipse cx={x + 3} cy={baseY + h * 0.35} rx={w * 0.48} ry={h * 0.14} fill="#000" opacity="0.07" />
+      {/* Main fillet body — tapered left to right */}
+      <path d={`M${x - w * 0.48},${baseY + h * 0.08}
+        C${x - w * 0.45},${baseY - h * 0.35} ${x - w * 0.15},${baseY - h * 0.48} ${x + w * 0.1},${baseY - h * 0.45}
+        C${x + w * 0.35},${baseY - h * 0.4} ${x + w * 0.48},${baseY - h * 0.2} ${x + w * 0.5},${baseY + h * 0.05}
+        C${x + w * 0.48},${baseY + h * 0.25} ${x + w * 0.3},${baseY + h * 0.32} ${x + w * 0.05},${baseY + h * 0.3}
+        C${x - w * 0.2},${baseY + h * 0.28} ${x - w * 0.45},${baseY + h * 0.2} ${x - w * 0.48},${baseY + h * 0.08} Z`}
+        fill={`url(#fish-g-${id})`} stroke="#555" strokeWidth="1.2" />
+      {/* Skin scoring lines */}
+      {[0.15, 0.3, 0.45, 0.6, 0.75].map((t, i) => {
+        const lx = x - w * 0.35 + t * w * 0.7;
+        return (
+          <line key={i} x1={lx} y1={baseY - h * 0.32 + t * h * 0.08}
+            x2={lx + w * 0.04} y2={baseY + h * 0.2 - t * h * 0.05}
+            stroke="#999" strokeWidth="0.5" opacity={0.25 + t * 0.1} strokeDasharray="3,3" />
+        );
+      })}
+      {/* Sear crust band along top edge */}
+      <path d={`M${x - w * 0.4},${baseY - h * 0.25}
+        C${x - w * 0.15},${baseY - h * 0.42} ${x + w * 0.2},${baseY - h * 0.4} ${x + w * 0.45},${baseY - h * 0.15}`}
+        fill="none" stroke="#b8956a" strokeWidth="2.5" opacity="0.2" strokeLinecap="round" />
+      {/* Centre line — spine */}
+      <path d={`M${x - w * 0.38},${baseY - h * 0.05}
+        C${x - w * 0.1},${baseY - h * 0.12} ${x + w * 0.15},${baseY - h * 0.1} ${x + w * 0.42},${baseY + h * 0.02}`}
+        fill="none" stroke="#aaa" strokeWidth="0.5" opacity="0.3" strokeDasharray="6,4" />
+      {/* Highlight */}
+      <path d={`M${x - w * 0.2},${baseY - h * 0.35}
+        C${x},${baseY - h * 0.42} ${x + w * 0.2},${baseY - h * 0.35} ${x + w * 0.35},${baseY - h * 0.2}`}
+        fill="none" stroke="#fff" strokeWidth="2.5" opacity="0.4" strokeLinecap="round" />
+      {/* Left-side pencil hatching */}
+      {[0, 1, 2, 3, 4].map(i => (
+        <line key={`h-${i}`} x1={x - w * 0.42 + i * 3} y1={baseY - h * 0.15 + i * 3}
+          x2={x - w * 0.38 + i * 3} y2={baseY + h * 0.18 + i * 2}
+          stroke="#888" strokeWidth="0.3" opacity="0.12" />
+      ))}
+      <defs>
+        <radialGradient id={`fish-g-${id}`} cx="38%" cy="25%" r="65%">
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.65" />
+          <stop offset="40%" stopColor={color} stopOpacity="0.2" />
+          <stop offset="75%" stopColor={color} stopOpacity="0.12" />
+          <stop offset="100%" stopColor="#888" stopOpacity="0.1" />
+        </radialGradient>
+      </defs>
+    </g>
+  );
+}
+
+function SearScallop({ x, y, size, color, id }: RProps) {
+  const r = size * 1.1;
+  const baseY = y + r * 0.08;
+  return (
+    <g>
+      <ellipse cx={x + 2} cy={baseY + r * 0.55} rx={r * 0.9} ry={r * 0.22} fill="#000" opacity="0.07" />
+      {/* Scallop cylinder — side visible */}
+      <path d={`M${x - r},${baseY + r * 0.15}
+        L${x - r},${baseY - r * 0.15}
+        A${r},${r * 0.3} 0 0,1 ${x + r},${baseY - r * 0.15}
+        L${x + r},${baseY + r * 0.15}
+        A${r},${r * 0.3} 0 0,1 ${x - r},${baseY + r * 0.15} Z`}
+        fill={`url(#scal-side-${id})`} stroke="#666" strokeWidth="0.8" />
+      {/* Top seared face — golden ellipse */}
+      <ellipse cx={x} cy={baseY - r * 0.15} rx={r} ry={r * 0.3}
+        fill={`url(#scal-top-${id})`} stroke="#555" strokeWidth="1.1" />
+      {/* Sear crust marks — golden brown arcs */}
+      {[-0.4, -0.15, 0.1, 0.35].map((t, i) => (
+        <path key={i}
+          d={`M${x - r * 0.7 + i * r * 0.15},${baseY - r * 0.2 + t * r * 0.15}
+            Q${x + t * r * 0.3},${baseY - r * 0.25 + t * r * 0.1} ${x + r * 0.7 - i * r * 0.1},${baseY - r * 0.18 + t * r * 0.12}`}
+          fill="none" stroke="#b8860b" strokeWidth="1.2" opacity={0.15 + i * 0.05} strokeLinecap="round" />
+      ))}
+      {/* Highlight on seared top */}
+      <ellipse cx={x - r * 0.2} cy={baseY - r * 0.22} rx={r * 0.35} ry={r * 0.12}
+        fill="#fff" opacity="0.35" />
+      <ellipse cx={x - r * 0.15} cy={baseY - r * 0.2} rx={r * 0.15} ry={r * 0.06}
+        fill="#fff" opacity="0.5" />
+      {/* Side texture lines */}
+      {[0, 1, 2].map(i => (
+        <line key={`st-${i}`} x1={x - r * 0.6 + i * r * 0.5} y1={baseY - r * 0.05}
+          x2={x - r * 0.55 + i * r * 0.5} y2={baseY + r * 0.12}
+          stroke="#999" strokeWidth="0.3" opacity="0.15" />
+      ))}
+      <defs>
+        <radialGradient id={`scal-top-${id}`} cx="35%" cy="30%" r="60%">
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.5" />
+          <stop offset="30%" stopColor="#d4a860" stopOpacity="0.25" />
+          <stop offset="70%" stopColor={color} stopOpacity="0.18" />
+          <stop offset="100%" stopColor="#a08050" stopOpacity="0.15" />
+        </radialGradient>
+        <radialGradient id={`scal-side-${id}`} cx="50%" cy="30%" r="60%">
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.3" />
+          <stop offset="100%" stopColor={color} stopOpacity="0.12" />
+        </radialGradient>
+      </defs>
+    </g>
+  );
+}
+
+function SlicedProtein({ x, y, size, color, id }: RProps) {
+  const w = size * 2.5, h = size * 1.8;
+  const slices = 5;
+  return (
+    <g>
+      <ellipse cx={x + 2} cy={y + h * 0.35} rx={w * 0.45} ry={h * 0.12} fill="#000" opacity="0.06" />
+      {Array.from({ length: slices }).map((_, i) => {
+        const sx = x - w * 0.3 + i * w * 0.15;
+        const sy = y - h * 0.1 + i * h * 0.05;
+        const sw = w * 0.28, sh = h * 0.55;
+        const lean = i * 2;
+        return (
+          <g key={i}>
+            <path d={`M${sx + lean},${sy - sh * 0.5}
+              C${sx + sw * 0.3 + lean},${sy - sh * 0.55} ${sx + sw * 0.7 + lean},${sy - sh * 0.4} ${sx + sw + lean},${sy - sh * 0.15}
+              C${sx + sw + lean * 0.5},${sy + sh * 0.2} ${sx + sw * 0.7},${sy + sh * 0.45} ${sx + sw * 0.4},${sy + sh * 0.5}
+              C${sx + sw * 0.1},${sy + sh * 0.45} ${sx - sw * 0.05},${sy + sh * 0.15} ${sx + lean},${sy - sh * 0.5} Z`}
+              fill={`url(#slice-g-${id}-${i})`} stroke="#666" strokeWidth={i === slices - 1 ? 1.1 : 0.6} opacity={0.6 + i * 0.08} />
+            {/* Skin scoring on top edge */}
+            {i >= slices - 2 && (
+              <path d={`M${sx + sw * 0.15 + lean},${sy - sh * 0.4}
+                L${sx + sw * 0.2 + lean},${sy - sh * 0.1}`}
+                fill="none" stroke="#999" strokeWidth="0.4" opacity="0.3" />
+            )}
+            <defs>
+              <linearGradient id={`slice-g-${id}-${i}`} x1="20%" y1="0%" x2="80%" y2="100%">
+                <stop offset="0%" stopColor="#fff" stopOpacity={0.5 - i * 0.05} />
+                <stop offset="50%" stopColor={color} stopOpacity={0.15 + i * 0.03} />
+                <stop offset="100%" stopColor="#888" stopOpacity="0.1" />
+              </linearGradient>
+            </defs>
+          </g>
+        );
+      })}
+      {/* Top highlight on front slice */}
+      <path d={`M${x + w * 0.1},${y - h * 0.3}
+        C${x + w * 0.2},${y - h * 0.38} ${x + w * 0.35},${y - h * 0.3} ${x + w * 0.4},${y - h * 0.15}`}
+        fill="none" stroke="#fff" strokeWidth="2" opacity="0.35" strokeLinecap="round" />
+    </g>
+  );
+}
+
+function LobsterTail({ x, y, size, color, id }: RProps) {
+  const w = size * 2.5, h = size * 2;
+  return (
+    <g>
+      <ellipse cx={x + 2} cy={y + h * 0.3} rx={w * 0.4} ry={h * 0.1} fill="#000" opacity="0.06" />
+      {/* Fan segments — 5 shell plates spreading outward */}
+      {[0, 1, 2, 3, 4].map(i => {
+        const angle = -0.5 + i * 0.25;
+        const segW = w * (0.18 + i * 0.04);
+        const segH = h * (0.3 + i * 0.08);
+        const cx = x + Math.sin(angle) * w * 0.12;
+        const cy = y - i * h * 0.06;
+        return (
+          <path key={i}
+            d={`M${cx},${cy + segH * 0.4}
+              C${cx - segW * 0.4},${cy + segH * 0.1} ${cx - segW * 0.45},${cy - segH * 0.3} ${cx},${cy - segH * 0.45}
+              C${cx + segW * 0.45},${cy - segH * 0.3} ${cx + segW * 0.4},${cy + segH * 0.1} ${cx},${cy + segH * 0.4} Z`}
+            fill={`url(#lob-seg-${id}-${i})`} stroke="#777" strokeWidth={0.6 + i * 0.1} opacity={0.5 + i * 0.1} />
+        );
+      })}
+      {/* Shell ridges */}
+      {[0.2, 0.4, 0.6].map((t, i) => (
+        <path key={`r-${i}`}
+          d={`M${x - w * 0.25},${y - h * t * 0.4} Q${x},${y - h * t * 0.5} ${x + w * 0.25},${y - h * t * 0.38}`}
+          fill="none" stroke="#999" strokeWidth="0.5" strokeDasharray="4,3" opacity="0.3" />
+      ))}
+      {/* Meat highlight */}
+      <path d={`M${x - w * 0.08},${y - h * 0.15} Q${x},${y - h * 0.25} ${x + w * 0.1},${y - h * 0.12}`}
+        fill="none" stroke="#fff" strokeWidth="2" opacity="0.35" strokeLinecap="round" />
+      <defs>
+        {[0, 1, 2, 3, 4].map(i => (
+          <radialGradient key={i} id={`lob-seg-${id}-${i}`} cx="40%" cy="30%" r="60%">
+            <stop offset="0%" stopColor="#fff" stopOpacity={0.5 - i * 0.05} />
+            <stop offset="50%" stopColor={color} stopOpacity={0.15 + i * 0.03} />
+            <stop offset="100%" stopColor="#888" stopOpacity="0.1" />
+          </radialGradient>
+        ))}
+      </defs>
+    </g>
+  );
+}
+
+function Steak({ x, y, size, color, id }: RProps) {
+  const w = size * 2.6, h = size * 2;
+  const baseY = y + h * 0.1;
+  return (
+    <g>
+      <ellipse cx={x + 3} cy={baseY + h * 0.3} rx={w * 0.45} ry={h * 0.12} fill="#000" opacity="0.07" />
+      {/* Thick steak body — irregular rectangle with rounded corners */}
+      <path d={`M${x - w * 0.4},${baseY + h * 0.15}
+        L${x - w * 0.42},${baseY - h * 0.15}
+        C${x - w * 0.4},${baseY - h * 0.35} ${x - w * 0.2},${baseY - h * 0.42} ${x},${baseY - h * 0.4}
+        C${x + w * 0.2},${baseY - h * 0.38} ${x + w * 0.4},${baseY - h * 0.3} ${x + w * 0.42},${baseY - h * 0.1}
+        L${x + w * 0.4},${baseY + h * 0.18}
+        C${x + w * 0.35},${baseY + h * 0.28} ${x + w * 0.1},${baseY + h * 0.3} ${x - w * 0.1},${baseY + h * 0.28}
+        C${x - w * 0.3},${baseY + h * 0.26} ${x - w * 0.38},${baseY + h * 0.22} ${x - w * 0.4},${baseY + h * 0.15} Z`}
+        fill={`url(#stk-g-${id})`} stroke="#555" strokeWidth="1.3" />
+      {/* Grill marks — diagonal crosshatch */}
+      {[-0.25, -0.05, 0.15, 0.35].map((t, i) => (
+        <g key={i}>
+          <line x1={x - w * 0.3 + i * w * 0.08} y1={baseY - h * 0.35 + i * h * 0.05}
+            x2={x + w * 0.2 + i * w * 0.08} y2={baseY + h * 0.1 + i * h * 0.05}
+            stroke="#5a3020" strokeWidth="1.5" opacity="0.15" strokeLinecap="round" />
+          <line x1={x + w * 0.3 - i * w * 0.08} y1={baseY - h * 0.35 + i * h * 0.05}
+            x2={x - w * 0.2 - i * w * 0.08} y2={baseY + h * 0.1 + i * h * 0.05}
+            stroke="#5a3020" strokeWidth="1" opacity="0.1" strokeLinecap="round" />
+        </g>
+      ))}
+      {/* Fat cap along one edge */}
+      <path d={`M${x - w * 0.38},${baseY - h * 0.1}
+        C${x - w * 0.42},${baseY - h * 0.25} ${x - w * 0.35},${baseY - h * 0.35} ${x - w * 0.2},${baseY - h * 0.38}`}
+        fill="none" stroke="#e8d8c0" strokeWidth="3" opacity="0.3" strokeLinecap="round" />
+      {/* Highlight */}
+      <path d={`M${x - w * 0.15},${baseY - h * 0.32}
+        Q${x + w * 0.05},${baseY - h * 0.38} ${x + w * 0.25},${baseY - h * 0.28}`}
+        fill="none" stroke="#fff" strokeWidth="2.5" opacity="0.35" strokeLinecap="round" />
+      {/* Side thickness indication */}
+      <path d={`M${x + w * 0.42},${baseY - h * 0.1} L${x + w * 0.4},${baseY + h * 0.18}`}
+        fill="none" stroke="#888" strokeWidth="0.8" opacity="0.25" />
+      <defs>
+        <radialGradient id={`stk-g-${id}`} cx="38%" cy="28%" r="62%">
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.5" />
+          <stop offset="35%" stopColor={color} stopOpacity="0.22" />
+          <stop offset="70%" stopColor={color} stopOpacity="0.15" />
+          <stop offset="100%" stopColor="#666" stopOpacity="0.12" />
+        </radialGradient>
+      </defs>
+    </g>
+  );
+}
+
+function Prawn({ x, y, size, color, id }: RProps) {
+  const s = size * 1.8;
+  return (
+    <g>
+      <ellipse cx={x + 2} cy={y + s * 0.35} rx={s * 0.4} ry={s * 0.1} fill="#000" opacity="0.05" />
+      {/* C-curved body */}
+      <path d={`M${x + s * 0.4},${y - s * 0.3}
+        C${x + s * 0.5},${y - s * 0.1} ${x + s * 0.45},${y + s * 0.15} ${x + s * 0.25},${y + s * 0.3}
+        C${x + s * 0.1},${y + s * 0.38} ${x - s * 0.1},${y + s * 0.35} ${x - s * 0.25},${y + s * 0.25}
+        C${x - s * 0.15},${y + s * 0.3} ${x + s * 0.05},${y + s * 0.28} ${x + s * 0.15},${y + s * 0.2}
+        C${x + s * 0.35},${y + s * 0.08} ${x + s * 0.4},${y - s * 0.08} ${x + s * 0.3},${y - s * 0.25}
+        Z`}
+        fill={`url(#prw-g-${id})`} stroke="#666" strokeWidth="1" />
+      {/* Segment lines */}
+      {[0.15, 0.3, 0.45, 0.6, 0.75].map((t, i) => {
+        const cx = x + s * 0.35 - t * s * 0.3;
+        const cy = y - s * 0.2 + t * s * 0.45;
+        return (
+          <path key={i}
+            d={`M${cx - s * 0.08},${cy - s * 0.05} Q${cx},${cy + s * 0.02} ${cx + s * 0.12},${cy - s * 0.03}`}
+            fill="none" stroke="#999" strokeWidth="0.4" opacity="0.3" />
+        );
+      })}
+      {/* Tail fan */}
+      <path d={`M${x - s * 0.25},${y + s * 0.25}
+        C${x - s * 0.4},${y + s * 0.15} ${x - s * 0.45},${y + s * 0.25} ${x - s * 0.35},${y + s * 0.35}
+        C${x - s * 0.25},${y + s * 0.32} ${x - s * 0.2},${y + s * 0.28} ${x - s * 0.25},${y + s * 0.25} Z`}
+        fill={`url(#prw-g-${id})`} stroke="#777" strokeWidth="0.6" />
+      {/* Highlight */}
+      <path d={`M${x + s * 0.32},${y - s * 0.2}
+        C${x + s * 0.4},${y - s * 0.05} ${x + s * 0.38},${y + s * 0.08} ${x + s * 0.28},${y + s * 0.15}`}
+        fill="none" stroke="#fff" strokeWidth="2" opacity="0.4" strokeLinecap="round" />
+      <defs>
+        <radialGradient id={`prw-g-${id}`} cx="45%" cy="30%" r="55%">
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.55" />
+          <stop offset="45%" stopColor={color} stopOpacity="0.25" />
+          <stop offset="100%" stopColor="#888" stopOpacity="0.12" />
+        </radialGradient>
+      </defs>
+    </g>
+  );
+}
+
+function RisottoBed({ x, y, size, color, id }: RProps) {
+  const w = size * 3.5, h = size * 1.2;
+  return (
+    <g>
+      <ellipse cx={x + 2} cy={y + h * 0.4} rx={w * 0.5} ry={h * 0.3} fill="#000" opacity="0.05" />
+      {/* Wide oval bed — low dome */}
+      <ellipse cx={x} cy={y} rx={w * 0.5} ry={h * 0.65}
+        fill={`url(#ris-g-${id})`} stroke="#888" strokeWidth="0.8" />
+      {/* Surface texture — small grain dots */}
+      {Array.from({ length: 20 }).map((_, i) => {
+        const dx = (Math.sin(i * 4.7 + 0.5) * 0.4) * w;
+        const dy = (Math.cos(i * 3.1 + 1.2) * 0.35) * h;
+        return (
+          <circle key={i} cx={x + dx} cy={y + dy} r={1 + Math.sin(i * 2.3) * 0.5}
+            fill={color} opacity={0.08 + Math.cos(i * 1.7) * 0.04} />
+        );
+      })}
+      {/* Soft height contour */}
+      <ellipse cx={x} cy={y - h * 0.15} rx={w * 0.35} ry={h * 0.35}
+        fill="none" stroke="#bbb" strokeWidth="0.4" strokeDasharray="4,5" opacity="0.25" />
+      {/* Highlight */}
+      <ellipse cx={x - w * 0.1} cy={y - h * 0.25} rx={w * 0.2} ry={h * 0.18}
+        fill="#fff" opacity="0.2" />
+      <defs>
+        <radialGradient id={`ris-g-${id}`} cx="40%" cy="35%" r="55%">
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.4" />
+          <stop offset="50%" stopColor={color} stopOpacity="0.18" />
+          <stop offset="100%" stopColor={color} stopOpacity="0.08" />
+        </radialGradient>
+      </defs>
+    </g>
+  );
+}
+
+function AsparagusBundle({ x, y, size, color, id }: RProps) {
+  const len = size * 3, w = size * 0.3;
+  const stalks = 4;
+  return (
+    <g>
+      {Array.from({ length: stalks }).map((_, i) => {
+        const ox = (i - (stalks - 1) / 2) * w * 1.8;
+        const tipY = y - len * 0.45 + Math.abs(i - 1.5) * len * 0.04;
+        return (
+          <g key={i}>
+            <ellipse cx={x + ox + 1} cy={y + len * 0.35} rx={w * 0.6} ry={w * 0.2} fill="#000" opacity="0.04" />
+            {/* Stalk */}
+            <line x1={x + ox} y1={tipY + len * 0.15} x2={x + ox} y2={y + len * 0.3}
+              stroke={color} strokeWidth={w * 1.5} opacity="0.15" strokeLinecap="round" />
+            <line x1={x + ox} y1={tipY + len * 0.15} x2={x + ox} y2={y + len * 0.3}
+              stroke="#666" strokeWidth={w * 0.5} opacity="0.3" strokeLinecap="round" />
+            {/* Tip — pointed bud */}
+            <path d={`M${x + ox - w * 0.4},${tipY + len * 0.15}
+              C${x + ox - w * 0.3},${tipY + len * 0.05} ${x + ox},${tipY} ${x + ox},${tipY - len * 0.02}
+              C${x + ox},${tipY} ${x + ox + w * 0.3},${tipY + len * 0.05} ${x + ox + w * 0.4},${tipY + len * 0.15} Z`}
+              fill={`url(#asp-g-${id})`} stroke="#555" strokeWidth="0.6" />
+            {/* Scale marks on tip */}
+            {[0.03, 0.06, 0.09].map((t, j) => (
+              <path key={j}
+                d={`M${x + ox - w * 0.25},${tipY + len * (0.08 + t)} Q${x + ox},${tipY + len * (0.06 + t)} ${x + ox + w * 0.25},${tipY + len * (0.08 + t)}`}
+                fill="none" stroke="#888" strokeWidth="0.3" opacity="0.25" />
+            ))}
+          </g>
+        );
+      })}
+      <defs>
+        <radialGradient id={`asp-g-${id}`} cx="40%" cy="25%" r="60%">
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.3" />
+          <stop offset="100%" stopColor={color} stopOpacity="0.25" />
+        </radialGradient>
+      </defs>
+    </g>
+  );
+}
+
+function FoamDollop({ x, y, size, color, id }: RProps) {
+  const s = size * 1.4;
+  const bubbles = [
+    { dx: 0, dy: 0, r: s * 0.6 },
+    { dx: -s * 0.35, dy: s * 0.15, r: s * 0.4 },
+    { dx: s * 0.3, dy: s * 0.2, r: s * 0.35 },
+    { dx: s * 0.1, dy: -s * 0.3, r: s * 0.3 },
+    { dx: -s * 0.2, dy: -s * 0.25, r: s * 0.25 },
+    { dx: s * 0.35, dy: -s * 0.15, r: s * 0.2 },
+    { dx: -s * 0.4, dy: -s * 0.1, r: s * 0.18 },
+  ];
+  return (
+    <g>
+      <ellipse cx={x + 1} cy={y + s * 0.45} rx={s * 0.7} ry={s * 0.15} fill="#000" opacity="0.04" />
+      {bubbles.map((b, i) => (
+        <g key={i}>
+          <circle cx={x + b.dx} cy={y + b.dy} r={b.r}
+            fill={`url(#foam-b-${id}-${i})`} stroke="#ccc" strokeWidth="0.3" opacity="0.7" />
+          <ellipse cx={x + b.dx - b.r * 0.2} cy={y + b.dy - b.r * 0.2}
+            rx={b.r * 0.25} ry={b.r * 0.18} fill="#fff" opacity="0.6" />
+          <defs>
+            <radialGradient id={`foam-b-${id}-${i}`} cx="35%" cy="30%" r="60%">
+              <stop offset="0%" stopColor="#fff" stopOpacity="0.8" />
+              <stop offset="60%" stopColor={color} stopOpacity="0.08" />
+              <stop offset="100%" stopColor={color} stopOpacity="0.03" />
+            </radialGradient>
+          </defs>
+        </g>
+      ))}
+    </g>
+  );
+}
+
+function MushroomCap({ x, y, size, color, id }: RProps) {
+  const w = size * 2, h = size * 1.5;
+  return (
+    <g>
+      <ellipse cx={x + 2} cy={y + h * 0.25} rx={w * 0.35} ry={h * 0.08} fill="#000" opacity="0.06" />
+      {/* Stem hint */}
+      <rect x={x - w * 0.08} y={y + h * 0.05} width={w * 0.16} height={h * 0.2} rx={2}
+        fill="#f0ead8" opacity="0.15" stroke="#aaa" strokeWidth="0.4" />
+      {/* Cap — domed from above */}
+      <path d={`M${x - w * 0.45},${y + h * 0.08}
+        C${x - w * 0.48},${y - h * 0.25} ${x - w * 0.2},${y - h * 0.5} ${x},${y - h * 0.52}
+        C${x + w * 0.2},${y - h * 0.5} ${x + w * 0.48},${y - h * 0.25} ${x + w * 0.45},${y + h * 0.08}
+        C${x + w * 0.35},${y + h * 0.15} ${x + w * 0.15},${y + h * 0.18} ${x},${y + h * 0.17}
+        C${x - w * 0.15},${y + h * 0.18} ${x - w * 0.35},${y + h * 0.15} ${x - w * 0.45},${y + h * 0.08} Z`}
+        fill={`url(#mush-g-${id})`} stroke="#666" strokeWidth="1" />
+      {/* Radial gill lines */}
+      {[-0.35, -0.2, -0.05, 0.1, 0.25].map((t, i) => (
+        <path key={i}
+          d={`M${x + w * t},${y + h * 0.1} L${x + w * t * 0.3},${y - h * 0.1}`}
+          fill="none" stroke="#999" strokeWidth="0.3" opacity="0.2" />
+      ))}
+      {/* Highlight */}
+      <path d={`M${x - w * 0.15},${y - h * 0.4}
+        Q${x},${y - h * 0.5} ${x + w * 0.18},${y - h * 0.35}`}
+        fill="none" stroke="#fff" strokeWidth="2.5" opacity="0.4" strokeLinecap="round" />
+      <defs>
+        <radialGradient id={`mush-g-${id}`} cx="38%" cy="25%" r="60%">
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.55" />
+          <stop offset="40%" stopColor={color} stopOpacity="0.22" />
+          <stop offset="100%" stopColor="#888" stopOpacity="0.12" />
+        </radialGradient>
+      </defs>
+    </g>
+  );
+}
+
 /* ─── RENDERERS MAP ─── */
 const RENDERERS: Record<string, React.FC<RProps>> = {
   dome: Dome,
+  'fish fillet': FishFillet,
+  'seared scallop': SearScallop,
+  'sliced protein': SlicedProtein,
+  steak: Steak,
+  'lobster tail': LobsterTail,
+  prawn: Prawn,
+  mushroom: MushroomCap,
   berries: Berries,
   sauce: SauceShape,
   quenelle: Quenelle,
+  'risotto bed': RisottoBed,
+  asparagus: AsparagusBundle,
+  foam: FoamDollop,
   'pulled sugar': PulledSugar,
   'chocolate shard': ChocolateShard,
   cookie: CookieShape,
@@ -403,22 +838,50 @@ const SHAPES = Object.keys(RENDERERS);
 
 /* ─── TYPE DETECTION ─── */
 const KW: Record<string, string> = {
+  // Specific proteins — match before generic
+  branzino: 'fish fillet', cod: 'fish fillet', snapper: 'fish fillet', salmon: 'fish fillet',
+  barramundi: 'fish fillet', halibut: 'fish fillet', seabass: 'fish fillet', 'sea bass': 'fish fillet',
+  trout: 'fish fillet', sole: 'fish fillet', turbot: 'fish fillet', grouper: 'fish fillet',
+  bream: 'fish fillet', 'john dory': 'fish fillet', monkfish: 'fish fillet', fillet: 'fish fillet',
+  hamachi: 'fish fillet', kingfish: 'fish fillet', tuna: 'fish fillet', swordfish: 'fish fillet',
+  fish: 'fish fillet',
+  scallop: 'seared scallop',
+  duck: 'sliced protein', 'pork belly': 'sliced protein', terrine: 'sliced protein',
+  beef: 'steak', wagyu: 'steak', ribeye: 'steak', sirloin: 'steak', tenderloin: 'steak',
+  'strip loin': 'steak', tomahawk: 'steak', 'rib eye': 'steak',
+  lobster: 'lobster tail', crayfish: 'lobster tail',
+  prawn: 'prawn', shrimp: 'prawn', langoustine: 'prawn', 'king prawn': 'prawn', crab: 'prawn',
+  lamb: 'sliced protein', rack: 'sliced protein',
+  chicken: 'dome', pork: 'dome',
+  mushroom: 'mushroom', truffle: 'mushroom', shiitake: 'mushroom', porcini: 'mushroom',
+  morel: 'mushroom', chanterelle: 'mushroom', enoki: 'mushroom',
+  // Bases & starches
+  risotto: 'risotto bed', rice: 'risotto bed', polenta: 'risotto bed', potato: 'smear',
+  mash: 'smear', 'pomme': 'smear',
+  asparagus: 'asparagus', broccolini: 'asparagus', leek: 'asparagus',
+  // Sauces & liquids
   sauce: 'sauce', jus: 'sauce', reduction: 'sauce', emulsion: 'sauce', coulis: 'sauce',
-  puree: 'quenelle', mousse: 'quenelle', cream: 'quenelle', foam: 'quenelle',
+  foam: 'foam', espuma: 'foam', air: 'foam',
+  puree: 'quenelle', mousse: 'quenelle', cream: 'quenelle',
   sorbet: 'quenelle', 'ice cream': 'quenelle', ice: 'quenelle', gelato: 'quenelle',
+  // Fruits & berries
   berry: 'berries', currant: 'berries', strawberry: 'berries', raspberry: 'berries', blackberry: 'berries',
+  blueberry: 'berries', cherry: 'berries', grape: 'berries', olive: 'berries',
+  // Garnishes & decorations
   crisp: 'chocolate shard', tuile: 'chocolate shard', shard: 'chocolate shard', chip: 'chocolate shard',
-  leaf: 'leaf garnish', herb: 'leaf garnish', micro: 'leaf garnish', flower: 'leaf garnish', cress: 'leaf garnish',
+  wafer: 'chocolate shard',
+  leaf: 'leaf garnish', herb: 'leaf garnish', micro: 'leaf garnish', flower: 'leaf garnish',
+  cress: 'leaf garnish',
   crumble: 'crumb', crumb: 'crumb', soil: 'crumb', dust: 'crumb', powder: 'crumb',
   cookie: 'cookie', biscuit: 'cookie', shortbread: 'cookie', gable: 'cookie',
   glaze: 'glaze', gel: 'glaze', mirror: 'glaze',
   sugar: 'pulled sugar', caramel: 'pulled sugar', spun: 'pulled sugar', pulled: 'pulled sugar',
-  scallop: 'dome', fish: 'dome', beef: 'dome', lamb: 'dome', duck: 'dome', pork: 'dome',
-  chicken: 'dome', lobster: 'dome', fondant: 'dome', dome: 'dome', tart: 'dome', sphere: 'dome',
+  // Pastry & desserts
+  fondant: 'dome', dome: 'dome', tart: 'dome', sphere: 'dome',
   paste: 'dome', meringue: 'dome', pavlova: 'dome',
-  potato: 'smear', rice: 'smear', risotto: 'smear', polenta: 'smear',
+  // Misc
   dot: 'dots', pearls: 'dots',
-  carrot: 'quenelle', pea: 'quenelle', leek: 'quenelle', mushroom: 'dome',
+  carrot: 'quenelle', pea: 'quenelle',
 };
 
 const COLOR_MAP: Record<string, string> = {
@@ -432,10 +895,19 @@ const COLOR_MAP: Record<string, string> = {
   scallop: '#f0e0c0', fish: '#e8ddd0', lobster: '#d4806a', duck: '#b88070', beef: '#8b4049',
   lamb: '#a07060', pork: '#d4a089', chicken: '#d4b878', mushroom: '#8b7355', potato: '#e8dcc8',
   carrot: '#d4884a', white: '#f0e6d0', nori: '#2d5016', lime: '#a8d84e', olive: '#6b7a35',
+  branzino: '#e0d5c5', cod: '#e8ddd0', salmon: '#d4907a', snapper: '#d4907a',
+  barramundi: '#e0d5c8', halibut: '#e8e0d0', trout: '#d4988a', tuna: '#c08080',
+  prawn: '#e0a088', shrimp: '#e0a088', langoustine: '#d4906a', crab: '#d4906a',
+  wagyu: '#7a3040', tenderloin: '#8b4049', risotto: '#e8dcc8', polenta: '#e0d8a8',
+  asparagus: '#5a8a40', truffle: '#3d3025', chanterelle: '#d4a040',
+  foam: '#f5f0e8', espuma: '#f5f0e8',
 };
 
 const SIZE_MAP: Record<string, number> = {
-  dome: 55, berries: 28, sauce: 48, quenelle: 28,
+  dome: 55, 'fish fillet': 42, 'seared scallop': 35, 'sliced protein': 40,
+  steak: 45, 'lobster tail': 35, prawn: 28, mushroom: 30,
+  berries: 28, sauce: 48, quenelle: 28, 'risotto bed': 38,
+  asparagus: 20, foam: 22,
   'pulled sugar': 35, 'chocolate shard': 24, cookie: 24,
   glaze: 32, 'leaf garnish': 16, smear: 30, crumb: 18, dots: 14,
 };
