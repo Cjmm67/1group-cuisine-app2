@@ -1,572 +1,408 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Download, RefreshCw, Plus, Trash2, Sparkles } from 'lucide-react';
+import { ArrowLeft, Download, Palette, List, Printer, Plus, Trash2 } from 'lucide-react';
 
-/* ── Component types and their rough.js draw configs ── */
-const SHAPE_TYPES = [
-  'dome', 'sauce', 'quenelle', 'berries', 'crisp', 'leaf', 'crumble',
-] as const;
-type ShapeType = typeof SHAPE_TYPES[number];
-
-const SHAPE_LABELS: Record<ShapeType, string> = {
-  dome: 'Dome / Protein', sauce: 'Sauce / Jus', quenelle: 'Quenelle / Purée',
-  berries: 'Berries / Pearls', crisp: 'Crisp / Shard', leaf: 'Leaf / Herb',
-  crumble: 'Crumble / Crumb',
-};
-
-interface PlateComponent {
-  id: number; name: string; shape: ShapeType;
-  x: number; y: number; size: number; color: string;
+/* ── Seeded random for consistent hand-drawn feel ── */
+function createRng(seed: number) {
+  let s = seed;
+  return () => { s = (s * 16807 + 0) % 2147483647; return (s - 1) / 2147483646; };
+}
+function hashStr(str: string) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+function jitter(val: number, amount: number, rng: () => number) {
+  return val + (rng() - 0.5) * amount * 2;
 }
 
-const PLATE_CX = 380, PLATE_CY = 300, PLATE_R = 220;
+/* ── Shape generators ── */
+function wobblyCircle(cx: number, cy: number, r: number, rng: () => number, pts = 8) {
+  const d: string[] = [];
+  for (let i = 0; i <= pts; i++) {
+    const a = (i / pts) * Math.PI * 2;
+    const jr = r + (rng() - 0.5) * r * 0.18;
+    const x = cx + Math.cos(a) * jr, y = cy + Math.sin(a) * jr;
+    if (i === 0) d.push(`M ${x.toFixed(1)} ${y.toFixed(1)}`);
+    else {
+      const cpx = cx + Math.cos(a - 0.35) * jr * 1.12;
+      const cpy = cy + Math.sin(a - 0.35) * jr * 1.12;
+      d.push(`Q ${jitter(cpx, 1.5, rng).toFixed(1)} ${jitter(cpy, 1.5, rng).toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`);
+    }
+  }
+  d.push('Z');
+  return d.join(' ');
+}
 
-const PRESETS = [
+function moundShape(cx: number, cy: number, w: number, h: number, rng: () => number) {
+  const l = cx - w / 2, r = cx + w / 2, t = cy - h, b = cy;
+  return `M ${jitter(l, 2, rng).toFixed(1)} ${b.toFixed(1)} Q ${jitter(l - 5, 3, rng).toFixed(1)} ${jitter(t + h * 0.3, 3, rng).toFixed(1)} ${jitter(cx - w * 0.15, 2, rng).toFixed(1)} ${jitter(t, 3, rng).toFixed(1)} Q ${jitter(cx + w * 0.15, 2, rng).toFixed(1)} ${jitter(t - 5, 3, rng).toFixed(1)} ${jitter(r + 5, 3, rng).toFixed(1)} ${jitter(t + h * 0.3, 3, rng).toFixed(1)} Q ${jitter(r + 8, 3, rng).toFixed(1)} ${jitter(b - h * 0.2, 3, rng).toFixed(1)} ${jitter(r, 2, rng).toFixed(1)} ${b.toFixed(1)} Z`;
+}
+
+function sauceSwoosh(x1: number, y1: number, x2: number, y2: number, curve: number, widthVal: number, rng: () => number) {
+  const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+  return `M ${x1.toFixed(1)} ${y1.toFixed(1)} Q ${jitter(mx, 4, rng).toFixed(1)} ${jitter(my - curve, 4, rng).toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)} L ${(x2 + 2).toFixed(1)} ${(y2 + 3).toFixed(1)} Q ${jitter(mx, 4, rng).toFixed(1)} ${jitter(my - curve + widthVal, 4, rng).toFixed(1)} ${(x1 + 1).toFixed(1)} ${(y1 + 2).toFixed(1)} Z`;
+}
+
+function quenelleShape(cx: number, cy: number, w: number, h: number, rng: () => number) {
+  const hw = w / 2, hh = h / 2;
+  return `M ${(cx - hw).toFixed(1)} ${cy.toFixed(1)} Q ${jitter(cx - hw * 0.5, 2, rng).toFixed(1)} ${jitter(cy - hh, 2, rng).toFixed(1)} ${cx.toFixed(1)} ${jitter(cy - hh, 2, rng).toFixed(1)} Q ${jitter(cx + hw * 0.5, 2, rng).toFixed(1)} ${jitter(cy - hh, 2, rng).toFixed(1)} ${(cx + hw).toFixed(1)} ${cy.toFixed(1)} Q ${jitter(cx + hw * 0.5, 2, rng).toFixed(1)} ${jitter(cy + hh, 2, rng).toFixed(1)} ${cx.toFixed(1)} ${jitter(cy + hh, 2, rng).toFixed(1)} Q ${jitter(cx - hw * 0.5, 2, rng).toFixed(1)} ${jitter(cy + hh, 2, rng).toFixed(1)} ${(cx - hw).toFixed(1)} ${cy.toFixed(1)} Z`;
+}
+
+/* ── Types ── */
+type CompType = 'protein' | 'sauce' | 'starch' | 'vegetable' | 'garnish' | 'dairy' | 'fruit' | 'pastry' | 'glaze' | 'sugar_work' | 'jus' | 'ice_cream' | 'sorbet' | 'crumb';
+type ShapeKind = 'mound' | 'quenelle' | 'swoosh' | 'dots' | 'berry' | 'shard' | 'scatter';
+
+interface PlateComp {
+  id: string; name: string; type: CompType; cx: number; cy: number;
+  shape: ShapeKind; w?: number; h?: number; r?: number; count?: number; spread?: number;
+  x1?: number; y1?: number; x2?: number; y2?: number; curve?: number; width?: number;
+}
+
+const TYPE_COLORS: Record<string, string> = {
+  protein: '#d4a089', sauce: '#b85c4e', jus: '#8b4049', starch: '#e8dcc8',
+  vegetable: '#8fa876', garnish: '#7db36a', dairy: '#f0ebe0', fruit: '#c47070',
+  pastry: '#d4b878', glaze: 'rgba(180,60,60,0.3)', sugar_work: 'rgba(200,160,80,0.25)',
+  ice_cream: '#f0ebe0', sorbet: '#d4828a', crumb: '#a08060',
+};
+
+const TYPE_LABELS: Record<string, string> = {
+  protein: 'Protein', sauce: 'Sauce', jus: 'Jus', starch: 'Starch / Base',
+  vegetable: 'Vegetable', garnish: 'Garnish', dairy: 'Dairy', fruit: 'Fruit',
+  pastry: 'Pastry', glaze: 'Glaze', sugar_work: 'Sugar Work',
+  ice_cream: 'Ice Cream', sorbet: 'Sorbet', crumb: 'Crumb',
+};
+
+const COMP_TYPES: CompType[] = ['protein', 'sauce', 'starch', 'vegetable', 'garnish', 'dairy', 'fruit', 'pastry', 'glaze', 'sugar_work', 'jus', 'ice_cream', 'sorbet', 'crumb'];
+
+/* ── Presets ── */
+const PRESETS: { name: string; subtitle: string; comps: PlateComp[] }[] = [
   {
-    name: 'Seared Scallop', components: [
-      { id: 1, name: 'Hokkaido Scallop', shape: 'dome' as ShapeType, x: 400, y: 280, size: 50, color: '#d4a574' },
-      { id: 2, name: 'Cauliflower Purée', shape: 'quenelle' as ShapeType, x: 300, y: 330, size: 40, color: '#e8dcc0' },
-      { id: 3, name: 'Sea Urchin Emulsion', shape: 'sauce' as ShapeType, x: 430, y: 370, size: 45, color: '#c4953a' },
-      { id: 4, name: 'Nori Crisp', shape: 'crisp' as ShapeType, x: 460, y: 250, size: 30, color: '#2a3a2a' },
-      { id: 5, name: 'Finger Lime', shape: 'berries' as ShapeType, x: 340, y: 260, size: 20, color: '#7a9a4a' },
-      { id: 6, name: 'Micro Shiso', shape: 'leaf' as ShapeType, x: 380, y: 240, size: 15, color: '#4a7a5a' },
+    name: 'Almond & Red Currant Vacherin', subtitle: 'Strawberry Sorbet · Almond Ice Cream · Pulled Sugar',
+    comps: [
+      { id: 'almond-paste', name: 'Almond Paste', type: 'starch', cx: 370, cy: 370, shape: 'mound', w: 110, h: 55 },
+      { id: 'sorbet', name: 'Strawberry Sorbet', type: 'sorbet', cx: 370, cy: 330, shape: 'quenelle', w: 50, h: 30 },
+      { id: 'glaze', name: 'Red Clear Glaze', type: 'glaze', cx: 340, cy: 340, shape: 'quenelle', w: 100, h: 50 },
+      { id: 'cookie', name: 'Gabl\u00e9 Cookie', type: 'pastry', cx: 430, cy: 400, shape: 'quenelle', w: 35, h: 18 },
+      { id: 'fraise', name: 'Fraise des Bois', type: 'fruit', cx: 365, cy: 290, shape: 'berry', r: 8 },
+      { id: 'choc', name: 'White Chocolate Garnish', type: 'garnish', cx: 310, cy: 290, shape: 'shard', w: 25, h: 35 },
+      { id: 'currants', name: 'Red Currants', type: 'fruit', cx: 210, cy: 340, shape: 'dots', count: 6, r: 9, spread: 55 },
+      { id: 'jus', name: 'Red Currant & Wine Jus', type: 'jus', cx: 230, cy: 420, shape: 'swoosh', x1: 180, y1: 400, x2: 290, y2: 440, curve: 15, width: 14 },
+      { id: 'jus-dots', name: 'Jus Dots', type: 'jus', cx: 400, cy: 470, shape: 'dots', count: 4, r: 11, spread: 60 },
+      { id: 'almond-ice', name: 'Almond Ice Cream', type: 'ice_cream', cx: 470, cy: 350, shape: 'quenelle', w: 40, h: 22 },
     ],
   },
   {
-    name: 'Wagyu Tenderloin', components: [
-      { id: 1, name: 'Wagyu A5', shape: 'dome' as ShapeType, x: 370, y: 290, size: 55, color: '#8a4a3a' },
-      { id: 2, name: 'Bone Marrow Butter', shape: 'sauce' as ShapeType, x: 310, y: 360, size: 40, color: '#c4a060' },
-      { id: 3, name: 'Charred Leek Purée', shape: 'quenelle' as ShapeType, x: 460, y: 310, size: 35, color: '#5a6a3a' },
-      { id: 4, name: 'Red Wine Jus', shape: 'sauce' as ShapeType, x: 380, y: 380, size: 50, color: '#5a2030' },
-      { id: 5, name: 'Pickled Shallot', shape: 'berries' as ShapeType, x: 430, y: 250, size: 18, color: '#b06a8a' },
-      { id: 6, name: 'Micro Herbs', shape: 'leaf' as ShapeType, x: 350, y: 255, size: 12, color: '#3a7a3a' },
-    ],
-  },
-  {
-    name: 'Vacherin Dessert', components: [
-      { id: 1, name: 'Almond Paste Shell', shape: 'dome' as ShapeType, x: 380, y: 300, size: 60, color: '#d4c5a9' },
-      { id: 2, name: 'Strawberry Sorbet', shape: 'quenelle' as ShapeType, x: 380, y: 250, size: 30, color: '#c44a5a' },
-      { id: 3, name: 'Red Currants', shape: 'berries' as ShapeType, x: 280, y: 310, size: 24, color: '#a03030' },
-      { id: 4, name: 'Wine Jus', shape: 'sauce' as ShapeType, x: 440, y: 370, size: 45, color: '#6a2040' },
-      { id: 5, name: 'White Choc Shard', shape: 'crisp' as ShapeType, x: 330, y: 260, size: 25, color: '#f0e6d0' },
-      { id: 6, name: 'Crumble Base', shape: 'crumble' as ShapeType, x: 380, y: 360, size: 35, color: '#b8a070' },
+    name: 'Seared Hokkaido Scallop', subtitle: 'Cauliflower Pur\u00e9e · Sea Urchin · Nori',
+    comps: [
+      { id: 'scallop', name: 'Hokkaido Scallop', type: 'protein', cx: 390, cy: 320, shape: 'mound', w: 70, h: 35 },
+      { id: 'puree', name: 'Cauliflower Pur\u00e9e', type: 'dairy', cx: 300, cy: 370, shape: 'swoosh', x1: 240, y1: 360, x2: 360, y2: 380, curve: 20, width: 16 },
+      { id: 'uni', name: 'Sea Urchin Emulsion', type: 'sauce', cx: 420, cy: 400, shape: 'swoosh', x1: 380, y1: 390, x2: 460, y2: 410, curve: 12, width: 10 },
+      { id: 'nori', name: 'Nori Crisp', type: 'garnish', cx: 440, cy: 280, shape: 'shard', w: 30, h: 40 },
+      { id: 'lime', name: 'Finger Lime', type: 'fruit', cx: 340, cy: 280, shape: 'dots', count: 5, r: 5, spread: 35 },
+      { id: 'shiso', name: 'Micro Shiso', type: 'garnish', cx: 370, cy: 270, shape: 'scatter' },
     ],
   },
 ];
 
-/* ── rough.js drawing functions ── */
-function drawPlate(rc: any, ctx: CanvasRenderingContext2D) {
-  // Shadow layers
-  rc.ellipse(PLATE_CX + 4, PLATE_CY + 8, PLATE_R * 2 + 30, PLATE_R * 2 + 30, {
-    fill: 'rgba(0,0,0,0.04)', fillStyle: 'solid', stroke: 'none', roughness: 0.3,
-  });
-  rc.ellipse(PLATE_CX + 2, PLATE_CY + 4, PLATE_R * 2 + 18, PLATE_R * 2 + 18, {
-    fill: 'rgba(0,0,0,0.03)', fillStyle: 'solid', stroke: 'none', roughness: 0.3,
-  });
-  // Outer rim
-  rc.ellipse(PLATE_CX, PLATE_CY, PLATE_R * 2 + 12, PLATE_R * 2 + 12, {
-    stroke: '#b0a898', strokeWidth: 0.5, roughness: 0.4, fill: 'rgba(0,0,0,0)', fillStyle: 'solid',
-  });
-  // Main plate
-  rc.ellipse(PLATE_CX, PLATE_CY, PLATE_R * 2, PLATE_R * 2, {
-    stroke: '#706858', strokeWidth: 1.8, roughness: 0.6, fill: '#fefefe', fillStyle: 'solid',
-  });
-  // Inner rim detail
-  rc.ellipse(PLATE_CX, PLATE_CY, (PLATE_R - 30) * 2, (PLATE_R - 30) * 2, {
-    stroke: '#d5cfc0', strokeWidth: 0.4, roughness: 0.5,
-    strokeLineDash: [4, 8],
-  });
+/* ── LeaderLine ── */
+function LeaderLine({ fromX, fromY, toX, toY, highlighted }: { fromX: number; fromY: number; toX: number; toY: number; highlighted: boolean }) {
+  const mx = (fromX + toX) / 2, my = (fromY + toY) / 2;
+  const cpx = mx + (fromX > 350 ? 15 : -15), cpy = my - 15;
+  const angle = Math.atan2(toY - cpy, toX - cpx) * 180 / Math.PI;
+  return (
+    <g opacity={highlighted ? 1 : 0.7}>
+      <path d={`M ${fromX} ${fromY} Q ${cpx} ${cpy} ${toX} ${toY}`} stroke={highlighted ? '#333' : '#555'} strokeWidth={highlighted ? 1.3 : 1} fill="none" />
+      <polygon points="0,-2.5 5,0 0,2.5" fill={highlighted ? '#333' : '#555'} transform={`translate(${toX},${toY}) rotate(${angle})`} />
+    </g>
+  );
 }
 
-function drawDome(rc: any, c: PlateComponent, seed: number) {
-  const { x, y, size: s } = c;
-  const w = s * 1.6, h = s * 1.2;
-  // Shadow
-  rc.ellipse(x + 2, y + h * 0.4, w * 1.3, h * 0.4, {
-    fill: 'rgba(0,0,0,0.06)', fillStyle: 'solid', stroke: 'none', roughness: 0.3, seed,
+/* ── Label positions (auto-generated around plate) ── */
+function autoLabels(comps: PlateComp[]) {
+  const left: { comp: PlateComp; ly: number }[] = [];
+  const right: { comp: PlateComp; ly: number }[] = [];
+  comps.forEach(c => {
+    if (c.cx <= 350) left.push({ comp: c, ly: 0 });
+    else right.push({ comp: c, ly: 0 });
   });
-  // Base ellipse
-  rc.ellipse(x, y + h * 0.15, w * 1.2, h * 0.35, {
-    fill: c.color, fillStyle: 'cross-hatch', fillWeight: 0.4, hachureGap: 3,
-    stroke: '#555', strokeWidth: 1.2, roughness: 0.8, seed,
-  });
-  // Dome body
-  rc.path(`M${x - w * 0.55} ${y + h * 0.1} C${x - w * 0.55} ${y - h * 0.7}, ${x + w * 0.55} ${y - h * 0.7}, ${x + w * 0.55} ${y + h * 0.1}`, {
-    fill: c.color, fillStyle: 'hachure', fillWeight: 0.5, hachureAngle: -40, hachureGap: 3.5,
-    stroke: '#444', strokeWidth: 1.5, roughness: 0.7, seed,
-  });
-}
-
-function drawSauce(rc: any, c: PlateComponent, seed: number) {
-  const { x, y, size: s } = c;
-  // Outer wash
-  rc.ellipse(x, y, s * 2.8, s * 1.6, {
-    fill: c.color, fillStyle: 'solid', stroke: 'none', roughness: 1.5, seed,
-    fillWeight: 0.3,
-  });
-  // Main pool
-  rc.ellipse(x, y, s * 2.2, s * 1.3, {
-    fill: c.color, fillStyle: 'hachure', fillWeight: 0.3, hachureAngle: 30, hachureGap: 2.5,
-    stroke: '#666', strokeWidth: 0.8, roughness: 1.2, seed,
-  });
-  // Inner concentration
-  rc.ellipse(x - s * 0.15, y + s * 0.1, s * 1.2, s * 0.7, {
-    fill: c.color, fillStyle: 'solid', stroke: 'none', roughness: 1, seed,
-  });
-}
-
-function drawQuenelle(rc: any, c: PlateComponent, seed: number) {
-  const { x, y, size: s } = c;
-  // Shadow
-  rc.ellipse(x + 1, y + s * 0.5, s * 2.2, s * 0.4, {
-    fill: 'rgba(0,0,0,0.05)', fillStyle: 'solid', stroke: 'none', roughness: 0.3, seed,
-  });
-  // Quenelle body — elongated tapered shape
-  rc.path(`M${x - s * 1.1} ${y + s * 0.15} Q${x - s * 0.9} ${y - s * 0.7}, ${x + s * 0.2} ${y - s * 0.6} Q${x + s * 1.1} ${y - s * 0.5}, ${x + s * 1.1} ${y + s * 0.1} Q${x + s * 0.7} ${y + s * 0.45}, ${x} ${y + s * 0.35} Q${x - s * 0.7} ${y + s * 0.45}, ${x - s * 1.1} ${y + s * 0.15} Z`, {
-    fill: c.color, fillStyle: 'hachure', fillWeight: 0.4, hachureAngle: 15, hachureGap: 3,
-    stroke: '#555', strokeWidth: 1.3, roughness: 0.6, seed,
-  });
-  // Ridge lines
-  for (let i = 0; i < 5; i++) {
-    const t = 0.15 + i * 0.15;
-    const rx = x - s * 0.8 + t * s * 1.8;
-    rc.line(rx, y - s * 0.3 + i * 2, rx + s * 0.3, y + s * 0.2 + i * 1, {
-      stroke: '#999', strokeWidth: 0.4, roughness: 0.5, seed: seed + i,
-    });
-  }
-}
-
-function drawBerries(rc: any, c: PlateComponent, seed: number) {
-  const { x, y, size: s } = c;
-  const positions = [
-    { dx: -s * 0.6, dy: 0, r: s * 0.45 },
-    { dx: s * 0.1, dy: -s * 0.35, r: s * 0.4 },
-    { dx: s * 0.7, dy: s * 0.1, r: s * 0.42 },
-    { dx: 0, dy: s * 0.4, r: s * 0.35 },
-    { dx: -s * 0.3, dy: -s * 0.5, r: s * 0.3 },
-    { dx: s * 0.45, dy: -s * 0.3, r: s * 0.32 },
-  ];
-  positions.forEach((p, i) => {
-    rc.circle(x + p.dx, y + p.dy, p.r * 2, {
-      fill: c.color, fillStyle: 'hachure', fillWeight: 0.3, hachureGap: 2, hachureAngle: 45 + i * 15,
-      stroke: '#555', strokeWidth: 0.9, roughness: 0.5, seed: seed + i,
-    });
-  });
-}
-
-function drawCrisp(rc: any, c: PlateComponent, seed: number) {
-  const { x, y, size: s } = c;
-  // Irregular angular shape standing at angle
-  rc.path(`M${x - s * 0.4} ${y + s * 0.5} L${x - s * 0.6} ${y - s * 0.8} L${x - s * 0.1} ${y - s * 1.1} L${x + s * 0.5} ${y - s * 0.6} L${x + s * 0.4} ${y + s * 0.2} Z`, {
-    fill: c.color, fillStyle: 'cross-hatch', fillWeight: 0.3, hachureGap: 3.5, hachureAngle: 60,
-    stroke: '#555', strokeWidth: 1.1, roughness: 0.8, seed,
-  });
-  // Fracture line
-  rc.line(x - s * 0.3, y - s * 0.6, x + s * 0.3, y - s * 0.2, {
-    stroke: '#888', strokeWidth: 0.5, roughness: 0.6, seed,
-  });
-}
-
-function drawLeaf(rc: any, c: PlateComponent, seed: number) {
-  const { x, y, size: s } = c;
-  // Leaf shape
-  rc.path(`M${x} ${y - s * 1.2} C${x + s * 0.8} ${y - s * 0.6}, ${x + s * 0.7} ${y + s * 0.5}, ${x} ${y + s * 1.2} C${x - s * 0.7} ${y + s * 0.5}, ${x - s * 0.8} ${y - s * 0.6}, ${x} ${y - s * 1.2} Z`, {
-    fill: c.color, fillStyle: 'hachure', fillWeight: 0.3, hachureAngle: 70, hachureGap: 2.5,
-    stroke: '#4a6a4a', strokeWidth: 1, roughness: 0.7, seed,
-  });
-  // Centre vein
-  rc.line(x, y - s * 0.9, x, y + s * 0.9, {
-    stroke: '#3a5a3a', strokeWidth: 0.6, roughness: 0.5, seed,
-  });
-  // Side veins
-  for (let i = -2; i <= 2; i++) {
-    if (i === 0) continue;
-    const vy = y + i * s * 0.35;
-    rc.line(x, vy, x + (i % 2 ? 1 : -1) * s * 0.45, vy - s * 0.15, {
-      stroke: '#4a6a4a', strokeWidth: 0.35, roughness: 0.4, seed: seed + i,
-    });
-  }
-}
-
-function drawCrumble(rc: any, c: PlateComponent, seed: number) {
-  const { x, y, size: s } = c;
-  // Scatter irregular small pieces
-  for (let i = 0; i < 10; i++) {
-    const dx = (Math.sin(seed + i * 7.3) * 0.5) * s * 1.5;
-    const dy = (Math.cos(seed + i * 4.1) * 0.5) * s * 0.8;
-    const ps = s * (0.15 + Math.abs(Math.sin(seed + i * 2.7)) * 0.2);
-    rc.rectangle(x + dx - ps, y + dy - ps * 0.5, ps * 2, ps, {
-      fill: c.color, fillStyle: 'hachure', fillWeight: 0.3, hachureGap: 2, hachureAngle: 20 + i * 25,
-      stroke: '#888', strokeWidth: 0.6, roughness: 1.2, seed: seed + i,
-    });
-  }
-}
-
-const DRAW_FNS: Record<ShapeType, (rc: any, c: PlateComponent, seed: number) => void> = {
-  dome: drawDome, sauce: drawSauce, quenelle: drawQuenelle,
-  berries: drawBerries, crisp: drawCrisp, leaf: drawLeaf, crumble: drawCrumble,
-};
-
-/* ── Label positioning ── */
-function computeLabels(comps: PlateComponent[]) {
-  const slots = [
-    { x: 720, y: 130, anchor: 'left' as const },
-    { x: 720, y: 200, anchor: 'left' as const },
-    { x: 720, y: 270, anchor: 'left' as const },
-    { x: 720, y: 340, anchor: 'left' as const },
-    { x: 720, y: 410, anchor: 'left' as const },
-    { x: 40, y: 150, anchor: 'right' as const },
-    { x: 40, y: 240, anchor: 'right' as const },
-    { x: 40, y: 330, anchor: 'right' as const },
-    { x: 40, y: 420, anchor: 'right' as const },
-  ];
-  return comps.map((c, i) => ({
-    comp: c, slot: slots[i % slots.length],
-  }));
-}
-
-function drawLabels(ctx: CanvasRenderingContext2D, rc: any, comps: PlateComponent[], seed: number) {
-  const labels = computeLabels(comps);
-  ctx.save();
-  ctx.font = 'italic 13px Georgia, serif';
-  labels.forEach(({ comp, slot }, i) => {
-    // Leader line
-    rc.line(comp.x, comp.y, slot.x + (slot.anchor === 'left' ? -10 : 10), slot.y, {
-      stroke: '#888', strokeWidth: 0.5, roughness: 0.4, seed: seed + 100 + i,
-    });
-    // Small dot at component end
-    rc.circle(comp.x, comp.y, 4, {
-      fill: '#666', fillStyle: 'solid', stroke: 'none', roughness: 0.3, seed: seed + 200 + i,
-    });
-    // Text
-    ctx.fillStyle = '#3a3020';
-    ctx.textAlign = slot.anchor === 'left' ? 'left' : 'right';
-    ctx.fillText(comp.name, slot.x, slot.y + 4);
-  });
-  ctx.restore();
-}
-
-function drawTitle(ctx: CanvasRenderingContext2D, name: string, venue: string) {
-  ctx.save();
-  ctx.textAlign = 'center';
-  // Title
-  ctx.font = 'bold 16px Georgia, serif';
-  ctx.fillStyle = '#2c2418';
-  ctx.letterSpacing = '2px';
-  ctx.fillText(name.toUpperCase(), PLATE_CX, 560);
-  // Venue
-  if (venue) {
-    ctx.font = 'italic 11px Georgia, serif';
-    ctx.fillStyle = '#8a7e6b';
-    ctx.fillText(venue, PLATE_CX, 578);
-  }
-  // Decorative line
-  ctx.strokeStyle = '#b8860b';
-  ctx.lineWidth = 0.5;
-  ctx.globalAlpha = 0.4;
-  ctx.beginPath();
-  ctx.moveTo(PLATE_CX - 60, 586);
-  ctx.lineTo(PLATE_CX + 60, 586);
-  ctx.stroke();
-  ctx.restore();
+  left.sort((a, b) => a.comp.cy - b.comp.cy);
+  right.sort((a, b) => a.comp.cy - b.comp.cy);
+  const startY = 140, gap = 42;
+  left.forEach((l, i) => { l.ly = startY + i * gap; });
+  right.forEach((l, i) => { l.ly = startY + i * gap; });
+  return { left, right };
 }
 
 /* ── Main Component ── */
 export default function PlatingStudioPage() {
-  const [comps, setComps] = useState<PlateComponent[]>(PRESETS[0].components);
-  const [name, setName] = useState(PRESETS[0].name);
-  const [venue, setVenue] = useState('');
-  const [sel, setSel] = useState<number | null>(null);
-  const [seed, setSeed] = useState(42);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const roughRef = useRef<any>(null);
-  const nextId = useRef(100);
+  const [comps, setComps] = useState<PlateComp[]>(PRESETS[0].comps.map(c => ({ ...c })));
+  const [dishName, setDishName] = useState(PRESETS[0].name);
+  const [subtitle, setSubtitle] = useState(PRESETS[0].subtitle);
+  const [colourMode, setColourMode] = useState(false);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showLegend, setShowLegend] = useState(true);
+  const [editId, setEditId] = useState<string | null>(null);
+  const activeId = selectedId || hoveredId;
+  const isHighlighted = (id: string) => activeId === id;
+  const nextId = React.useRef(100);
 
-  // Dynamic import of rough.js (client-only)
-  const [roughLoaded, setRoughLoaded] = useState(false);
-  useEffect(() => {
-    import('roughjs').then((mod) => {
-      (window as any).__rough = mod.default || mod;
-      setRoughLoaded(true);
-    });
-  }, []);
+  const getCompFill = (type: string) => colourMode ? (TYPE_COLORS[type] || '#ccc') : '#f5f5f0';
+  const getFillOpacity = (type: string) => colourMode ? 0.6 : (type === 'glaze' || type === 'sugar_work' ? 0.15 : 0.3);
 
-  const draw = useCallback(() => {
-    const canvas = canvasRef.current;
-    const rough = (window as any).__rough;
-    if (!canvas || !rough) return;
+  const shapes = useMemo(() => {
+    return comps.map(c => {
+      const rng = createRng(hashStr(c.id) + 42);
+      const paths: { d: string; type: string; strokeOnly?: boolean }[] = [];
+      const extras: string[] = [];
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Clear and set paper background
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#FAF8F4';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Paper grain texture
-    ctx.save();
-    ctx.globalAlpha = 0.03;
-    for (let i = 0; i < 4000; i++) {
-      const gx = Math.random() * canvas.width;
-      const gy = Math.random() * canvas.height;
-      const gs = Math.random() * 1.5;
-      ctx.fillStyle = Math.random() > 0.5 ? '#000' : '#8a7a6a';
-      ctx.fillRect(gx, gy, gs, gs);
-    }
-    ctx.restore();
-
-    const rc = rough.canvas(canvas);
-    roughRef.current = rc;
-
-    // Draw plate
-    drawPlate(rc, ctx);
-
-    // Draw components (back to front by y-position)
-    const sorted = [...comps].sort((a, b) => a.y - b.y);
-    sorted.forEach(c => {
-      const fn = DRAW_FNS[c.shape];
-      if (fn) fn(rc, c, seed + c.id);
-    });
-
-    // Draw labels
-    drawLabels(ctx, rc, comps, seed);
-
-    // Draw title
-    drawTitle(ctx, name, venue);
-
-    // Selection ring
-    if (sel !== null) {
-      const sc = comps.find(c => c.id === sel);
-      if (sc) {
-        rc.ellipse(sc.x, sc.y, sc.size * 3.5, sc.size * 3.5, {
-          stroke: '#b8860b', strokeWidth: 1, roughness: 0.3,
-          strokeLineDash: [6, 4],
-        });
+      if (c.shape === 'mound') {
+        paths.push({ d: moundShape(c.cx, c.cy, c.w || 80, c.h || 40, rng), type: c.type });
+        for (let i = 1; i <= 3; i++) {
+          const yOff = c.cy - (c.h || 40) + i * ((c.h || 40) * 0.25);
+          const xShrink = (c.w || 80) * (1 - i * 0.22) / 2;
+          extras.push(`M ${(c.cx - xShrink).toFixed(1)} ${yOff.toFixed(1)} Q ${c.cx.toFixed(1)} ${(yOff - 8).toFixed(1)} ${(c.cx + xShrink).toFixed(1)} ${yOff.toFixed(1)}`);
+        }
+      } else if (c.shape === 'quenelle') {
+        paths.push({ d: quenelleShape(c.cx, c.cy, c.w || 50, c.h || 28, rng), type: c.type });
+      } else if (c.shape === 'berry') {
+        paths.push({ d: wobblyCircle(c.cx, c.cy, c.r || 8, rng), type: c.type });
+      } else if (c.shape === 'dots') {
+        for (let i = 0; i < (c.count || 4); i++) {
+          const angle = (i / (c.count || 4)) * Math.PI * 0.8 + Math.PI * 0.6;
+          const dist = (c.spread || 40) * (0.3 + (i / (c.count || 4)) * 0.7);
+          const dx = c.cx + Math.cos(angle) * dist, dy = c.cy + Math.sin(angle) * dist * 0.5;
+          paths.push({ d: wobblyCircle(dx, dy, (c.r || 8) + (rng() - 0.5) * 3, rng), type: c.type });
+        }
+      } else if (c.shape === 'swoosh') {
+        paths.push({ d: sauceSwoosh(c.x1 || c.cx - 40, c.y1 || c.cy, c.x2 || c.cx + 40, c.y2 || c.cy + 10, c.curve || 15, c.width || 12, rng), type: c.type });
+      } else if (c.shape === 'shard') {
+        const w = c.w || 20, h = c.h || 30;
+        paths.push({ d: `M ${jitter(c.cx - w * 0.3, 2, rng).toFixed(1)} ${(c.cy + h * 0.4).toFixed(1)} L ${jitter(c.cx - w * 0.5, 2, rng).toFixed(1)} ${jitter(c.cy - h * 0.3, 2, rng).toFixed(1)} L ${jitter(c.cx + w * 0.1, 2, rng).toFixed(1)} ${jitter(c.cy - h * 0.5, 2, rng).toFixed(1)} L ${jitter(c.cx + w * 0.5, 2, rng).toFixed(1)} ${jitter(c.cy - h * 0.1, 2, rng).toFixed(1)} L ${jitter(c.cx + w * 0.3, 2, rng).toFixed(1)} ${(c.cy + h * 0.3).toFixed(1)} Z`, type: c.type });
+      } else if (c.shape === 'scatter') {
+        for (let i = 0; i < 5; i++) {
+          const dx = c.cx + (rng() - 0.5) * 30, dy = c.cy + (rng() - 0.5) * 20;
+          paths.push({ d: wobblyCircle(dx, dy, 3 + rng() * 2, rng), type: c.type });
+        }
       }
-    }
-  }, [comps, name, venue, seed, sel, roughLoaded]);
-
-  useEffect(() => { if (roughLoaded) draw(); }, [draw, roughLoaded]);
-
-  // Canvas click to select/deselect
-  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    const mx = (e.clientX - rect.left) * scaleX;
-    const my = (e.clientY - rect.top) * scaleY;
-
-    const clicked = comps.find(c => {
-      const dx = mx - c.x, dy = my - c.y;
-      return Math.sqrt(dx * dx + dy * dy) < c.size * 1.5;
+      return { id: c.id, paths, extras };
     });
-    setSel(clicked ? clicked.id : null);
+  }, [comps]);
+
+  const labels = useMemo(() => autoLabels(comps), [comps]);
+
+  const loadPreset = (p: typeof PRESETS[number]) => {
+    setComps(p.comps.map(c => ({ ...c })));
+    setDishName(p.name);
+    setSubtitle(p.subtitle);
+    setSelectedId(null);
+    setEditId(null);
   };
 
-  // Drag
-  const dragging = useRef<number | null>(null);
-  const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    const mx = (e.clientX - rect.left) * scaleX;
-    const my = (e.clientY - rect.top) * scaleY;
-    const hit = comps.find(c => Math.sqrt((mx - c.x) ** 2 + (my - c.y) ** 2) < c.size * 1.5);
-    if (hit) {
-      dragging.current = hit.id;
-      setSel(hit.id);
-      canvas.setPointerCapture(e.pointerId);
-    } else {
-      setSel(null);
-    }
-  };
-  const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (dragging.current === null) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    const mx = (e.clientX - rect.left) * scaleX;
-    const my = (e.clientY - rect.top) * scaleY;
-    setComps(prev => prev.map(c => c.id === dragging.current ? { ...c, x: mx, y: my } : c));
-  };
-  const handlePointerUp = () => { dragging.current = null; };
-
-  // Actions
   const addComp = () => {
-    const id = nextId.current++;
+    const id = `comp-${nextId.current++}`;
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 60 + Math.random() * 80;
     setComps(prev => [...prev, {
-      id, name: 'New Component', shape: 'dome',
-      x: PLATE_CX + (Math.random() - 0.5) * 150,
-      y: PLATE_CY + (Math.random() - 0.5) * 150,
-      size: 30, color: '#b8a080',
+      id, name: 'New Component', type: 'garnish', shape: 'berry',
+      cx: 350 + Math.cos(angle) * dist, cy: 330 + Math.sin(angle) * dist, r: 8,
     }]);
-    setSel(id);
+    setEditId(id);
+    setSelectedId(id);
   };
-  const removeComp = (id: number) => {
+
+  const removeComp = (id: string) => {
     setComps(prev => prev.filter(c => c.id !== id));
-    if (sel === id) setSel(null);
+    if (selectedId === id) { setSelectedId(null); setEditId(null); }
   };
-  const updateComp = (id: number, upd: Partial<PlateComponent>) => {
+
+  const updateComp = (id: string, upd: Partial<PlateComp>) => {
     setComps(prev => prev.map(c => c.id === id ? { ...c, ...upd } : c));
   };
-  const loadPreset = (p: typeof PRESETS[number]) => {
-    setComps(p.components.map(c => ({ ...c })));
-    setName(p.name);
-    setSel(null);
-    nextId.current = Math.max(...p.components.map(c => c.id)) + 100;
-  };
-  const regenerate = () => setSeed(Math.floor(Math.random() * 10000));
-  const exportPNG = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const url = canvas.toDataURL('image/png');
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${name.toLowerCase().replace(/\s+/g, '-')}-plating.png`;
-    a.click();
+
+  const exportSvg = () => {
+    const svgEl = document.getElementById('plating-svg');
+    if (!svgEl) return;
+    const data = new XMLSerializer().serializeToString(svgEl);
+    const blob = new Blob([data], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `${dishName.replace(/\s+/g, '_')}_plating.svg`; a.click();
+    URL.revokeObjectURL(url);
   };
 
-  const selComp = comps.find(c => c.id === sel);
+  const editComp = comps.find(c => c.id === editId);
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div style={{ fontFamily: "'Georgia', serif", background: '#faf8f4', minHeight: '100vh' }}>
       {/* Header */}
-      <div className="border-b border-stone-200 bg-white px-4 sm:px-6 py-3">
-        <div className="max-w-screen-xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/create" className="text-stone-400 hover:text-stone-700 transition-colors">
-              <ArrowLeft size={18} />
-            </Link>
-            <div>
-              <h1 className="text-lg font-bold text-stone-900" style={{ fontFamily: 'Georgia, serif' }}>Plating Studio</h1>
-              <p className="text-[10px] text-stone-400 -mt-0.5">Hand-Drawn Sketch · rough.js</p>
-            </div>
+      <div style={{ padding: '10px 20px', borderBottom: '1px solid #e0dcd4', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, background: '#fff' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Link href="/create" style={{ color: '#8a7e6b', textDecoration: 'none', fontSize: 18 }}>
+            <ArrowLeft size={18} />
+          </Link>
+          <div>
+            <span style={{ fontSize: 18, fontWeight: 700, color: '#2c2418' }}>Plating Studio</span>
+            <span style={{ fontSize: 11, color: '#8a7e6b', fontStyle: 'italic', marginLeft: 8 }}>Interactive Sketch — 1-CUISINESG</span>
           </div>
-          <div className="flex items-center gap-2">
-            {PRESETS.map((p, i) => (
-              <button key={i} onClick={() => loadPreset(p)}
-                className={`px-3 py-1.5 text-[11px] font-medium rounded border transition-all ${
-                  name === p.name ? 'border-amber-600 bg-amber-50 text-amber-800' : 'border-stone-200 text-stone-500 hover:border-stone-400'
-                }`}>{p.name}</button>
-            ))}
-          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {PRESETS.map((p, i) => (
+            <button key={i} onClick={() => loadPreset(p)} style={{
+              padding: '4px 12px', fontSize: 11, border: '1px solid #c9c0b0', borderRadius: 3,
+              background: dishName === p.name ? '#2c2418' : 'transparent',
+              color: dishName === p.name ? '#faf8f4' : '#5a4e3a',
+              cursor: 'pointer', fontFamily: 'inherit',
+            }}>{p.name.split(' ').slice(0, 3).join(' ')}</button>
+          ))}
         </div>
       </div>
 
-      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6 flex gap-6" style={{ minHeight: 'calc(100vh - 60px)' }}>
-        {/* Canvas */}
-        <div className="flex-1 flex flex-col items-center">
-          <input value={name} onChange={e => setName(e.target.value)}
-            className="text-center text-xl font-bold text-stone-800 bg-transparent border-none outline-none mb-3 w-80"
-            style={{ fontFamily: 'Georgia, serif', letterSpacing: '0.04em' }} />
-
-          <div className="bg-white rounded-lg border border-stone-200 shadow-sm overflow-hidden">
-            <canvas ref={canvasRef} width={760} height={600}
-              className="cursor-grab active:cursor-grabbing"
-              style={{ width: '100%', maxWidth: 760, height: 'auto' }}
-              onClick={handleCanvasClick}
-              onPointerDown={handlePointerDown}
-              onPointerMove={handlePointerMove}
-              onPointerUp={handlePointerUp} />
+      <div style={{ display: 'flex', minHeight: 'calc(100vh - 50px)' }}>
+        {/* SVG Diagram */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 8px' }}>
+          {/* Controls */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+            <button onClick={() => setColourMode(!colourMode)} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 14px', fontSize: 11, border: '1px solid #c9c0b0', borderRadius: 3, background: colourMode ? '#2c2418' : 'transparent', color: colourMode ? '#faf8f4' : '#5a4e3a', cursor: 'pointer', fontFamily: 'inherit' }}>
+              <Palette size={13} /> {colourMode ? 'Sketch Mode' : 'Colour Mode'}
+            </button>
+            <button onClick={() => setShowLegend(!showLegend)} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 14px', fontSize: 11, border: '1px solid #c9c0b0', borderRadius: 3, background: 'transparent', color: '#5a4e3a', cursor: 'pointer', fontFamily: 'inherit' }}>
+              <List size={13} /> Legend
+            </button>
+            <button onClick={addComp} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 14px', fontSize: 11, border: '1px solid #b8860b', borderRadius: 3, background: '#2c2418', color: '#faf8f4', cursor: 'pointer', fontFamily: 'inherit' }}>
+              <Plus size={13} /> Add
+            </button>
+            <button onClick={exportSvg} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 14px', fontSize: 11, border: '1px solid #c9c0b0', borderRadius: 3, background: 'transparent', color: '#5a4e3a', cursor: 'pointer', fontFamily: 'inherit' }}>
+              <Download size={13} /> SVG
+            </button>
+            <button onClick={() => window.print()} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 14px', fontSize: 11, border: '1px solid #c9c0b0', borderRadius: 3, background: 'transparent', color: '#5a4e3a', cursor: 'pointer', fontFamily: 'inherit' }}>
+              <Printer size={13} /> Print
+            </button>
           </div>
 
-          <div className="flex items-center gap-3 mt-4">
-            <button onClick={addComp}
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold uppercase tracking-wide rounded bg-stone-900 text-white hover:bg-stone-700 transition-all">
-              <Plus size={13} /> Add Component
-            </button>
-            <button onClick={regenerate}
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded border border-stone-300 text-stone-600 hover:border-stone-500 transition-all">
-              <RefreshCw size={13} /> Redraw
-            </button>
-            <button onClick={exportPNG}
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded border border-amber-400 text-amber-700 bg-amber-50 hover:bg-amber-100 transition-all">
-              <Download size={13} /> Export PNG
-            </button>
-            {sel !== null && (
-              <button onClick={() => removeComp(sel)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded border border-red-300 text-red-600 bg-red-50 hover:bg-red-100 transition-all">
-                <Trash2 size={13} /> Remove
-              </button>
+          <div style={{ display: 'flex', gap: 0, alignItems: 'flex-start', maxWidth: 900, width: '100%' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <svg id="plating-svg" viewBox="0 0 700 620" style={{ width: '100%', maxWidth: 700, display: 'block', margin: '0 auto', background: '#fdfcf8', borderRadius: 4, border: '1px solid #e5e0d6' }}>
+                {/* Title */}
+                <text x="350" y="42" textAnchor="middle" style={{ fontSize: 19, fontStyle: 'italic', fill: '#222', fontFamily: "'Georgia', serif" }}>{dishName}</text>
+                <text x="350" y="62" textAnchor="middle" style={{ fontSize: 11, fill: '#888', fontFamily: "'Georgia', serif", fontStyle: 'italic' }}>{subtitle}</text>
+
+                {/* Plate */}
+                <ellipse cx="352" cy="340" rx="232" ry="228" fill="rgba(0,0,0,0.05)" />
+                <circle cx="350" cy="330" r="225" fill="#f5f5f0" stroke="#d4d0c8" strokeWidth="2.5" />
+                <circle cx="350" cy="330" r="195" fill="none" stroke="#eae6de" strokeWidth="0.6" strokeDasharray="5,7" />
+
+                {/* Components */}
+                {shapes.map(s => (
+                  <g key={s.id}
+                    onMouseEnter={() => setHoveredId(s.id)} onMouseLeave={() => setHoveredId(null)}
+                    onClick={() => { setSelectedId(selectedId === s.id ? null : s.id); setEditId(selectedId === s.id ? null : s.id); }}
+                    style={{ cursor: 'pointer', transition: 'filter 0.2s' }}
+                    filter={isHighlighted(s.id) ? 'url(#glow)' : 'none'}>
+                    {s.paths.map((p, i) => (
+                      <path key={i} d={p.d}
+                        fill={p.strokeOnly ? 'none' : getCompFill(p.type)}
+                        fillOpacity={p.strokeOnly ? 0 : getFillOpacity(p.type)}
+                        stroke={isHighlighted(s.id) ? '#333' : (p.type === 'glaze' || p.type === 'sugar_work' ? '#999' : '#777')}
+                        strokeWidth={isHighlighted(s.id) ? 2.5 : (p.type === 'garnish' || p.type === 'crumb' ? 1 : 1.5)}
+                        strokeDasharray={p.type === 'glaze' ? '4,3' : 'none'} />
+                    ))}
+                    {s.extras.map((d, i) => (
+                      <path key={`e-${i}`} d={d} fill="none" stroke={isHighlighted(s.id) ? '#555' : '#bbb'} strokeWidth={0.8} strokeDasharray="5,4" />
+                    ))}
+                  </g>
+                ))}
+
+                {/* Leader lines + Labels */}
+                {labels.left.map(({ comp: c, ly }) => (
+                  <g key={`ll-${c.id}`}>
+                    <LeaderLine fromX={80} fromY={ly + 5} toX={c.cx} toY={c.cy} highlighted={isHighlighted(c.id)} />
+                    <text x={75} y={ly} textAnchor="end"
+                      onMouseEnter={() => setHoveredId(c.id)} onMouseLeave={() => setHoveredId(null)}
+                      onClick={() => { setSelectedId(selectedId === c.id ? null : c.id); setEditId(selectedId === c.id ? null : c.id); }}
+                      style={{ fontSize: 13, fontStyle: 'italic', fill: isHighlighted(c.id) ? '#111' : '#333', fontWeight: isHighlighted(c.id) ? 700 : 400, cursor: 'pointer', fontFamily: "'Georgia', serif" }}>
+                      {c.name}
+                    </text>
+                  </g>
+                ))}
+                {labels.right.map(({ comp: c, ly }) => (
+                  <g key={`lr-${c.id}`}>
+                    <LeaderLine fromX={620} fromY={ly + 5} toX={c.cx} toY={c.cy} highlighted={isHighlighted(c.id)} />
+                    <text x={625} y={ly} textAnchor="start"
+                      onMouseEnter={() => setHoveredId(c.id)} onMouseLeave={() => setHoveredId(null)}
+                      onClick={() => { setSelectedId(selectedId === c.id ? null : c.id); setEditId(selectedId === c.id ? null : c.id); }}
+                      style={{ fontSize: 13, fontStyle: 'italic', fill: isHighlighted(c.id) ? '#111' : '#333', fontWeight: isHighlighted(c.id) ? 700 : 400, cursor: 'pointer', fontFamily: "'Georgia', serif" }}>
+                      {c.name}
+                    </text>
+                  </g>
+                ))}
+
+                <defs>
+                  <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3" result="blur" />
+                    <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                  </filter>
+                </defs>
+              </svg>
+
+              {/* Chef notes */}
+              <div style={{ textAlign: 'center', padding: '8px 24px 16px', fontStyle: 'italic', fontSize: 12, color: '#888', lineHeight: 1.6 }}>
+                <span style={{ color: '#aaa' }}>—</span>&nbsp; Click components or labels to highlight &nbsp;·&nbsp; Toggle colour mode for watercolour fills &nbsp;<span style={{ color: '#aaa' }}>—</span>
+              </div>
+            </div>
+
+            {/* Legend sidebar */}
+            {showLegend && (
+              <div style={{ width: 180, padding: '12px 14px', borderLeft: '1px solid #e8e4dc', fontSize: 12, color: '#444', lineHeight: 1.7, flexShrink: 0, background: '#fdfcf8' }}>
+                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 8, color: '#333', borderBottom: '1px solid #e8e4dc', paddingBottom: 6 }}>Components</div>
+                {comps.map(c => (
+                  <div key={c.id}
+                    onMouseEnter={() => setHoveredId(c.id)} onMouseLeave={() => setHoveredId(null)}
+                    onClick={() => { setSelectedId(selectedId === c.id ? null : c.id); setEditId(selectedId === c.id ? null : c.id); }}
+                    style={{ cursor: 'pointer', padding: '3px 4px', borderRadius: 3, display: 'flex', alignItems: 'center', gap: 6, background: isHighlighted(c.id) ? '#f5f0e8' : 'transparent', fontWeight: isHighlighted(c.id) ? 600 : 400, transition: 'all 0.15s' }}>
+                    <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: colourMode ? (TYPE_COLORS[c.type] || '#ccc') : '#e0dcd4', border: '1px solid #bbb', flexShrink: 0 }} />
+                    <span style={{ fontStyle: 'italic', fontSize: 11 }}>{c.name}</span>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
-        </div>
 
-        {/* Side Panel */}
-        <div className="w-64 flex-shrink-0 space-y-3">
-          <div className="text-[10px] font-bold tracking-widest uppercase text-stone-400">Components</div>
-          {comps.length === 0 && (
-            <p className="text-xs text-stone-400 italic">Click &quot;+ Add Component&quot; to start.</p>
-          )}
-          {comps.map(c => (
-            <div key={c.id} onClick={() => setSel(c.id)}
-              className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                sel === c.id ? 'border-amber-500 bg-amber-50 ring-1 ring-amber-500/20' : 'border-stone-200 bg-white hover:border-stone-300'
-              }`}>
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-stone-800">{c.name}</span>
-                <button onClick={e => { e.stopPropagation(); removeComp(c.id); }}
-                  className="text-stone-300 hover:text-red-500 transition-colors">
-                  <Trash2 size={12} />
+          {/* Edit panel for selected component */}
+          {editComp && (
+            <div style={{ maxWidth: 600, width: '100%', marginTop: 12, padding: 16, background: '#fff', border: '1px solid #e0dcd4', borderRadius: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#2c2418' }}>Edit: {editComp.name}</span>
+                <button onClick={() => removeComp(editComp.id)} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '3px 10px', fontSize: 10, border: '1px solid #e8a0a0', borderRadius: 3, background: '#fff5f5', color: '#c44', cursor: 'pointer', fontFamily: 'inherit' }}>
+                  <Trash2 size={11} /> Remove
                 </button>
               </div>
-              {sel === c.id && (
-                <div className="space-y-2 mt-2 pt-2 border-t border-stone-100">
-                  <input value={c.name} onChange={e => updateComp(c.id, { name: e.target.value })}
-                    className="w-full px-2 py-1 text-xs border border-stone-200 rounded bg-white outline-none focus:border-amber-400" />
-
-                  <div className="text-[9px] font-bold tracking-wider uppercase text-stone-400">Shape</div>
-                  <div className="flex flex-wrap gap-1">
-                    {SHAPE_TYPES.map(s => (
-                      <button key={s} onClick={e => { e.stopPropagation(); updateComp(c.id, { shape: s }); }}
-                        className={`px-2 py-0.5 text-[9px] rounded border capitalize ${
-                          c.shape === s ? 'border-amber-500 bg-stone-900 text-white' : 'border-stone-200 text-stone-500'
-                        }`}>{s}</button>
-                    ))}
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <span className="text-[9px] font-bold tracking-wider uppercase text-stone-400 w-8">Size</span>
-                    <input type="range" min={10} max={80} value={c.size}
-                      onChange={e => updateComp(c.id, { size: parseInt(e.target.value) })}
-                      className="flex-1" style={{ accentColor: '#b8860b' }} />
-                    <span className="text-[10px] text-stone-500 w-5 text-right">{c.size}</span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <span className="text-[9px] font-bold tracking-wider uppercase text-stone-400 w-8">Tint</span>
-                    <input type="color" value={c.color}
-                      onChange={e => updateComp(c.id, { color: e.target.value })}
-                      className="w-6 h-5 border border-stone-200 rounded cursor-pointer p-0" />
-                    <span className="text-[9px] text-stone-400">{c.color}</span>
-                  </div>
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                <div style={{ flex: 1, minWidth: 140 }}>
+                  <label style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#8a7e6b' }}>Name</label>
+                  <input value={editComp.name} onChange={e => updateComp(editComp.id, { name: e.target.value })} style={{ width: '100%', padding: '4px 8px', fontSize: 12, border: '1px solid #d4cfc4', borderRadius: 3, fontFamily: 'inherit', outline: 'none' }} />
                 </div>
-              )}
+                <div>
+                  <label style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#8a7e6b' }}>Type</label>
+                  <select value={editComp.type} onChange={e => updateComp(editComp.id, { type: e.target.value as CompType })} style={{ padding: '4px 6px', fontSize: 11, border: '1px solid #d4cfc4', borderRadius: 3, fontFamily: 'inherit' }}>
+                    {COMP_TYPES.map(t => <option key={t} value={t}>{TYPE_LABELS[t]}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#8a7e6b' }}>Shape</label>
+                  <select value={editComp.shape} onChange={e => updateComp(editComp.id, { shape: e.target.value as ShapeKind })} style={{ padding: '4px 6px', fontSize: 11, border: '1px solid #d4cfc4', borderRadius: 3, fontFamily: 'inherit' }}>
+                    {['mound', 'quenelle', 'swoosh', 'dots', 'berry', 'shard', 'scatter'].map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+              </div>
             </div>
-          ))}
-
-          {/* Venue */}
-          <div className="pt-3 border-t border-stone-200">
-            <div className="text-[9px] font-bold tracking-wider uppercase text-stone-400 mb-1.5">Venue Label</div>
-            <input value={venue} onChange={e => setVenue(e.target.value)}
-              placeholder="e.g. Kaarla"
-              className="w-full px-2 py-1.5 text-xs border border-stone-200 rounded bg-white outline-none focus:border-amber-400" />
-          </div>
-
-          <div className="text-[10px] text-stone-400 leading-relaxed pt-3 border-t border-stone-200">
-            <strong>Tip:</strong> Drag components on the canvas to reposition. Click &quot;Redraw&quot; for a fresh hand-drawn variation — each render is unique.
-          </div>
+          )}
         </div>
       </div>
+
+      <style>{`@media print { button, [style*="borderLeft"] { display: none !important; } }`}</style>
     </div>
   );
 }

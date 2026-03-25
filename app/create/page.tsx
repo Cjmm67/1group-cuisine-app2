@@ -313,198 +313,6 @@ window.addEventListener('load', async function() {
 }
 
 
-// ─── AI PLATING SKETCH (Claude API bespoke SVG) ─────────────────────────────
-
-function PlatingSketchPanel({ components, assembly, title, venueName, venueAccent, imagePrompt, onImagePromptChange }: {
-  components: { name: string }[];
-  assembly: string[];
-  title: string;
-  venueName: string;
-  venueAccent: string;
-  imagePrompt: string;
-  onImagePromptChange: (p: string) => void;
-}) {
-  const [svg, setSvg] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [finalImage, setFinalImage] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const generate = async () => {
-    setLoading(true); setError(null);
-    try {
-      const res = await fetch('/api/chat/sketch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title, venueName, venueAccent,
-          imagePrompt: `${title}. Components: ${components.map(c => c.name).join(', ')}. Assembly: ${assembly.join('. ')}`,
-          components, assembly,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Sketch generation failed');
-      setSvg(data.svg);
-    } catch (err: any) {
-      setError(err.message);
-    } finally { setLoading(false); }
-  };
-
-  const downloadSvg = () => {
-    if (!svg) return;
-    const blob = new Blob([svg], { type: 'image/svg+xml' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `${title.toLowerCase().replace(/\s+/g, '-')}-plating.svg`; a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const downloadPng = () => {
-    if (!svg) return;
-    const canvas = document.createElement('canvas');
-    canvas.width = 1360; canvas.height = 1200;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    const img = new Image();
-    img.onload = () => {
-      ctx.fillStyle = '#FAF8F4';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const url = canvas.toDataURL('image/png');
-      const a = document.createElement('a');
-      a.href = url; a.download = `${title.toLowerCase().replace(/\s+/g, '-')}-plating.png`; a.click();
-    };
-    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) { alert('Please upload an image file.'); return; }
-    if (file.size > 10 * 1024 * 1024) { alert('Image too large — max 10MB.'); return; }
-    const reader = new FileReader();
-    reader.onload = () => setFinalImage(reader.result as string);
-    reader.readAsDataURL(file);
-  };
-
-  return (
-    <div className="space-y-4">
-      {/* Plating Sketch Section */}
-      <div className="rounded-lg border border-stone-200 overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-2.5 bg-stone-50 border-b border-stone-100">
-          <div className="flex items-center gap-2">
-            <PenTool size={13} style={{ color: venueAccent }} />
-            <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: venueAccent }}>Plating Sketch</span>
-            <span className="text-[10px] text-stone-400 italic">AI-generated</span>
-          </div>
-          {svg && (
-            <div className="flex items-center gap-2">
-              <button onClick={generate} className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-semibold rounded border border-stone-200 text-stone-500 hover:border-stone-400 transition-all">
-                <RefreshCw size={10} /> Redraw
-              </button>
-              <button onClick={downloadSvg} className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-bold uppercase tracking-wide rounded border text-stone-600 border-stone-200 hover:border-stone-400 transition-all">
-                <Download size={10} /> SVG
-              </button>
-              <button onClick={downloadPng} className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-bold uppercase tracking-wide rounded transition-all"
-                style={{ background: `${venueAccent}15`, color: venueAccent, border: `1px solid ${venueAccent}40` }}>
-                <Download size={10} /> PNG
-              </button>
-            </div>
-          )}
-        </div>
-
-        {!svg && !loading && (
-          <div className="p-8 text-center bg-[#FAF8F4]">
-            <p className="text-sm text-stone-500 mb-3">Generate a bespoke plating diagram for this dish</p>
-            <button onClick={generate}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wide text-white transition-all"
-              style={{ background: venueAccent }}>
-              <Sparkles size={14} /> Generate Plating Sketch
-            </button>
-          </div>
-        )}
-
-        {loading && (
-          <div className="p-12 text-center bg-[#FAF8F4]">
-            <Loader2 size={24} className="animate-spin mx-auto mb-3 text-stone-400" />
-            <p className="text-sm font-semibold text-stone-600">Claude is drawing your dish...</p>
-            <p className="text-xs text-stone-400 mt-1">Composing organic shapes, wash layers, and annotations</p>
-          </div>
-        )}
-
-        {error && (
-          <div className="p-6 text-center bg-red-50">
-            <p className="text-sm text-red-600 mb-2">{error}</p>
-            <button onClick={generate} className="text-xs font-bold text-red-500 hover:text-red-700 uppercase tracking-wide">Try Again</button>
-          </div>
-        )}
-
-        {svg && !loading && (
-          <div className="bg-[#FAF8F4] p-4" dangerouslySetInnerHTML={{ __html: svg }} style={{ maxWidth: '100%' }} />
-        )}
-      </div>
-
-      {/* Reference Image Prompt — editable, synced with sketch */}
-      <div className="bg-stone-900 rounded-lg p-4">
-        <div className="flex items-center justify-between mb-2">
-          <div className="text-[10px] font-bold tracking-widest uppercase text-[#C9A84C]">Reference Image Prompt</div>
-          <div className="flex items-center gap-2">
-            <CopyButton text={imagePrompt} label="Copy prompt" />
-            {svg && (
-              <span className="text-[9px] text-stone-500 italic">Download sketch + paste prompt into Midjourney</span>
-            )}
-          </div>
-        </div>
-        <textarea
-          value={imagePrompt}
-          onChange={e => onImagePromptChange(e.target.value)}
-          rows={4}
-          className="w-full text-sm text-stone-300 italic leading-relaxed bg-stone-800 border border-stone-700 rounded px-3 py-2 outline-none focus:border-[#C9A84C] resize-y"
-        />
-      </div>
-
-      {/* Upload Final Image (from Midjourney etc) */}
-      <div className="rounded-lg border border-dashed border-stone-300 overflow-hidden">
-        <div className="px-4 py-2.5 bg-stone-50 border-b border-stone-100">
-          <div className="flex items-center gap-2">
-            <ImageIcon size={13} style={{ color: venueAccent }} />
-            <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: venueAccent }}>Final Dish Image</span>
-            <span className="text-[10px] text-stone-400 italic">Upload from Midjourney / Ideogram / DALL-E</span>
-          </div>
-        </div>
-
-        {!finalImage ? (
-          <div className="p-6 text-center bg-white">
-            <p className="text-xs text-stone-400 mb-3 leading-relaxed">
-              Download the sketch above, upload it to Midjourney with the prompt, then upload the final image here to include it in your PDF.
-            </p>
-            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-            <button onClick={() => fileInputRef.current?.click()}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide border border-stone-300 text-stone-600 hover:border-stone-500 transition-all">
-              <Upload size={13} /> Upload Final Image
-            </button>
-          </div>
-        ) : (
-          <div className="bg-white p-4">
-            <div className="relative">
-              <img src={finalImage} alt="Final dish" className="w-full rounded-lg border border-stone-200" />
-              <button onClick={() => setFinalImage(null)}
-                className="absolute top-2 right-2 p-1.5 rounded-full bg-white/90 border border-stone-200 text-stone-500 hover:text-red-500 transition-colors">
-                <X size={14} />
-              </button>
-            </div>
-            <div className="flex items-center gap-2 mt-3">
-              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-              <button onClick={() => fileInputRef.current?.click()}
-                className="text-[10px] font-semibold text-stone-500 hover:text-stone-700 uppercase tracking-wide">Replace Image</button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 function AdaptationResultPanel({ result, chefName, originalTitle, venueAccent }: {
   result: AdaptationResult; chefName: string; originalTitle: string; venueAccent: string;
 }) {
@@ -689,17 +497,20 @@ function AdaptationResultPanel({ result, chefName, originalTitle, venueAccent }:
             </div>
           </div>
 
-          {/* Plating Sketch + Image Prompt + Final Image Upload */}
-          {(a.components?.length > 0) && (
-            <PlatingSketchPanel
-              components={a.components.map(c => ({ name: c.name }))}
-              assembly={a.assembly || []}
-              title={a.title}
-              venueName={menuAnalysis.venueName}
-              venueAccent={venueAccent}
-              imagePrompt={a.imagePrompt || ''}
-              onImagePromptChange={(p: string) => setField('imagePrompt', p)}
-            />
+          {/* Image Prompt */}
+          {a.imagePrompt && (
+            <div className="bg-stone-900 rounded-lg p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-[10px] font-bold tracking-widest uppercase text-[#C9A84C]">Reference Image Prompt</div>
+                <CopyButton text={a.imagePrompt} label="Copy prompt" />
+              </div>
+              {editing ? (
+                <textarea value={a.imagePrompt} onChange={e => setField('imagePrompt', e.target.value)}
+                  rows={4} className="w-full text-sm text-stone-300 italic leading-relaxed bg-stone-800 border border-stone-700 rounded px-3 py-2 outline-none focus:border-[#C9A84C] resize-y" />
+              ) : (
+                <p className="text-sm text-stone-300 italic leading-relaxed">{a.imagePrompt}</p>
+              )}
+            </div>
           )}
         </div>
       </div>
