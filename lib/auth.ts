@@ -107,7 +107,7 @@ export async function createToken(user: AuthUser): Promise<string> {
   })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('7d')
+    .setExpirationTime('365d')
     .sign(JWT_SECRET);
 }
 
