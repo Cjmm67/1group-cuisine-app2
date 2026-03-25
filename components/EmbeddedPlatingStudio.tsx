@@ -389,52 +389,136 @@ function DotsShape({ x, y, size, color, id }: RProps) {
    ═══════════════════════════════════════════ */
 
 function FishFillet({ x, y, size, color, id }: RProps) {
-  const w = size * 3.2, h = size * 1.6;
-  const baseY = y + h * 0.1;
+  const w = size * 3.6, h = size * 2.8;
+  const baseY = y + h * 0.05;
+  /* Wide triangular wedge — broad at head (left), tapers to tail (right)
+     Modelled from overhead grilled branzino: arched, thick, grill-marked */
   return (
     <g>
-      <ellipse cx={x + 3} cy={baseY + h * 0.35} rx={w * 0.48} ry={h * 0.14} fill="#000" opacity="0.07" />
-      {/* Main fillet body — tapered left to right */}
-      <path d={`M${x - w * 0.48},${baseY + h * 0.08}
-        C${x - w * 0.45},${baseY - h * 0.35} ${x - w * 0.15},${baseY - h * 0.48} ${x + w * 0.1},${baseY - h * 0.45}
-        C${x + w * 0.35},${baseY - h * 0.4} ${x + w * 0.48},${baseY - h * 0.2} ${x + w * 0.5},${baseY + h * 0.05}
-        C${x + w * 0.48},${baseY + h * 0.25} ${x + w * 0.3},${baseY + h * 0.32} ${x + w * 0.05},${baseY + h * 0.3}
-        C${x - w * 0.2},${baseY + h * 0.28} ${x - w * 0.45},${baseY + h * 0.2} ${x - w * 0.48},${baseY + h * 0.08} Z`}
-        fill={`url(#fish-g-${id})`} stroke="#555" strokeWidth="1.2" />
-      {/* Skin scoring lines */}
-      {[0.15, 0.3, 0.45, 0.6, 0.75].map((t, i) => {
-        const lx = x - w * 0.35 + t * w * 0.7;
+      {/* Ground shadow — wide triangular */}
+      <path d={`M${x - w * 0.45},${baseY + h * 0.28}
+        C${x - w * 0.2},${baseY + h * 0.38} ${x + w * 0.2},${baseY + h * 0.32} ${x + w * 0.48},${baseY + h * 0.18}
+        C${x + w * 0.3},${baseY + h * 0.35} ${x - w * 0.1},${baseY + h * 0.4} ${x - w * 0.45},${baseY + h * 0.28} Z`}
+        fill="#000" opacity="0.07" />
+
+      {/* Side thickness — visible 3D edge along bottom */}
+      <path d={`M${x - w * 0.46},${baseY + h * 0.12}
+        L${x - w * 0.46},${baseY + h * 0.22}
+        C${x - w * 0.2},${baseY + h * 0.3} ${x + w * 0.15},${baseY + h * 0.26} ${x + w * 0.47},${baseY + h * 0.1}
+        L${x + w * 0.47},${baseY + h * 0.02}
+        C${x + w * 0.15},${baseY + h * 0.18} ${x - w * 0.2},${baseY + h * 0.22} ${x - w * 0.46},${baseY + h * 0.12} Z`}
+        fill={`url(#fish-side-${id})`} stroke="#888" strokeWidth="0.6" opacity="0.7" />
+
+      {/* Main fillet body — wide triangular wedge, arched top surface */}
+      <path d={`M${x - w * 0.46},${baseY + h * 0.12}
+        C${x - w * 0.48},${baseY - h * 0.08} ${x - w * 0.42},${baseY - h * 0.28} ${x - w * 0.25},${baseY - h * 0.35}
+        C${x - w * 0.05},${baseY - h * 0.42} ${x + w * 0.15},${baseY - h * 0.38} ${x + w * 0.3},${baseY - h * 0.28}
+        C${x + w * 0.42},${baseY - h * 0.18} ${x + w * 0.48},${baseY - h * 0.05} ${x + w * 0.47},${baseY + h * 0.02}
+        C${x + w * 0.15},${baseY + h * 0.18} ${x - w * 0.2},${baseY + h * 0.22} ${x - w * 0.46},${baseY + h * 0.12} Z`}
+        fill={`url(#fish-top-${id})`} stroke="#555" strokeWidth="1.3" />
+
+      {/* Golden sear wash across surface */}
+      <path d={`M${x - w * 0.4},${baseY + h * 0.05}
+        C${x - w * 0.2},${baseY - h * 0.2} ${x + w * 0.1},${baseY - h * 0.25} ${x + w * 0.38},${baseY - h * 0.1}
+        C${x + w * 0.15},${baseY - h * 0.05} ${x - w * 0.15},${baseY + h * 0.02} ${x - w * 0.4},${baseY + h * 0.05} Z`}
+        fill="#c8a050" opacity="0.08" />
+
+      {/* Diagonal grill marks — parallel lines at ~40° angle */}
+      {[-0.3, -0.15, 0, 0.15, 0.3, 0.45].map((t, i) => {
+        const startX = x - w * 0.35 + t * w * 0.7;
+        const startY = baseY - h * 0.35 + Math.abs(t) * h * 0.15;
+        const endX = startX + w * 0.22;
+        const endY = startY + h * 0.35;
         return (
-          <line key={i} x1={lx} y1={baseY - h * 0.32 + t * h * 0.08}
-            x2={lx + w * 0.04} y2={baseY + h * 0.2 - t * h * 0.05}
-            stroke="#999" strokeWidth="0.5" opacity={0.25 + t * 0.1} strokeDasharray="3,3" />
+          <line key={`gm-${i}`}
+            x1={startX} y1={startY}
+            x2={endX} y2={endY}
+            stroke="#8a6530" strokeWidth={1.8 + Math.sin(i * 1.5) * 0.4}
+            opacity={0.12 + Math.sin(i * 2.1) * 0.04}
+            strokeLinecap="round" />
         );
       })}
-      {/* Sear crust band along top edge */}
-      <path d={`M${x - w * 0.4},${baseY - h * 0.25}
-        C${x - w * 0.15},${baseY - h * 0.42} ${x + w * 0.2},${baseY - h * 0.4} ${x + w * 0.45},${baseY - h * 0.15}`}
-        fill="none" stroke="#b8956a" strokeWidth="2.5" opacity="0.2" strokeLinecap="round" />
-      {/* Centre line — spine */}
-      <path d={`M${x - w * 0.38},${baseY - h * 0.05}
-        C${x - w * 0.1},${baseY - h * 0.12} ${x + w * 0.15},${baseY - h * 0.1} ${x + w * 0.42},${baseY + h * 0.02}`}
-        fill="none" stroke="#aaa" strokeWidth="0.5" opacity="0.3" strokeDasharray="6,4" />
-      {/* Highlight */}
-      <path d={`M${x - w * 0.2},${baseY - h * 0.35}
-        C${x},${baseY - h * 0.42} ${x + w * 0.2},${baseY - h * 0.35} ${x + w * 0.35},${baseY - h * 0.2}`}
-        fill="none" stroke="#fff" strokeWidth="2.5" opacity="0.4" strokeLinecap="round" />
-      {/* Left-side pencil hatching */}
-      {[0, 1, 2, 3, 4].map(i => (
-        <line key={`h-${i}`} x1={x - w * 0.42 + i * 3} y1={baseY - h * 0.15 + i * 3}
-          x2={x - w * 0.38 + i * 3} y2={baseY + h * 0.18 + i * 2}
-          stroke="#888" strokeWidth="0.3" opacity="0.12" />
+      {/* Cross-grill marks (perpendicular, lighter) */}
+      {[-0.2, 0.0, 0.2, 0.4].map((t, i) => {
+        const startX = x - w * 0.25 + t * w * 0.6;
+        const startY = baseY + h * 0.05 + Math.abs(t) * h * 0.08;
+        const endX = startX + w * 0.2;
+        const endY = startY - h * 0.32;
+        return (
+          <line key={`gx-${i}`}
+            x1={startX} y1={startY}
+            x2={endX} y2={endY}
+            stroke="#8a6530" strokeWidth={1.2}
+            opacity={0.07 + i * 0.01}
+            strokeLinecap="round" />
+        );
+      })}
+
+      {/* Skin edge — crispy golden strip along bottom-left curve */}
+      <path d={`M${x - w * 0.44},${baseY + h * 0.1}
+        C${x - w * 0.25},${baseY + h * 0.2} ${x},${baseY + h * 0.18} ${x + w * 0.25},${baseY + h * 0.1}`}
+        fill="none" stroke="#b8960a" strokeWidth="3" opacity="0.15" strokeLinecap="round" />
+      <path d={`M${x - w * 0.42},${baseY + h * 0.09}
+        C${x - w * 0.22},${baseY + h * 0.18} ${x + w * 0.02},${baseY + h * 0.16} ${x + w * 0.22},${baseY + h * 0.08}`}
+        fill="none" stroke="#a08030" strokeWidth="1.5" opacity="0.12" strokeLinecap="round" />
+
+      {/* Height contour — dashed ellipse showing the arch/dome of the fillet */}
+      <path d={`M${x - w * 0.25},${baseY - h * 0.08}
+        Q${x},${baseY - h * 0.2} ${x + w * 0.25},${baseY - h * 0.05}`}
+        fill="none" stroke="#555" strokeWidth="0.8" strokeDasharray="6,5" opacity="0.25" />
+      {/* Second contour higher */}
+      <path d={`M${x - w * 0.18},${baseY - h * 0.18}
+        Q${x + w * 0.05},${baseY - h * 0.28} ${x + w * 0.2},${baseY - h * 0.15}`}
+        fill="none" stroke="#555" strokeWidth="0.6" strokeDasharray="5,5" opacity="0.18" />
+
+      {/* Spine line — faint centre ridge */}
+      <path d={`M${x - w * 0.38},${baseY}
+        C${x - w * 0.15},${baseY - h * 0.12} ${x + w * 0.1},${baseY - h * 0.15} ${x + w * 0.4},${baseY - h * 0.02}`}
+        fill="none" stroke="#bbb" strokeWidth="0.5" opacity="0.2" strokeDasharray="8,6" />
+
+      {/* Specular highlight — wide glossy sweep */}
+      <path d={`M${x - w * 0.25},${baseY - h * 0.3}
+        C${x - w * 0.05},${baseY - h * 0.4} ${x + w * 0.15},${baseY - h * 0.35} ${x + w * 0.32},${baseY - h * 0.2}`}
+        fill="none" stroke="#fff" strokeWidth="3.5" opacity="0.4" strokeLinecap="round" />
+      <path d={`M${x - w * 0.15},${baseY - h * 0.22}
+        C${x + w * 0.02},${baseY - h * 0.28} ${x + w * 0.15},${baseY - h * 0.24} ${x + w * 0.25},${baseY - h * 0.15}`}
+        fill="none" stroke="#fff" strokeWidth="1.5" opacity="0.25" strokeLinecap="round" />
+
+      {/* Left-side pencil shading — depth on thicker end */}
+      {[0, 1, 2, 3, 4, 5, 6].map(i => {
+        const t = i * 0.1;
+        const sx = x - w * 0.44 + t * w * 0.12;
+        return (
+          <line key={`ps-${i}`}
+            x1={sx} y1={baseY - h * 0.1 + i * 3}
+            x2={sx + 2} y2={baseY + h * 0.15 + i * 1.5}
+            stroke="#888" strokeWidth="0.35" opacity={0.12 + (1 - t) * 0.08} />
+        );
+      })}
+
+      {/* Herb flecks on surface — small green dots (like in the photo) */}
+      {[
+        { dx: -w * 0.15, dy: -h * 0.1 }, { dx: w * 0.05, dy: -h * 0.15 },
+        { dx: -w * 0.05, dy: h * 0.02 }, { dx: w * 0.15, dy: -h * 0.08 },
+        { dx: -w * 0.25, dy: -h * 0.02 }, { dx: w * 0.1, dy: 0 },
+      ].map((p, i) => (
+        <circle key={`hf-${i}`} cx={x + p.dx} cy={baseY + p.dy}
+          r={1 + Math.sin(i * 2.7) * 0.5}
+          fill="#6a8a40" opacity={0.12 + Math.cos(i * 1.9) * 0.05} />
       ))}
+
       <defs>
-        <radialGradient id={`fish-g-${id}`} cx="38%" cy="25%" r="65%">
-          <stop offset="0%" stopColor="#fff" stopOpacity="0.65" />
-          <stop offset="40%" stopColor={color} stopOpacity="0.2" />
-          <stop offset="75%" stopColor={color} stopOpacity="0.12" />
+        <radialGradient id={`fish-top-${id}`} cx="35%" cy="25%" r="65%">
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.6" />
+          <stop offset="25%" stopColor="#f0e8d0" stopOpacity="0.25" />
+          <stop offset="50%" stopColor={color} stopOpacity="0.18" />
+          <stop offset="80%" stopColor="#c8a868" stopOpacity="0.12" />
           <stop offset="100%" stopColor="#888" stopOpacity="0.1" />
         </radialGradient>
+        <linearGradient id={`fish-side-${id}`} x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor={color} stopOpacity="0.12" />
+          <stop offset="100%" stopColor="#888" stopOpacity="0.08" />
+        </linearGradient>
       </defs>
     </g>
   );
