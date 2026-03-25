@@ -73,7 +73,7 @@ export async function validateCredentials(
   // 1. Check admin users first (master_admin and admin roles)
   const users = getUsers();
   const adminUser = users.find((u) => u.email === normalizedEmail);
-  if (adminUser && adminUser.password === password) {
+  if (adminUser && adminUser.password.trim() === password.trim()) {
     return {
       email: adminUser.email,
       name: adminUser.name,

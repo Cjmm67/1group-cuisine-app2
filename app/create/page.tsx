@@ -10,6 +10,9 @@ import {
 import { MOCK_CHEFS, MOCK_RECIPES } from '@/lib/mockData';
 import Link from 'next/link';
 import { MotionReveal, MotionStagger } from '@/components/motion/MotionReveal';
+import dynamic from 'next/dynamic';
+
+const EmbeddedPlatingStudio = dynamic(() => import('@/components/EmbeddedPlatingStudio'), { ssr: false, loading: () => <div className="rounded-lg border border-stone-200 p-8 text-center text-xs text-stone-400">Loading plating studio...</div> });
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 interface Message { role: 'user' | 'assistant'; content: string; fileName?: string; }
@@ -496,6 +499,16 @@ function AdaptationResultPanel({ result, chefName, originalTitle, venueAccent }:
               ))}
             </div>
           </div>
+
+          {/* Plating Studio */}
+          {(a.components || []).length > 0 && (
+            <EmbeddedPlatingStudio
+              components={(a.components || []).map(c => ({ name: c?.name || 'Component' }))}
+              title={a.title || 'Untitled'}
+              venueName={menuAnalysis?.venueName || ''}
+              venueAccent={venueAccent || '#8B8578'}
+            />
+          )}
 
           {/* Image Prompt */}
           {a.imagePrompt && (
