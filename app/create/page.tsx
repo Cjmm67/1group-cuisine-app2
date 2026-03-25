@@ -563,7 +563,7 @@ function EmbeddedPlatingStudio({ components, title, venueName, venueAccent }: {
 
       {/* Footer hint */}
       <div className="px-4 py-2 bg-stone-50 border-t border-stone-100 text-center">
-        <span className="text-[10px] text-stone-400 italic">Hover components to highlight &middot; Toggle colour mode for watercolour fills &middot; Download SVG for Midjourney reference</span>
+        <span className="text-[10px] text-stone-400 italic">Hover components to highlight · Toggle colour mode for watercolour fills · Download SVG for Midjourney reference</span>
       </div>
     </div>
   );
