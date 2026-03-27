@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { label: 'Chefs', href: '/chefs' },
   { label: 'Create', href: '/create' },
   { label: '1-Cheflix', href: '/masterclasses' },
+  { label: 'Brand', href: '/brand' },
   { label: 'Marketplace', href: '/marketplace' },
   { label: 'Sustainability', href: '/sustainability' },
 ];
