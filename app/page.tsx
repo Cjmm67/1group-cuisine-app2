@@ -5,12 +5,11 @@ import Link from 'next/link';
 import { RecipeCard } from '@/components/recipe/RecipeCard';
 import { ChefCard } from '@/components/chef/ChefCard';
 import { MasterclassCard } from '@/components/masterclass/MasterclassCard';
-import { Badge } from '@/components/ui/Badge';
 import { SchemaMarkup, websiteSchema, venueSchemas, buildFAQSchema } from '@/components/seo/SchemaMarkup';
 import { MOCK_RECIPES, MOCK_CHEFS, MOCK_MASTERCLASSES } from '@/lib/mockData';
-import { slugify } from '@/lib/utils';
 import { ArrowRight, Sparkles, ChefHat, GraduationCap } from 'lucide-react';
 import { MotionReveal, MotionStagger } from '@/components/motion/MotionReveal';
+import { FeaturedDishShowcase } from '@/components/motion/FeaturedDishShowcase';
 
 const homeFAQs = buildFAQSchema([
   {
@@ -39,7 +38,6 @@ export default function Home() {
   const featuredRecipes = MOCK_RECIPES.slice(0, 6);
   const featuredChefs = MOCK_CHEFS.slice(0, 4);
   const featuredMasterclasses = MOCK_MASTERCLASSES.slice(0, 3);
-  const heroRecipe = MOCK_RECIPES[0];
 
   const venues = [
     { name: '1-Arden', desc: 'Rooftop Bar, CapitaSpring', url: 'https://www.1-group.sg/1arden' },
@@ -95,25 +93,8 @@ export default function Home() {
         <div className="absolute bottom-0 left-0 right-0 h-px overflow-hidden"><div className="shimmer h-full" /></div>
       </section>
 
-      {/* ── Featured Recipe Hero — Scale In ── */}
-      {heroRecipe && heroRecipe.image && (
-        <MotionReveal animation="scale-in" duration={900} delay={200}>
-          <section className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 -mt-8 relative z-10">
-            <Link href={`/recipes/${slugify(heroRecipe.title)}`} className="block">
-              <div className="relative rounded-xl overflow-hidden aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] bg-gray-200 image-zoom-hover group">
-                <img src={heroRecipe.image} alt={heroRecipe.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
-                  <Badge variant="primary" size="sm" className="bg-gold-600 text-white border-0 mb-2">Featured Recipe</Badge>
-                  <h2 className="text-white text-xl sm:text-2xl lg:text-3xl font-bold mb-1">{heroRecipe.title}</h2>
-                  <p className="text-gray-300 text-sm">by {heroRecipe.chef.name}</p>
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-out pointer-events-none" />
-              </div>
-            </Link>
-          </section>
-        </MotionReveal>
-      )}
+      {/* ── Featured Dish Showcase — Counter-Scrolling Motion Graphics ── */}
+      <FeaturedDishShowcase />
 
       {/* ── How It Works — Staggered ── */}
       <section className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-14">
