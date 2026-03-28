@@ -477,19 +477,14 @@
   100% { transform: translateX(-33.333%); }
 }
 
-@keyframes dish-scroll-right {
-  0% { transform: translateX(-33.333%); }
-  100% { transform: translateX(0); }
-}
-
 @keyframes dish-reveal {
-  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .dish-showcase-section {
   position: relative;
-  background: #0a0a0a;
+  background: #ffffff;
   overflow: hidden;
   padding-bottom: 0;
 }
@@ -513,32 +508,28 @@
   z-index: 10;
 }
 
-/* Shared track styles */
+/* Single track */
 .dish-showcase-track {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   width: max-content;
   will-change: transform;
 }
 
 .dish-showcase-track-left {
-  animation: dish-scroll-left 120s linear infinite;
-}
-
-.dish-showcase-track-right {
-  animation: dish-scroll-right 100s linear infinite;
+  animation: dish-scroll-left 240s linear infinite;
 }
 
 .dish-showcase-track.paused {
   animation-play-state: paused;
 }
 
-/* Individual dish card */
+/* Individual dish card — BIG */
 .dish-showcase-card {
   flex-shrink: 0;
-  width: 260px;
-  height: 180px;
-  border-radius: 8px;
+  width: 360px;
+  height: 280px;
+  border-radius: 12px;
   overflow: hidden;
   position: relative;
   display: block;
@@ -554,8 +545,8 @@
 }
 
 .dish-showcase-card:hover {
-  transform: translateY(-4px) scale(1.03);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(201, 169, 110, 0.15);
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(201, 169, 110, 0.12);
   z-index: 5;
 }
 
@@ -564,7 +555,7 @@
   height: 100%;
   position: relative;
   overflow: hidden;
-  background: #1a1a1a;
+  background: #f3f2ee;
 }
 
 .dish-showcase-img {
@@ -572,46 +563,49 @@
   height: 100%;
   object-fit: cover;
   transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1), filter 0.5s ease;
-  filter: brightness(0.85) saturate(0.9);
+  filter: brightness(0.92) saturate(0.95);
 }
 
 .dish-showcase-card:hover .dish-showcase-img {
-  transform: scale(1.08);
-  filter: brightness(0.7) saturate(1.1);
+  transform: scale(1.06);
+  filter: brightness(0.75) saturate(1.1);
 }
 
-/* Responsive — larger cards on desktop */
+/* Responsive sizing */
 @media (min-width: 640px) {
   .dish-showcase-card {
-    width: 300px;
-    height: 200px;
+    width: 420px;
+    height: 310px;
+  }
+  .dish-showcase-track {
+    gap: 20px;
   }
 }
 
 @media (min-width: 1024px) {
   .dish-showcase-card {
-    width: 340px;
-    height: 220px;
+    width: 480px;
+    height: 340px;
   }
   .dish-showcase-track {
-    gap: 16px;
+    gap: 24px;
   }
 }
 
-/* Slow down tracks on smaller viewports */
+/* Slower on mobile */
 @media (max-width: 640px) {
   .dish-showcase-track-left {
-    animation-duration: 80s;
+    animation-duration: 160s;
   }
-  .dish-showcase-track-right {
-    animation-duration: 65s;
+  .dish-showcase-card {
+    width: 300px;
+    height: 230px;
   }
 }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .dish-showcase-track-left,
-  .dish-showcase-track-right {
+  .dish-showcase-track-left {
     animation: none;
   }
   .dish-showcase-card {
