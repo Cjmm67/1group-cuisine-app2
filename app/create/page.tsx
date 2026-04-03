@@ -252,67 +252,80 @@ function downloadAsPDF(result: AdaptationResult, chefName: string, originalTitle
     </div>
   `;
 
-  const html = `<!DOCTYPE html><html lang="en"><head>
-<meta charset="UTF-8">
-<title>${a.title}</title>
-<style>${styles}</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"><\/script>
-</head>
-<body>
-<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#FAF8F4;font-family:Inter,sans-serif;flex-direction:column;gap:12px" id="loading">
-  <div style="display:flex;gap:8px">
-    <div style="width:8px;height:8px;border-radius:50%;background:${venueAccent};animation:b 1.2s ease-in-out infinite"></div>
-    <div style="width:8px;height:8px;border-radius:50%;background:${venueAccent};animation:b 1.2s ease-in-out .2s infinite"></div>
-    <div style="width:8px;height:8px;border-radius:50%;background:${venueAccent};animation:b 1.2s ease-in-out .4s infinite"></div>
-  </div>
-  <div style="font-size:13px;font-weight:600;color:#2C2C2C">Generating PDF\u2026</div>
-  <div style="font-size:11px;color:#8B8578">This will download automatically</div>
-  <style>@keyframes b{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}</style>
-</div>
-<div class="page" id="recipe" style="position:absolute;left:-9999px;top:0">${bodyHtml}</div>
-<script>
-window.addEventListener('load', async function() {
-  try {
-    const { jsPDF } = window.jspdf;
-    const el = document.getElementById('recipe');
-    el.style.left = '0';
-    el.style.position = 'static';
-    await new Promise(r => setTimeout(r, 400));
-    const canvas = await html2canvas(el, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      logging: false,
-      backgroundColor: '#FAF8F4',
-      width: el.scrollWidth,
-      height: el.scrollHeight,
-      windowWidth: el.scrollWidth + 100,
+  // --- In-page PDF generation (no popup, no Chrome warning) ---
+  const loadScript = (src: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
+      const s = document.createElement('script');
+      s.src = src; s.onload = () => resolve(); s.onerror = reject;
+      document.head.appendChild(s);
     });
-    el.style.display = 'none';
-    const imgData = canvas.toDataURL('image/jpeg', 0.92);
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
-    const pageW = 210, pageH = 297;
-    const imgH = (canvas.height * pageW) / canvas.width;
-    let remaining = imgH, yOffset = 0, page = 0;
-    while (remaining > 0) {
-      if (page > 0) pdf.addPage();
-      pdf.addImage(imgData, 'JPEG', 0, -yOffset, pageW, imgH, '', 'FAST');
-      yOffset += pageH;
-      remaining -= pageH;
-      page++;
-    }
-    pdf.save('${filename}');
-    document.getElementById('loading').innerHTML = '<div style="text-align:center"><div style="font-size:22px;margin-bottom:8px">\u2713</div><div style="font-size:13px;font-weight:600;color:#1B3A2D">PDF downloaded</div><div style="font-size:11px;color:#8B8578;margin-top:4px">Check your downloads folder</div><button onclick="window.close()" style="margin-top:16px;padding:8px 20px;background:${venueAccent};color:#fff;border:none;border-radius:6px;font-weight:600;font-size:12px;cursor:pointer">Close</button></div>';
-  } catch(e) {
-    document.getElementById('loading').innerHTML = '<div style="text-align:center"><div style="font-size:13px;color:#C44536;font-weight:600">PDF generation failed</div><div style="font-size:11px;color:#8B8578;margin-top:4px">' + e.message + '</div><button onclick="window.close()" style="margin-top:12px;padding:8px 20px;border:1px solid #ddd;border-radius:6px;font-size:12px;cursor:pointer">Close</button></div>';
-  }
-});
-<\/script>
-</body></html>`;
+  };
 
-  const w = window.open('', '_blank', 'width=500,height=300,menubar=no,toolbar=no,location=no,status=no');
-  if (w) { w.document.write(html); w.document.close(); }
+  (async () => {
+    try {
+      // Load libs into main page (cached after first use)
+      await Promise.all([
+        loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'),
+        loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'),
+      ]);
+
+      // Create hidden render container — fixed 860px width ensures no clipping
+      const container = document.createElement('div');
+      container.style.cssText = 'position:fixed;left:-10000px;top:0;width:860px;z-index:-1;';
+      document.body.appendChild(container);
+
+      // Inject styles + content
+      const styleEl = document.createElement('style');
+      styleEl.textContent = styles;
+      container.appendChild(styleEl);
+
+      const page = document.createElement('div');
+      page.className = 'page';
+      page.style.cssText = 'width:760px;margin:0 auto;padding:36px 44px;background:#FAF8F4;';
+      page.innerHTML = bodyHtml;
+      container.appendChild(page);
+
+      // Wait for fonts + layout
+      await document.fonts.ready;
+      await new Promise(r => setTimeout(r, 500));
+
+      const canvas = await (window as any).html2canvas(page, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        backgroundColor: '#FAF8F4',
+        width: 760,
+        height: page.scrollHeight,
+        windowWidth: 860,
+      });
+
+      // Clean up render container
+      document.body.removeChild(container);
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.92);
+      const { jsPDF } = (window as any).jspdf;
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+      const pageW = 210, pageH = 297;
+      const margin = 5; // 5mm margin each side
+      const contentW = pageW - margin * 2;
+      const imgH = (canvas.height * contentW) / canvas.width;
+      const contentH = pageH - margin * 2;
+      let remaining = imgH, yOffset = 0, pageNum = 0;
+      while (remaining > 0) {
+        if (pageNum > 0) pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', margin, margin - yOffset, contentW, imgH, '', 'FAST');
+        yOffset += contentH;
+        remaining -= contentH;
+        pageNum++;
+      }
+      pdf.save(filename);
+    } catch (e: any) {
+      console.error('PDF generation failed:', e);
+      alert('PDF generation failed: ' + (e.message || 'Unknown error'));
+    }
+  })();
 }
 
 
